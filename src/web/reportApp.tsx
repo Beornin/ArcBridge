@@ -1617,7 +1617,7 @@ export function ReportApp() {
                                 Back to Reports
                             </a>
                         </div>
-                        <nav className="px-3 pb-6 space-y-3 text-sm overflow-y-auto [overflow-anchor:none]" onWheel={handleNavWheel}>
+                        <nav className="px-3 pb-6 space-y-2 text-sm overflow-y-auto [overflow-anchor:none]" onWheel={handleNavWheel}>
                             {navGroups.map((group) => {
                                 const GroupIcon = group.icon;
                                 const isActive = group.id === activeGroup;
@@ -1629,7 +1629,7 @@ export function ReportApp() {
                                         key={group.id}
                                         layout="position"
                                         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                                        className="space-y-2"
+                                        className="space-y-1"
                                     >
                                         <button
                                             onClick={() => handleGroupHeaderClick(group.id)}
@@ -1717,7 +1717,7 @@ export function ReportApp() {
                                 </div>
                             </div>
                         </div>
-                        <nav className="px-4 space-y-4 text-sm flex-1 overflow-y-auto [overflow-anchor:none]" onWheel={handleNavWheel}>
+                        <nav className="px-4 space-y-2 text-sm flex-1 overflow-y-auto [overflow-anchor:none]" onWheel={handleNavWheel}>
                             {navGroups.map((group) => {
                                 const GroupIcon = group.icon;
                                 const isActive = group.id === activeGroup;
@@ -1729,7 +1729,7 @@ export function ReportApp() {
                                         key={group.id}
                                         layout="position"
                                         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                                        className="space-y-2"
+                                        className="space-y-1"
                                     >
                                         <button
                                             onClick={() => handleGroupHeaderClick(group.id)}
