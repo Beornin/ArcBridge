@@ -48,6 +48,7 @@ import { StatsHeader } from './stats/ui/StatsHeader';
 import { WebUploadBanner } from './stats/ui/WebUploadBanner';
 import { DevMockBanner } from './stats/ui/DevMockBanner';
 import { prefetchIconUrls, renderProfessionIcon as renderProfessionIconShared } from './stats/ui/StatsViewShared';
+import { STATS_LOADING_JOKE_INTERVAL_MS, STATS_LOADING_JOKES, shuffled } from './stats/loadingJokes';
 
 interface StatsViewProps {
     logs: ILogData[];
@@ -138,6 +139,11 @@ export function StatsView({ logs, onBack, mvpWeights, statsViewSettings, onStats
     const webUploadBuildStatus = activeWebUploadState.buildStatus;
     const devMockAvailable = !embedded && import.meta.env.DEV && !!window.electronAPI?.mockWebReport;
     const [sectionContentReady, setSectionContentReady] = useState(true);
+    const [statsSettlingBannerJoke, setStatsSettlingBannerJoke] = useState(STATS_LOADING_JOKES[0] || '');
+    const statsLoadingJokeDeckRef = useRef<string[]>([]);
+    const statsLoadingJokeCursorRef = useRef(0);
+    const statsLoadingJokeTimerRef = useRef<number | null>(null);
+    const statsLoadingJokeLastChangeRef = useRef(0);
     const isSectionVisibleFast = useCallback(
         (id: string) => (sectionVisibility ? sectionVisibility(id) : true),
         [sectionVisibility]
@@ -147,8 +153,7 @@ export function StatsView({ logs, onBack, mvpWeights, statsViewSettings, onStats
     const useExternalAggregation = !!externalAggregationResult;
     const {
         result: internalAggregationResult,
-        aggregationProgress: internalAggregationProgress,
-        aggregationDiagnostics: internalAggregationDiagnostics
+        aggregationProgress: internalAggregationProgress
     } = useStatsAggregationWorker({
         logs: useExternalAggregation ? [] : logs,
         precomputedStats: useExternalAggregation ? undefined : precomputedStats,
@@ -158,7 +163,6 @@ export function StatsView({ logs, onBack, mvpWeights, statsViewSettings, onStats
     });
     const aggregationResult = externalAggregationResult || internalAggregationResult;
     const aggregationProgress = externalAggregationResult?.aggregationProgress || internalAggregationProgress;
-    const aggregationDiagnostics = externalAggregationResult?.aggregationDiagnostics || internalAggregationDiagnostics;
     const { stats, skillUsageData: computedSkillUsageData } = aggregationResult;
     const statsSettling = useMemo(() => {
         const detailsTotal = Math.max(0, Number(statsDataProgress?.total || logs.length || 0));
@@ -221,38 +225,63 @@ export function StatsView({ logs, onBack, mvpWeights, statsViewSettings, onStats
             progressPercent
         };
     }, [statsDataProgress, aggregationProgress, logs.length]);
-    const statsDiagnosticsText = useMemo(() => {
-        if (!aggregationDiagnostics) return '';
-        const formatMs = (value: number) => {
-            const ms = Math.max(0, Number(value || 0));
-            if (ms >= 10000) return `${(ms / 1000).toFixed(1)}s`;
-            if (ms >= 1000) return `${(ms / 1000).toFixed(2)}s`;
-            return `${Math.round(ms)}ms`;
-        };
-        const parts = [
-            `Load ${formatMs(aggregationDiagnostics.streamMs)}`,
-            `Calculate ${formatMs(aggregationDiagnostics.computeMs)}`,
-            `Total ${formatMs(aggregationDiagnostics.totalMs)}`
-        ];
-        const strip = aggregationDiagnostics.transferStripStats;
-        if (aggregationDiagnostics.mode === 'worker' && strip) {
-            const spikeRows = Number(strip.spikeSkillRowsRemoved || 0);
-            const incomingRows = Number(strip.incomingSkillRowsRemoved || 0);
-            const skillMaps = Number(strip.playerSkillMapsRemoved || 0);
-            const totalTrimmed = spikeRows + incomingRows + skillMaps;
-            if (totalTrimmed > 0) {
-                parts.push(`Cleaned up ${totalTrimmed.toLocaleString()} temporary records`);
-            }
-        }
-        if (aggregationDiagnostics.mode === 'worker' && Number(aggregationDiagnostics.droppedLogMessages || 0) > 0) {
-            parts.push(`Skipped ${Number(aggregationDiagnostics.droppedLogMessages || 0)} outdated updates`);
-        }
-        return parts.join(' • ');
-    }, [aggregationDiagnostics]);
     const showStatsSettlingBanner = statsSettling.active;
     const statsSettlingBannerTitle = statsSettling.phaseLabel;
     const statsSettlingBannerMeta = statsSettling.progressText;
     const blurStatsDashboard = showStatsSettlingBanner && statsSettling.progressPercent < 100;
+    const statsActionsDisabled = showStatsSettlingBanner || !sectionContentReady;
+    useEffect(() => {
+        if (statsLoadingJokeTimerRef.current !== null) {
+            window.clearTimeout(statsLoadingJokeTimerRef.current);
+            statsLoadingJokeTimerRef.current = null;
+        }
+        if (!showStatsSettlingBanner) return;
+        const nextJoke = () => {
+            if (statsLoadingJokeDeckRef.current.length === 0 || statsLoadingJokeCursorRef.current >= statsLoadingJokeDeckRef.current.length) {
+                statsLoadingJokeDeckRef.current = shuffled(STATS_LOADING_JOKES);
+                statsLoadingJokeCursorRef.current = 0;
+            }
+            const joke = statsLoadingJokeDeckRef.current[statsLoadingJokeCursorRef.current];
+            statsLoadingJokeCursorRef.current += 1;
+            if (joke) {
+                setStatsSettlingBannerJoke(joke);
+                statsLoadingJokeLastChangeRef.current = Date.now();
+            }
+        };
+        const scheduleNext = (delayMs: number) => {
+            statsLoadingJokeTimerRef.current = window.setTimeout(() => {
+                statsLoadingJokeTimerRef.current = null;
+                nextJoke();
+                scheduleNext(STATS_LOADING_JOKE_INTERVAL_MS);
+            }, Math.max(300, delayMs));
+        };
+        if (statsLoadingJokeLastChangeRef.current <= 0) {
+            nextJoke();
+            scheduleNext(STATS_LOADING_JOKE_INTERVAL_MS);
+            return () => {
+                if (statsLoadingJokeTimerRef.current !== null) {
+                    window.clearTimeout(statsLoadingJokeTimerRef.current);
+                    statsLoadingJokeTimerRef.current = null;
+                }
+            };
+        }
+        const elapsed = Date.now() - statsLoadingJokeLastChangeRef.current;
+        const initialDelay = STATS_LOADING_JOKE_INTERVAL_MS - elapsed;
+        scheduleNext(initialDelay);
+        return () => {
+            if (statsLoadingJokeTimerRef.current !== null) {
+                window.clearTimeout(statsLoadingJokeTimerRef.current);
+                statsLoadingJokeTimerRef.current = null;
+            }
+        };
+    }, [showStatsSettlingBanner]);
+    useEffect(() => {
+        if (embedded || typeof document === 'undefined') return;
+        document.body.classList.toggle('stats-dashboard-loading', blurStatsDashboard);
+        return () => {
+            document.body.classList.remove('stats-dashboard-loading');
+        };
+    }, [embedded, blurStatsDashboard]);
     useEffect(() => {
         if (showStatsSettlingBanner) {
             setSectionContentReady(false);
@@ -3251,6 +3280,7 @@ type SpikeFight = {
                 sharing={sharing}
                 canShareDiscord={canShareDiscord}
                 onShare={handleShare}
+                actionsDisabled={statsActionsDisabled}
             />
 
             <WebUploadBanner
@@ -3281,9 +3311,7 @@ type SpikeFight = {
                             />
                         </div>
                     )}
-                    {statsDiagnosticsText && (
-                        <div className="stats-settling-banner__meta mt-2 text-[11px] opacity-80">{statsDiagnosticsText}</div>
-                    )}
+                    <div className="stats-settling-banner__meta stats-settling-banner__joke mt-2 text-xs opacity-90">{statsSettlingBannerJoke}</div>
                 </div>
             )}
 
