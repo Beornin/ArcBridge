@@ -119,7 +119,8 @@ const logs = inputs.map((filePath) => {
     return { filePath, status: 'success', details };
 }).filter(Boolean);
 
-const result = computeStatsAggregation({ logs, statsViewSettings, mvpWeights, disruptionMethod: 'count' });
+const aggregation = computeStatsAggregation({ logs, statsViewSettings, mvpWeights, disruptionMethod: 'count' });
+const result = aggregation?.stats || aggregation || {};
 const specialByName = new Map();
 (result.specialTables || []).forEach((t) => {
     if (!t?.name) return;
@@ -139,8 +140,7 @@ for (const cond of NON_DAMAGING) {
     const specialTop = special ? pickTop(special.rows || [], 'total') : null;
     const outgoingPlayers = (result.outgoingConditionPlayers || []).map((p) => {
         const condition = p?.conditions?.[name] || p?.conditions?.[name.toLowerCase()];
-        const val = condition?.applicationsFromUptime
-            ?? condition?.applicationsFromBuffsActive
+        const val = condition?.applicationsFromBuffsActive
             ?? condition?.applicationsFromBuffs
             ?? condition?.applications
             ?? 0;
