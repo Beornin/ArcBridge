@@ -1,19 +1,17 @@
 # Release Notes
 
-Version v1.37.5 — February 24, 2026
+Version v1.37.6 — February 25, 2026
 
 ## 🌟 Highlights
-- Gate actions during settling to prevent unintended interactions.
-- Unified loading blur for a cleaner, more consistent visual.
-- WvW loading screens now shuffle a 150-line set of light jokes to brighten waits.
+- Between mode added to the file picker for precise date-range filtering.
+- Web build assets refreshed to support the update and improve visuals.
 
 ## 🛠️ Improvements
-- Fight headers now show total squad and total enemy counts for the selected fight.
-- Fight components gain win/loss indicators with refreshed styling for clearer results.
-- Left navigation spacing on the web view is now denser to better match the app layout.
+- File picker dialog now includes Between date-range filtering, making it easier to narrow results.
+- Web assets updated to reflect the new mode and provide a smoother experience.
 
 ## 🧯 Fixes
-None.
+- None.
 
 ## ⚠️ Breaking Changes
-None.
+- None.
