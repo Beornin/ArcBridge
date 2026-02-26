@@ -2731,6 +2731,14 @@ if (!gotTheLock) {
             console.log('[Main] Clearing persistent logs to improve startup time.');
             store.delete('logs');
         }
+        // Retry queue references specific log files from prior sessions. Since logs are
+        // intentionally non-persistent, clear retry queue state on boot as well.
+        if (store.has(UPLOAD_RETRY_QUEUE_KEY) || store.has(UPLOAD_RETRY_STATE_KEY)) {
+            console.log('[Main] Clearing persistent upload retry queue state.');
+            store.delete(UPLOAD_RETRY_QUEUE_KEY);
+            store.delete(UPLOAD_RETRY_STATE_KEY);
+            resolvedRetryCount = 0;
+        }
 
         // Removed get-logs and save-logs handlers
 
