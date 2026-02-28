@@ -754,8 +754,6 @@ function App() {
             const rawCandidates = logsRef.current
                 .filter((log) => {
                     if (!log.filePath || log.details || log.statsDetailsLoaded) return false;
-                    if (log.detailsFetchExhausted) return false;
-                    if (log.detailsKnownUnavailable) return false;
                     if (log.detailsAvailable) return true;
                     return (log.status === 'success' || log.status === 'calculating' || log.status === 'discord') && Boolean(log.permalink);
                 })
