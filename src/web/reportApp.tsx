@@ -34,10 +34,13 @@ import {
     ArrowLeft,
     ArrowUp,
     ArrowBigUp,
+    Clock3,
     FileText,
     ListTree,
     BarChart3,
     Keyboard,
+    Route,
+    Target,
     ChevronDown,
     GitCompareArrows
 } from 'lucide-react';
@@ -629,6 +632,19 @@ export function ReportApp() {
                 { id: 'squad-composition', label: 'Classes', icon: Users },
                 { id: 'timeline', label: 'Squad vs Enemy Size', icon: Users },
                 { id: 'map-distribution', label: 'Map Distribution', icon: MapIcon }
+            ]
+        },
+        {
+            id: 'commanders',
+            label: 'Commander Stats',
+            icon: CommanderTagIcon,
+            sectionIds: ['commander-stats', 'commander-push-timing', 'commander-target-conversion', 'commander-tag-movement', 'commander-tag-death-response'],
+            items: [
+                { id: 'commander-stats', label: 'Commander Stats', icon: CommanderTagIcon },
+                { id: 'commander-push-timing', label: 'Push Timing', icon: Clock3 },
+                { id: 'commander-target-conversion', label: 'Target Conversion', icon: Target },
+                { id: 'commander-tag-movement', label: 'Tag Movement', icon: Route },
+                { id: 'commander-tag-death-response', label: 'Tag Death Response', icon: Skull }
             ]
         },
         {

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Clock3, Route, Target } from 'lucide-react';
+import { Clock3, Route, Skull, Target } from 'lucide-react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { CommanderTagIcon } from '../../ui/CommanderTagIcon';
 
@@ -39,6 +39,11 @@ type CommanderFightRow = {
     movementPerMinute: number | null;
     stationaryPct: number | null;
     movementBurstCount: number | null;
+    commanderDiedAtMs: number | null;
+    squadDeathsAfterTagDeath: number | null;
+    enemyKillsAfterTagDeath: number | null;
+    collapsedAfterTagDeath: boolean | null;
+    recoveredAfterTagDeath: boolean | null;
     boonUptimePct: number;
     boonEntries: number;
     incomingDamageBySkill: Array<{ id: string; name: string; icon?: string; damage: number; hits: number }>;
@@ -88,6 +93,11 @@ type CommanderSummaryRow = {
     avgCommanderMovementPerMinute: number | null;
     avgTagStationaryPct: number | null;
     avgTagMovementBurstCount: number | null;
+    fightsWithCommanderDeath: number;
+    avgSquadDeathsAfterTagDeath: number | null;
+    avgEnemyKillsAfterTagDeath: number | null;
+    squadCollapseAfterTagDeathPct: number | null;
+    recoveryAfterTagDeathPct: number | null;
     boonUptimePct: number;
     boonEntries: number;
     incomingSkillBreakdown: Array<{ id: string; name: string; icon?: string; damage: number; hits: number }>;
@@ -375,6 +385,154 @@ export const CommanderTagMovementSection = ({
                                 </tbody>
                             </table>
                         </div>
+                    )}
+                </div>
+            )}
+        </section>
+    );
+};
+
+export const CommanderTagDeathResponseSection = ({
+    commanderStats,
+    isSectionVisible,
+    isFirstVisibleSection,
+    sectionClass
+}: Omit<CommanderStatsSectionProps, 'getProfessionIconPath'>) => {
+    const rows = useMemo(
+        () => (Array.isArray(commanderStats?.rows) ? commanderStats?.rows || [] : []),
+        [commanderStats]
+    );
+    const [selectedCommanderKey, setSelectedCommanderKey] = useState<string>('');
+
+    useEffect(() => {
+        if (rows.length === 0) {
+            setSelectedCommanderKey('');
+            return;
+        }
+        if (!selectedCommanderKey || !rows.some((row) => row.key === selectedCommanderKey)) {
+            setSelectedCommanderKey(rows[0].key);
+        }
+    }, [rows, selectedCommanderKey]);
+
+    const selectedCommander = useMemo(
+        () => rows.find((row) => row.key === selectedCommanderKey) || rows[0] || null,
+        [rows, selectedCommanderKey]
+    );
+    const deathFights = useMemo(
+        () => (selectedCommander?.fightsData || []).filter((fight) => fight.commanderDiedAtMs !== null),
+        [selectedCommander]
+    );
+    const hasPostDeathEnemyData = useMemo(
+        () => rows.some((row) => row.avgEnemyKillsAfterTagDeath !== null),
+        [rows]
+    );
+
+    return (
+        <section
+            id="commander-tag-death-response"
+            data-section-visible={isSectionVisible('commander-tag-death-response')}
+            data-section-first={isFirstVisibleSection('commander-tag-death-response')}
+            className={sectionClass('commander-tag-death-response', 'bg-white/5 border border-rose-300/20 rounded-2xl p-6 page-break-avoid scroll-mt-24')}
+        >
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+                <h3 className="text-lg font-bold text-rose-100 flex items-center gap-2">
+                    <Skull className="w-5 h-5 text-rose-300" />
+                    Squad Response To Tag Death
+                </h3>
+                <span className="text-[10px] uppercase tracking-widest text-rose-200/70">
+                    {rows.length} Commanders
+                </span>
+            </div>
+
+            {rows.length === 0 ? (
+                <div className="text-center text-gray-500 italic py-8">No commander death response data available.</div>
+            ) : (
+                <div className="space-y-4 min-w-0">
+                    {!hasPostDeathEnemyData ? (
+                        <div className="rounded-lg border border-rose-200/10 bg-black/25 px-3 py-2 text-xs text-rose-100/80">
+                            Post-death enemy kill counts are unavailable for these logs because enemy replay death timestamps were not present.
+                        </div>
+                    ) : null}
+                    <div className="w-full max-w-full overflow-x-auto pb-1">
+                        <table className="w-full min-w-[760px] text-xs table-auto">
+                            <thead>
+                                <tr className="text-gray-400 uppercase tracking-widest text-[10px] border-b border-white/10">
+                                    <th className="text-left py-2 px-2">Commander</th>
+                                    <th className="text-right py-2 px-2">Fights With Tag Death</th>
+                                    <th className="text-right py-2 px-2">Collapse Rate</th>
+                                    <th className="text-right py-2 px-2">Avg Squad Deaths After</th>
+                                    <th className="text-right py-2 px-2">Avg Enemy Kills After</th>
+                                    <th className="text-right py-2 px-2">Recovery Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {rows.map((row) => (
+                                    <tr
+                                        key={`${row.key}-tag-death-response`}
+                                        onClick={() => setSelectedCommanderKey(row.key)}
+                                        className={`border-b border-white/5 cursor-pointer transition-colors ${
+                                            selectedCommander?.key === row.key ? 'bg-rose-500/10' : 'hover:bg-white/5'
+                                        }`}
+                                    >
+                                        <td className="py-2 px-2 text-gray-100 font-semibold truncate">{row.account}</td>
+                                        <td className="py-2 px-2 text-right font-mono text-gray-200">{formatInt(row.fightsWithCommanderDeath)}</td>
+                                        <td className="py-2 px-2 text-right font-mono text-gray-200">{formatNullablePct(row.squadCollapseAfterTagDeathPct)}</td>
+                                        <td className="py-2 px-2 text-right font-mono text-gray-200">{formatNullableNumber(row.avgSquadDeathsAfterTagDeath, 1)}</td>
+                                        <td className="py-2 px-2 text-right font-mono text-gray-200">{formatNullableNumber(row.avgEnemyKillsAfterTagDeath, 1)}</td>
+                                        <td className="py-2 px-2 text-right font-mono text-gray-200">{formatNullablePct(row.recoveryAfterTagDeathPct)}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {selectedCommander && (
+                        deathFights.length === 0 ? (
+                            <div className="text-center text-gray-500 italic py-4">This commander has no fights with a recorded tag death.</div>
+                        ) : (
+                            <div className="overflow-x-auto min-w-0">
+                                <table className="w-full min-w-[700px] text-xs table-auto">
+                                    <thead>
+                                        <tr className="text-gray-400 uppercase tracking-widest text-[10px] border-b border-white/10">
+                                            <th className="text-left py-2 px-2">Fight</th>
+                                            <th className="text-right py-2 px-2">Commander Died At</th>
+                                            <th className="text-right py-2 px-2">Squad Deaths After</th>
+                                            <th className="text-right py-2 px-2">Enemy Kills After</th>
+                                            <th className="text-right py-2 px-2">Collapse</th>
+                                            <th className="text-right py-2 px-2">Recovery</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {deathFights.map((fight) => (
+                                            <tr key={`${fight.id}-tag-death-response`} className="border-b border-white/5">
+                                                <td className="py-1.5 px-2 text-gray-200">{fight.shortLabel} • {fight.mapName || 'Unknown'}</td>
+                                                <td className="py-1.5 px-2 text-right font-mono text-gray-200">{formatNullableDuration(fight.commanderDiedAtMs)}</td>
+                                                <td className="py-1.5 px-2 text-right font-mono text-gray-200">{formatNullableNumber(fight.squadDeathsAfterTagDeath, 0)}</td>
+                                                <td className="py-1.5 px-2 text-right font-mono text-gray-200">{formatNullableNumber(fight.enemyKillsAfterTagDeath, 0)}</td>
+                                                <td
+                                                    className={`py-1.5 px-2 text-right font-semibold ${
+                                                        fight.collapsedAfterTagDeath === null
+                                                            ? 'text-gray-400'
+                                                            : (fight.collapsedAfterTagDeath ? 'text-rose-300' : 'text-emerald-300')
+                                                    }`}
+                                                >
+                                                    {fight.collapsedAfterTagDeath === null ? 'N/A' : (fight.collapsedAfterTagDeath ? 'Yes' : 'No')}
+                                                </td>
+                                                <td
+                                                    className={`py-1.5 px-2 text-right font-semibold ${
+                                                        fight.recoveredAfterTagDeath === null
+                                                            ? 'text-gray-400'
+                                                            : (fight.recoveredAfterTagDeath ? 'text-emerald-300' : 'text-rose-300')
+                                                    }`}
+                                                >
+                                                    {fight.recoveredAfterTagDeath === null ? 'N/A' : (fight.recoveredAfterTagDeath ? 'Yes' : 'No')}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )
                     )}
                 </div>
             )}

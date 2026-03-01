@@ -55,12 +55,13 @@ export const STATS_TOC_GROUPS: readonly StatsTocGroup[] = [
         id: 'commanders',
         label: 'Commander Stats',
         icon: CommanderTagIcon,
-        sectionIds: ['commander-stats', 'commander-push-timing', 'commander-target-conversion', 'commander-tag-movement'],
+        sectionIds: ['commander-stats', 'commander-push-timing', 'commander-target-conversion', 'commander-tag-movement', 'commander-tag-death-response'],
         items: [
             { id: 'commander-stats', label: 'Commander Stats', icon: CommanderTagIcon },
             { id: 'commander-push-timing', label: 'Push Timing', icon: Clock3 },
             { id: 'commander-target-conversion', label: 'Target Conversion', icon: Target },
-            { id: 'commander-tag-movement', label: 'Tag Movement', icon: Route }
+            { id: 'commander-tag-movement', label: 'Tag Movement', icon: Route },
+            { id: 'commander-tag-death-response', label: 'Tag Death Response', icon: Skull }
         ]
     },
     {
