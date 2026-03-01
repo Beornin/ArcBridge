@@ -2751,6 +2751,11 @@ export const computeStatsAggregation = ({ logs, precomputedStats, mvpWeights, st
                     movementPerMinute: number | null;
                     stationaryPct: number | null;
                     movementBurstCount: number | null;
+                    commanderDiedAtMs: number | null;
+                    squadDeathsAfterTagDeath: number | null;
+                    enemyKillsAfterTagDeath: number | null;
+                    collapsedAfterTagDeath: boolean | null;
+                    recoveredAfterTagDeath: boolean | null;
                     boonUptimePct: number;
                     boonEntries: number;
                     incomingDamageBySkill: Array<{ id: string; name: string; icon?: string; damage: number; hits: number }>;
@@ -2909,6 +2914,17 @@ export const computeStatsAggregation = ({ logs, precomputedStats, mvpWeights, st
                     : Math.max(0, Number(summary?.enemyDowns || 0));
                 const timeToFirstEnemyDownMs = getFirstReplayTime(enemyTargets, 'down');
                 const timeToFirstEnemyDeathMs = getFirstReplayTime(enemyTargets, 'dead');
+                const commanderDiedAtMs = getFirstReplayTime([commander], 'dead');
+                const squadDeathTimes = squadPlayers.flatMap((player: any) => getReplayTimes(player, 'dead'));
+                const enemyDeathTimes = enemyTargets.flatMap((target: any) => getReplayTimes(target, 'dead'));
+                const squadDeathsAfterTagDeath = commanderDiedAtMs !== null
+                    ? squadDeathTimes.filter((time: number) => time > commanderDiedAtMs).length
+                    : null;
+                const enemyKillsAfterTagDeath = commanderDiedAtMs !== null
+                    ? (enemyDeathTimes.length > 0
+                        ? enemyDeathTimes.filter((time: number) => time > commanderDiedAtMs).length
+                        : null)
+                    : null;
                 const downToKillConversionMs = timeToFirstEnemyDownMs !== null
                     && timeToFirstEnemyDeathMs !== null
                     && timeToFirstEnemyDeathMs >= timeToFirstEnemyDownMs
@@ -2924,6 +2940,22 @@ export const computeStatsAggregation = ({ logs, precomputedStats, mvpWeights, st
                 const wasStalledPush = timeToFirstEnemyDownMs !== null
                     ? (timeToFirstEnemyDeathMs === null
                         || (timeToFirstEnemyDeathMs - timeToFirstEnemyDownMs) > STALLED_PUSH_WINDOW_MS)
+                    : null;
+                const collapsedAfterTagDeath = commanderDiedAtMs !== null
+                    ? (
+                        squadDeathsAfterTagDeath !== null
+                        && enemyKillsAfterTagDeath !== null
+                        ? squadDeathsAfterTagDeath > enemyKillsAfterTagDeath
+                        : null
+                    )
+                    : null;
+                const recoveredAfterTagDeath = commanderDiedAtMs !== null
+                    ? (
+                        squadDeathsAfterTagDeath !== null
+                        && enemyKillsAfterTagDeath !== null
+                        ? enemyKillsAfterTagDeath > 0 && enemyKillsAfterTagDeath >= squadDeathsAfterTagDeath
+                        : null
+                    )
                     : null;
                 const alliesDown = squadPlayers.reduce((sum: number, p: any) => sum + Math.max(0, Number(p?.defenses?.[0]?.downCount || 0)), 0);
                 const alliesDead = squadPlayers.reduce((sum: number, p: any) => sum + Math.max(0, Number(p?.defenses?.[0]?.deadCount || 0)), 0);
@@ -3067,6 +3099,11 @@ export const computeStatsAggregation = ({ logs, precomputedStats, mvpWeights, st
                     movementPerMinute: movementMetrics.movementPerMinute,
                     stationaryPct: movementMetrics.stationaryPct,
                     movementBurstCount: movementMetrics.movementBurstCount,
+                    commanderDiedAtMs,
+                    squadDeathsAfterTagDeath,
+                    enemyKillsAfterTagDeath,
+                    collapsedAfterTagDeath,
+                    recoveredAfterTagDeath,
                     boonUptimePct,
                     boonEntries: boonCount,
                     incomingDamageBySkill,
@@ -3108,6 +3145,12 @@ export const computeStatsAggregation = ({ logs, precomputedStats, mvpWeights, st
                     const avgCommanderMovementPerMinute = averageDefined(fights.map((fight) => fight.movementPerMinute));
                     const avgTagStationaryPct = averageDefined(fights.map((fight) => fight.stationaryPct));
                     const avgTagMovementBurstCount = averageDefined(fights.map((fight) => fight.movementBurstCount));
+                    const fightsWithCommanderDeath = fights.filter((fight) => fight.commanderDiedAtMs !== null).length;
+                    const deathFights = fights.filter((fight) => fight.commanderDiedAtMs !== null);
+                    const avgSquadDeathsAfterTagDeath = averageDefined(deathFights.map((fight) => fight.squadDeathsAfterTagDeath));
+                    const avgEnemyKillsAfterTagDeath = averageDefined(deathFights.map((fight) => fight.enemyKillsAfterTagDeath));
+                    const squadCollapseAfterTagDeathPct = percentFromFlags(deathFights.map((fight) => fight.collapsedAfterTagDeath));
+                    const recoveryAfterTagDeathPct = percentFromFlags(deathFights.map((fight) => fight.recoveredAfterTagDeath));
                     return {
                         key: entry.key,
                         account: entry.account,
@@ -3149,6 +3192,11 @@ export const computeStatsAggregation = ({ logs, precomputedStats, mvpWeights, st
                         avgCommanderMovementPerMinute,
                         avgTagStationaryPct,
                         avgTagMovementBurstCount,
+                        fightsWithCommanderDeath,
+                        avgSquadDeathsAfterTagDeath,
+                        avgEnemyKillsAfterTagDeath,
+                        squadCollapseAfterTagDeathPct,
+                        recoveryAfterTagDeathPct,
                         boonUptimePct: weightedBoonUptimePct,
                         boonEntries: entry.boonEntriesSeen,
                         incomingSkillBreakdown: Array.from(entry.incomingSkillMap.values())
