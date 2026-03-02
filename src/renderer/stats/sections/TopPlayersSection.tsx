@@ -151,7 +151,7 @@ export const TopPlayersSection = ({
             </h3>
             {showMvp && (
                 <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,0.9fr)] gap-3 mb-6">
-                    <div className="mvp-card mvp-card--gold border border-yellow-500/30 rounded-2xl p-3 relative overflow-hidden group flex items-center">
+                    <div className="mvp-card mvp-card--gold border border-yellow-500/30 rounded-2xl p-3 relative overflow-visible z-0 group hover:z-20 flex items-center">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-500/10 blur-[80px] rounded-full pointer-events-none group-hover:bg-yellow-500/20 transition-all" />
 
                         <div className="flex items-center gap-5 relative z-10 w-full">
@@ -203,7 +203,7 @@ export const TopPlayersSection = ({
                         ].map((entry) => (
                             <div
                                 key={entry.label}
-                                className={`mvp-card mvp-card--${entry.label.toLowerCase()} border border-white/10 rounded-2xl p-3 relative overflow-hidden group flex flex-col`}
+                                className={`mvp-card mvp-card--${entry.label.toLowerCase()} border border-white/10 rounded-2xl p-3 relative overflow-visible z-0 group hover:z-20 flex flex-col`}
                             >
                                 <div className={`absolute top-0 right-0 w-48 h-48 rounded-full blur-[70px] pointer-events-none transition-all ${entry.label === 'Silver'
                                     ? 'bg-slate-300/15 group-hover:bg-slate-300/25'
