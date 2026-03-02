@@ -5,6 +5,7 @@
  */
 
 import { computeOutgoingConditions } from '../shared/conditionsMetrics';
+import { TIMESTAMP_MS_THRESHOLD } from '../shared/constants';
 
 // ─── Timestamp helpers ────────────────────────────────────────────────────────
 
@@ -17,13 +18,13 @@ export const resolveTimestampSeconds = (value: any): number | undefined => {
     if (value === undefined || value === null || value === '') return undefined;
     if (typeof value === 'number') {
         if (!Number.isFinite(value) || value <= 0) return undefined;
-        return value > 1e12 ? Math.floor(value / 1000) : Math.floor(value);
+        return value > TIMESTAMP_MS_THRESHOLD ? Math.floor(value / 1000) : Math.floor(value);
     }
     const raw = String(value).trim();
     if (!raw) return undefined;
     const numeric = Number(raw);
     if (Number.isFinite(numeric) && numeric > 0) {
-        return numeric > 1e12 ? Math.floor(numeric / 1000) : Math.floor(numeric);
+        return numeric > TIMESTAMP_MS_THRESHOLD ? Math.floor(numeric / 1000) : Math.floor(numeric);
     }
     const parsed = Date.parse(raw);
     if (Number.isFinite(parsed) && parsed > 0) return Math.floor(parsed / 1000);

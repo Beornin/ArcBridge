@@ -1,10 +1,12 @@
 import { forwardRef, memo, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
-import { applyStabilityGeneration, getIncomingDisruptions, getPlayerDamage, getPlayerDps, getPlayerDownsTaken, getPlayerDeaths, getPlayerDamageTaken, getPlayerDodges, getPlayerMissed, getPlayerBlocked, getPlayerEvaded, getPlayerResurrects, getPlayerDownContribution, getPlayerOutgoingCrowdControl, getPlayerSquadBarrier, getPlayerSquadHealing, getTargetStatTotal } from '../shared/dashboardMetrics';
+import { getPlayerDamage, getPlayerDps, getPlayerDownsTaken, getPlayerDeaths, getPlayerDamageTaken, getPlayerDodges, getPlayerMissed, getPlayerBlocked, getPlayerEvaded, getPlayerResurrects, getTargetStatTotal } from '../shared/dashboardMetrics';
+import { applySquadStabilityGeneration as applyStabilityGeneration, computeIncomingDisruptions as getIncomingDisruptions, computeDownContribution as getPlayerDownContribution, computeOutgoingCrowdControl as getPlayerOutgoingCrowdControl, computeSquadBarrier as getPlayerSquadBarrier, computeSquadHealing as getPlayerSquadHealing } from '../shared/combatMetrics';
 import { Player } from '../shared/dpsReportTypes';
 import { DEFAULT_DISRUPTION_METHOD, DEFAULT_EMBED_STATS, DisruptionMethod, IEmbedStatSettings } from './global.d';
 import { getProfessionAbbrev, getProfessionEmoji, getProfessionIconPath } from '../shared/professionUtils';
+import { TIMESTAMP_MS_THRESHOLD } from '../shared/constants';
 
 interface ExpandableLogCardProps {
     log: any;
@@ -136,7 +138,7 @@ const ExpandableLogCardBase = forwardRef<HTMLDivElement, ExpandableLogCardProps>
         if (raw) {
             const value = Number(raw);
             if (Number.isFinite(value)) {
-                return value > 1e12 ? value : value * 1000;
+                return value > TIMESTAMP_MS_THRESHOLD ? value : value * 1000;
             }
         }
         return parseFilenameTimestampMs(log.filePath) || parseFilenameTimestampMs(log.fightName) || parseFilenameTimestampMs(details.fightName);

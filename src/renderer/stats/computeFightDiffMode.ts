@@ -5,11 +5,13 @@ import { formatDurationMs } from './utils/dashboardUtils';
 import {
     getPlayerCleanses,
     getPlayerStrips,
-    getPlayerSquadHealing,
-    getPlayerSquadBarrier,
-    getPlayerOutgoingCrowdControl,
-    getPlayerDownContribution,
 } from '../../shared/dashboardMetrics';
+import {
+    computeDownContribution as getPlayerDownContribution,
+    computeSquadHealing as getPlayerSquadHealing,
+    computeSquadBarrier as getPlayerSquadBarrier,
+    computeOutgoingCrowdControl as getPlayerOutgoingCrowdControl,
+} from '../../shared/combatMetrics';
 
 const knownProfessionNames = new Set(Object.keys(PROFESSION_COLORS));
 const knownProfessionList = Object.keys(PROFESSION_COLORS)

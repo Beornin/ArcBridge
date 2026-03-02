@@ -2,6 +2,7 @@ import { ipcMain, BrowserWindow } from 'electron';
 import path from 'node:path';
 import fs from 'fs';
 import { AUTH_RETRY_PAUSE_THRESHOLD, type UploadRetryQueueEntry, type UploadRetryRuntimeState, type UploadRetryQueuePayload } from '../uploadRetryQueue';
+import { BULK_PROCESS_CONCURRENCY } from '../../shared/constants';
 import { pruneDetailsForStats, hasUsableFightDetails } from '../detailsProcessing';
 import { getDevDatasetsDir } from '../devDatasets';
 
@@ -9,7 +10,6 @@ import { getDevDatasetsDir } from '../devDatasets';
 
 const pendingDetailsRefreshByPermalink = new Map<string, Promise<{ details: any | null; terminal: boolean; errorCode?: string }>>();
 const missingDetailsLogByPath = new Map<string, number>();
-const BULK_PROCESS_CONCURRENCY = 3;
 
 // ─── Handler options ───────────────────────────────────────────────────────────
 

@@ -173,7 +173,6 @@ const recentDiscordSends = new Map<string, number>();
 const DISCORD_DEDUPE_TTL_MS = 2 * 60 * 1000;
 let discordNoWebhookLogAt = 0;
 let bulkUploadMode = false;
-const BULK_PROCESS_CONCURRENCY = 3;
 const bulkLogDetailsCache = new Map<string, any>();
 const bulkLogDetailsByBaseName = new Map<string, any>();
 const BULK_LOG_DETAILS_CACHE_MAX = 600;

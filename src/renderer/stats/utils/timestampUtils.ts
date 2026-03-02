@@ -1,3 +1,5 @@
+import { TIMESTAMP_MS_THRESHOLD } from '../../../shared/constants';
+
 /**
  * Converts any timestamp-like value to a millisecond epoch number.
  * Returns 0 for unresolvable inputs.
@@ -6,7 +8,7 @@ export const parseTimestamp = (value: any): number => {
     if (value === undefined || value === null || value === '') return 0;
     if (typeof value === 'number') {
         if (!Number.isFinite(value) || value <= 0) return 0;
-        return value > 1e12 ? value : value * 1000;
+        return value > TIMESTAMP_MS_THRESHOLD ? value : value * 1000;
     }
     if (value instanceof Date) {
         const ms = value.getTime();
@@ -16,7 +18,7 @@ export const parseTimestamp = (value: any): number => {
     if (!str) return 0;
     const numeric = Number(str);
     if (Number.isFinite(numeric) && numeric > 0) {
-        return numeric > 1e12 ? numeric : numeric * 1000;
+        return numeric > TIMESTAMP_MS_THRESHOLD ? numeric : numeric * 1000;
     }
     const parsed = Date.parse(str);
     if (Number.isFinite(parsed) && parsed > 0) return parsed;
