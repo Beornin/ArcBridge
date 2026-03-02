@@ -1776,6 +1776,9 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                                     );
                                                 })}
                                         </div>
+                                        <div className="mt-2 text-[11px] text-gray-500">
+                                            The selected repo is your default `Upload to Web` target. Starred repos show up in the upload dropdown as alternate targets.
+                                        </div>
                                     </>
                                 ) : (
                                     <div className="flex items-center gap-2">

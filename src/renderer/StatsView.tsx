@@ -58,7 +58,7 @@ interface StatsViewProps {
     statsViewSettings?: IStatsViewSettings;
     onStatsViewSettingsChange?: (settings: IStatsViewSettings) => void;
     webUploadState?: IWebUploadState;
-    onWebUpload?: (payload: { meta: any; stats: any }) => Promise<void> | void;
+    onWebUpload?: (payload: { meta: any; stats: any; repoFullName?: string; repoOwner?: string; repoName?: string }) => Promise<void> | void;
     disruptionMethod?: DisruptionMethod;
     precomputedStats?: any;
     embedded?: boolean;
@@ -508,7 +508,9 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
         devMockUploadState,
         webCopyStatus,
         setWebCopyStatus,
+        webUploadTargets,
         handleWebUpload,
+        handleWebUploadToTarget,
         handleDevMockUpload
     } = useStatsUploads({
         logs,
@@ -3309,6 +3311,8 @@ type SpikeFight = {
                 onDevMockUpload={handleDevMockUpload}
                 uploadingWeb={uploadingWeb}
                 onWebUpload={handleWebUpload}
+                uploadTargets={webUploadTargets}
+                onWebUploadToTarget={handleWebUploadToTarget}
                 canUploadWeb={canUploadWeb}
                 sharing={sharing}
                 canShareDiscord={canShareDiscord}

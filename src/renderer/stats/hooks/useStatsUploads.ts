@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { computeStatsAggregation } from '../computeStatsAggregation';
 
 interface UseStatsUploadsProps {
@@ -27,6 +27,48 @@ export const useStatsUploads = ({
     }>({ uploading: false, message: null, url: null });
 
     const [webCopyStatus, setWebCopyStatus] = useState<'idle' | 'copied'>('idle');
+    const [webUploadTargets, setWebUploadTargets] = useState<Array<{ fullName: string; label: string; isDefault: boolean }>>([]);
+
+    useEffect(() => {
+        let cancelled = false;
+        const loadTargets = async () => {
+            if (!window.electronAPI?.getSettings) {
+                if (!cancelled) setWebUploadTargets([]);
+                return;
+            }
+            try {
+                const settings = await window.electronAPI.getSettings();
+                if (cancelled) return;
+                const defaultFullName = settings?.githubRepoOwner && settings?.githubRepoName
+                    ? `${settings.githubRepoOwner}/${settings.githubRepoName}`
+                    : '';
+                const favoriteRepos = Array.isArray(settings?.githubFavoriteRepos)
+                    ? settings.githubFavoriteRepos.filter((entry) => typeof entry === 'string')
+                    : [];
+                const seen = new Set<string>();
+                const nextTargets: Array<{ fullName: string; label: string; isDefault: boolean }> = [];
+                const pushTarget = (fullName: string, isDefault: boolean) => {
+                    const normalized = String(fullName || '').trim();
+                    if (!normalized || !/^[^/]+\/[^/]+$/.test(normalized) || seen.has(normalized)) return;
+                    seen.add(normalized);
+                    nextTargets.push({
+                        fullName: normalized,
+                        label: isDefault ? `${normalized} (Default)` : normalized,
+                        isDefault
+                    });
+                };
+                if (defaultFullName) pushTarget(defaultFullName, true);
+                favoriteRepos.forEach((fullName) => pushTarget(fullName, fullName === defaultFullName));
+                setWebUploadTargets(nextTargets);
+            } catch {
+                if (!cancelled) setWebUploadTargets([]);
+            }
+        };
+        void loadTargets();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
 
     const buildReportMeta = () => {
         const commanderSet = new Set<string>();
@@ -108,19 +150,31 @@ export const useStatsUploads = ({
         return baseStats;
     };
 
-    const handleWebUpload = async () => {
+    const runWebUpload = async (repoFullName?: string) => {
         if (embedded) return;
         if (!onWebUpload) return;
         try {
             const meta = buildReportMeta();
             const uploadStats = buildReportStats();
+            const normalizedRepoFullName = typeof repoFullName === 'string' ? repoFullName.trim() : '';
+            const repoParts = normalizedRepoFullName.split('/').map((part) => part.trim()).filter(Boolean);
             await onWebUpload({
                 meta,
-                stats: uploadStats
+                stats: uploadStats,
+                ...(normalizedRepoFullName ? { repoFullName: normalizedRepoFullName } : {}),
+                ...(repoParts.length === 2 ? { repoOwner: repoParts[0], repoName: repoParts[1] } : {})
             });
         } catch (err) {
             console.error('[StatsView] Web upload failed:', err);
         }
+    };
+
+    const handleWebUpload = async () => {
+        await runWebUpload();
+    };
+
+    const handleWebUploadToTarget = async (repoFullName: string) => {
+        await runWebUpload(repoFullName);
     };
 
     const handleDevMockUpload = async () => {
@@ -162,7 +216,9 @@ export const useStatsUploads = ({
         setDevMockUploadState,
         webCopyStatus,
         setWebCopyStatus,
+        webUploadTargets,
         handleWebUpload,
+        handleWebUploadToTarget,
         handleDevMockUpload
     };
 };
