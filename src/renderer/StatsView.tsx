@@ -127,7 +127,7 @@ const EMPTY_SKILL_USAGE_SUMMARY: SkillUsageSummary = {
 
 const EMPTY_ANY_ARRAY: any[] = [];
 
-export function StatsView({ logs, onBack, mvpWeights, statsViewSettings, onStatsViewSettingsChange, webUploadState, onWebUpload, disruptionMethod, precomputedStats, embedded = false, sectionVisibility, dashboardTitle, uiTheme, canShareDiscord = true, statsDataProgress, aggregationResult: externalAggregationResult }: StatsViewProps) {
+export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings, onStatsViewSettingsChange, webUploadState, onWebUpload, disruptionMethod, precomputedStats, embedded = false, sectionVisibility, dashboardTitle, uiTheme, canShareDiscord = true, statsDataProgress, aggregationResult: externalAggregationResult }: StatsViewProps) {
     const activeMvpWeights = mvpWeights || DEFAULT_MVP_WEIGHTS;
     const activeStatsViewSettings = statsViewSettings || DEFAULT_STATS_VIEW_SETTINGS;
     const activeWebUploadState = webUploadState || DEFAULT_WEB_UPLOAD_STATE;
@@ -3304,7 +3304,6 @@ type SpikeFight = {
                 embedded={embedded}
                 dashboardTitle={dashboardTitle}
                 totalLogs={headerTotalLogs}
-                onBack={onBack}
                 devMockAvailable={devMockAvailable}
                 devMockUploadState={devMockUploadState}
                 onDevMockUpload={handleDevMockUpload}

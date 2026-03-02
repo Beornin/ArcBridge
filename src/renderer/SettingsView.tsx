@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Key, X as CloseIcon, Minimize, BarChart3, Users, Sparkles, Compass, BookOpen, Cloud, Link as LinkIcon, RefreshCw, Plus, Trash2, ExternalLink, Zap, Star, Download, Upload, ChevronDown } from 'lucide-react';
+import { Settings, Key, X as CloseIcon, Minimize, BarChart3, Users, Sparkles, Compass, BookOpen, Cloud, Link as LinkIcon, RefreshCw, Plus, Trash2, ExternalLink, Zap, Star, Download, Upload, ChevronDown } from 'lucide-react';
 import { DashboardLayout, IEmbedStatSettings, DEFAULT_DASHBOARD_LAYOUT, DEFAULT_DISCORD_ENEMY_SPLIT_SETTINGS, DEFAULT_EMBED_STATS, DEFAULT_MVP_WEIGHTS, DEFAULT_STATS_VIEW_SETTINGS, IMvpWeights, DisruptionMethod, DEFAULT_DISRUPTION_METHOD, IStatsViewSettings, UiTheme, DEFAULT_UI_THEME, KineticFontStyle, DEFAULT_KINETIC_FONT_STYLE } from './global.d';
 import { METRICS_SPEC } from '../shared/metricsSettings';
 import { BASE_WEB_THEMES, CRT_WEB_THEME, CRT_WEB_THEME_ID, DEFAULT_WEB_THEME_ID, KINETIC_DARK_WEB_THEME, KINETIC_DARK_WEB_THEME_ID, KINETIC_WEB_THEME, KINETIC_WEB_THEME_ID, MATTE_WEB_THEME, MATTE_WEB_THEME_ID } from '../shared/webThemes';
@@ -94,7 +94,7 @@ function SettingsSection({ title, icon: Icon, children, delay = 0, action, secti
     );
 }
 
-export function SettingsView({ onBack, onEmbedStatSettingsSaved, onOpenWhatsNew, onOpenWalkthrough, helpUpdatesFocusTrigger, onHelpUpdatesFocusConsumed, onMvpWeightsSaved, onStatsViewSettingsSaved, onDisruptionMethodSaved, onUiThemeSaved, onKineticFontStyleSaved, onDashboardLayoutSaved, dashboardLayout: dashboardLayoutProp, onGithubWebThemeSaved, developerSettingsTrigger }: SettingsViewProps) {
+export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpenWhatsNew, onOpenWalkthrough, helpUpdatesFocusTrigger, onHelpUpdatesFocusConsumed, onMvpWeightsSaved, onStatsViewSettingsSaved, onDisruptionMethodSaved, onUiThemeSaved, onKineticFontStyleSaved, onDashboardLayoutSaved, dashboardLayout: dashboardLayoutProp, onGithubWebThemeSaved, developerSettingsTrigger }: SettingsViewProps) {
     const [dpsReportToken, setDpsReportToken] = useState<string>('');
     const [closeBehavior, setCloseBehavior] = useState<'minimize' | 'quit'>('minimize');
     const [embedStats, setEmbedStats] = useState<IEmbedStatSettings>(DEFAULT_EMBED_STATS);
@@ -1268,16 +1268,18 @@ export function SettingsView({ onBack, onEmbedStatSettingsSaved, onOpenWhatsNew,
                 animate={{ opacity: 1, y: 0 }}
                 className="flex items-center justify-between gap-4 mb-6"
             >
-                <div className="flex items-center gap-4">
-                    <button
-                        onClick={onBack}
-                        className="settings-back-button p-2 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 transition-colors"
-                    >
-                        <ArrowLeft className="w-5 h-5" />
-                    </button>
-                    <h2 className="settings-title text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                        Settings
-                    </h2>
+                <div className="flex items-start gap-3 sm:items-center sm:gap-4">
+                    <div className="p-2 rounded-xl bg-white/5 border border-white/10 text-amber-300 shrink-0">
+                        <Settings className="w-5 h-5" />
+                    </div>
+                    <div className="space-y-0">
+                        <h2 className="settings-title text-2xl font-bold text-white flex items-center gap-2">
+                            Settings
+                        </h2>
+                        <p className="text-gray-400 text-[11px] sm:text-xs">
+                            Application preferences, automation defaults, and web publishing controls
+                        </p>
+                    </div>
                 </div>
                 <div className="flex items-center gap-3">
                     <AnimatePresence mode="wait">
@@ -1318,15 +1320,8 @@ export function SettingsView({ onBack, onEmbedStatSettingsSaved, onOpenWhatsNew,
                         <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
                             <div className="text-[11px] uppercase tracking-[0.25em] text-gray-500 mb-2">Quick Actions</div>
                             <button
-                                onClick={onBack}
-                                className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-white/10 bg-white/5 text-xs font-semibold text-gray-200 hover:bg-white/10 transition-colors"
-                            >
-                                <span>Back to Dashboard</span>
-                                <ArrowLeft className="w-3.5 h-3.5" />
-                            </button>
-                            <button
                                 onClick={() => scrollToSettingsSection('appearance')}
-                                className="mt-2 w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-white/10 bg-white/5 text-xs font-semibold text-gray-200 hover:bg-white/10 transition-colors"
+                                className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-white/10 bg-white/5 text-xs font-semibold text-gray-200 hover:bg-white/10 transition-colors"
                             >
                                 <span>Jump to Top</span>
                                 <ChevronDown className="w-3.5 h-3.5 -rotate-90" />
@@ -2520,14 +2515,8 @@ export function SettingsView({ onBack, onEmbedStatSettingsSaved, onOpenWhatsNew,
             <div className={`fixed bottom-4 left-4 right-4 z-40 ${isModernLayout ? 'lg:hidden' : ''}`}>
                 <div className="flex items-center justify-between gap-2 rounded-2xl border border-white/25 bg-white/5 backdrop-blur-2xl px-3 py-1.5 shadow-[0_24px_65px_rgba(0,0,0,0.55)]">
                     <button
-                        onClick={onBack}
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[10px] uppercase tracking-widest text-gray-200"
-                    >
-                        Back
-                    </button>
-                    <button
                         onClick={() => setSettingsNavOpen((open) => !open)}
-                        className="flex items-center gap-2 px-4 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[10px] uppercase tracking-widest text-gray-200"
+                        className="flex items-center gap-2 px-4 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[10px] uppercase tracking-widest text-gray-200 flex-1 justify-between"
                     >
                         <span className="truncate max-w-[160px]">
                             {settingsSections.find((item) => item.id === activeSettingsSectionId)?.label || 'Settings'}

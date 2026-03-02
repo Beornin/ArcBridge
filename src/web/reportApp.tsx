@@ -85,6 +85,8 @@ const glassCard = 'border border-white/10 rounded-2xl shadow-xl backdrop-blur-md
 const WEB_THEME_OVERRIDE_COOKIE = 'arcbridge_web_theme_override';
 const KINETIC_WEB_FONT_OVERRIDE_COOKIE = 'arcbridge_web_kinetic_font_override';
 const DEFAULT_THEME_SELECT_VALUE = '__default__';
+const WEB_REPORT_THEME_STYLESHEET_ID = 'arcbridge-web-report-theme-stylesheet';
+const ASSET_BASE_PATH_PROBE_PATHS = ['reports/index.json', 'logo.json'] as const;
 
 const readCookieValue = (name: string): string | null => {
     if (typeof document === 'undefined') return null;
@@ -95,6 +97,37 @@ const readCookieValue = (name: string): string | null => {
         return decodeURIComponent(match[1]);
     } catch {
         return match[1];
+    }
+};
+
+const getWebReportThemeStylesheetHref = (uiTheme: UiThemeChoice): string => {
+    const file = uiTheme === 'modern'
+        ? 'modern'
+        : uiTheme === 'crt'
+            ? 'crt'
+            : uiTheme === 'matte'
+                ? 'matte'
+                : uiTheme === 'kinetic'
+                    ? 'kinetic'
+                    : 'classic';
+    return `./web-report-themes/${file}.css`;
+};
+
+const ensureWebReportThemeStylesheet = (uiTheme: UiThemeChoice) => {
+    if (typeof document === 'undefined') return;
+    const href = getWebReportThemeStylesheetHref(uiTheme);
+    const head = document.head || document.getElementsByTagName('head')[0];
+    if (!head) return;
+    let link = document.getElementById(WEB_REPORT_THEME_STYLESHEET_ID) as HTMLLinkElement | null;
+    if (!link) {
+        link = document.createElement('link');
+        link.id = WEB_REPORT_THEME_STYLESHEET_ID;
+        link.rel = 'stylesheet';
+        head.appendChild(link);
+    }
+    const absoluteHref = new URL(href, window.location.href).toString();
+    if (link.href !== absoluteHref) {
+        link.href = href;
     }
 };
 
@@ -155,15 +188,20 @@ const readThemeOverrideFromRuntime = (): string | null => {
     if (fromQuery && isValidThemeOverrideId(fromQuery)) {
         return fromQuery;
     }
+    // Check cookie for persisted viewer preference (lower priority than query param).
     const persisted = readCookieValue(WEB_THEME_OVERRIDE_COOKIE);
-    if (!persisted) return null;
-    try {
-        const parsed = JSON.parse(persisted);
-        const fromCookie = typeof parsed?.themeId === 'string' ? parsed.themeId : null;
-        return fromCookie && isValidThemeOverrideId(fromCookie) ? fromCookie : null;
-    } catch {
-        return null;
+    if (persisted) {
+        try {
+            const parsed = JSON.parse(persisted);
+            const themeId = typeof parsed?.themeId === 'string' ? parsed.themeId.trim() : null;
+            if (themeId && isValidThemeOverrideId(themeId)) {
+                return themeId;
+            }
+        } catch {
+            // Ignore malformed cookie.
+        }
     }
+    return null;
 };
 
 const resolveUiThemeFromOverride = (themeIdOverride: string | null, fallback: UiThemeChoice): UiThemeChoice => {
@@ -171,7 +209,9 @@ const resolveUiThemeFromOverride = (themeIdOverride: string | null, fallback: Ui
     if (themeIdOverride === MATTE_WEB_THEME_ID) return 'matte';
     if (themeIdOverride === KINETIC_WEB_THEME_ID || themeIdOverride === KINETIC_DARK_WEB_THEME_ID) return 'kinetic';
     if (themeIdOverride === CRT_WEB_THEME_ID) return 'crt';
-    return fallback === 'modern' || fallback === 'classic' ? fallback : 'classic';
+    // For base palette overrides, preserve the report's structural theme. The viewer is
+    // changing the accent color only, not the layout (e.g. matte + Arcane stays matte).
+    return fallback;
 };
 
 const readStoredThemeId = (value: unknown): string | null => {
@@ -180,10 +220,45 @@ const readStoredThemeId = (value: unknown): string | null => {
     return normalized ? normalized : null;
 };
 
-const isLegacyKineticReport = (stats: any): boolean => (
-    stats?.uiTheme === 'kinetic'
-    && !readStoredThemeId(stats?.webThemeId)
+const readReportThemeId = (stats: any): string | null => (
+    readStoredThemeId(stats?.reportTheme?.paletteId)
+    || readStoredThemeId(stats?.reportTheme?.themeId)
+    || readStoredThemeId(stats?.webThemeId)
 );
+
+const readReportUiTheme = (stats: any): UiThemeChoice | null => {
+    const explicit = stats?.reportTheme?.ui;
+    if (explicit === 'modern' || explicit === 'classic' || explicit === 'crt' || explicit === 'matte' || explicit === 'kinetic') {
+        return explicit;
+    }
+    const legacy = stats?.uiTheme;
+    if (legacy === 'modern' || legacy === 'classic' || legacy === 'crt' || legacy === 'matte' || legacy === 'kinetic') {
+        return legacy;
+    }
+    const themeId = readReportThemeId(stats);
+    if (themeId === MATTE_WEB_THEME_ID) return 'matte';
+    if (themeId === KINETIC_WEB_THEME_ID || themeId === KINETIC_DARK_WEB_THEME_ID) return 'kinetic';
+    if (themeId === CRT_WEB_THEME_ID) return 'crt';
+    return null;
+};
+
+const isLegacyKineticReport = (stats: any): boolean => (
+    readReportUiTheme(stats) === 'kinetic'
+    && !readReportThemeId(stats)
+);
+
+const parseSiteTheme = (data: unknown): { ui: UiThemeChoice; paletteId: string; kineticFont: KineticWebFontChoice } | null => {
+    if (!data || typeof data !== 'object' || Array.isArray(data)) return null;
+    const payload = data as any;
+    const ui = payload?.siteTheme?.ui;
+    const paletteId = payload?.siteTheme?.paletteId;
+    if ((ui === 'classic' || ui === 'modern' || ui === 'crt' || ui === 'matte' || ui === 'kinetic')
+        && paletteId && typeof paletteId === 'string') {
+        const kineticFont: KineticWebFontChoice = payload?.siteTheme?.kineticFont === 'original' ? 'original' : 'default';
+        return { ui, paletteId, kineticFont };
+    }
+    return null;
+};
 
 const formatLocalRange = (start: string, end: string) => {
     try {
@@ -347,6 +422,7 @@ export function ReportApp() {
     const [uiTheme, setUiTheme] = useState<UiThemeChoice>(() => resolveUiThemeFromOverride(initialThemeOverride, 'classic'));
     const [defaultUiTheme, setDefaultUiTheme] = useState<UiThemeChoice>('classic');
     const [defaultThemeId, setDefaultThemeId] = useState<string>(DEFAULT_WEB_THEME.id);
+    const [siteTheme, setSiteTheme] = useState<{ ui: UiThemeChoice; paletteId: string; kineticFont: KineticWebFontChoice } | null>(null);
     const [themeIdOverride, setThemeIdOverride] = useState<string | null>(initialThemeOverride);
     const requestedView = useMemo(() => (initialSearchParams.get('view') || '').trim().toLowerCase(), [initialSearchParams]);
     const reportId = useMemo(
@@ -383,6 +459,7 @@ export function ReportApp() {
     const kineticFontDropdownRef = useRef<HTMLDivElement | null>(null);
     const metricsSpecHighlightRef = useRef<number | null>(null);
     const metricsSpecHeadingCountsRef = useRef<Map<string, number>>(new Map());
+    const siteThemeRef = useRef<{ ui: UiThemeChoice; paletteId: string } | null>(null);
     const pendingScrollIdRef = useRef<string | null>(null);
     const groupTopScrollRafRef = useRef<number | null>(null);
     const basePath = useMemo(() => {
@@ -500,19 +577,38 @@ export function ReportApp() {
         setUiTheme(resolveUiThemeFromOverride(themeIdOverride, defaultUiTheme));
     }, [themeIdOverride, defaultUiTheme]);
 
+    // Apply the site-wide theme from index.json so all pages stay visually consistent.
+    // The structural UI (kinetic, classic, etc.) always follows the site theme.
+    // Palette defaults only apply when the viewer has no personal override (cookie/URL).
+    // Kinetic font follows the site setting unless the viewer has a cookie preference.
+    useEffect(() => {
+        if (!siteTheme) return;
+        siteThemeRef.current = siteTheme;
+        setDefaultUiTheme(siteTheme.ui);
+        if (!themeIdOverride) {
+            setDefaultThemeId(siteTheme.paletteId);
+        }
+        const cookieFont = readCookieValue(KINETIC_WEB_FONT_OVERRIDE_COOKIE);
+        if (!cookieFont) {
+            setKineticFontChoice(siteTheme.kineticFont);
+        }
+    }, [siteTheme, themeIdOverride]);
+
     useEffect(() => {
         setAssetBasePath(assetBasePathCandidates[0] || '/');
         let isMounted = true;
         const resolve = async () => {
             for (const candidate of assetBasePathCandidates) {
-                try {
-                    const response = await fetch(joinAssetPath(candidate, 'ui-theme.json'), { cache: 'no-store' });
-                    if (response.ok) {
-                        if (isMounted) setAssetBasePath(candidate);
-                        return;
+                for (const probePath of ASSET_BASE_PATH_PROBE_PATHS) {
+                    try {
+                        const response = await fetch(joinAssetPath(candidate, probePath), { cache: 'no-store' });
+                        if (response.ok) {
+                            if (isMounted) setAssetBasePath(candidate);
+                            return;
+                        }
+                    } catch {
+                        // Try next probe path or candidate.
                     }
-                } catch {
-                    // Try next candidate.
                 }
             }
         };
@@ -945,6 +1041,8 @@ export function ReportApp() {
         setError(null);
         setReport(null);
         setIndex(null);
+        setSiteTheme(null);
+        siteThemeRef.current = null;
         setRollupData(null);
         setRollupError(null);
         setRollupLoading(false);
@@ -992,16 +1090,13 @@ export function ReportApp() {
         };
 
         const applyThemeDefaults = (normalized: ReportPayload) => {
-            if (themeIdOverride) return;
-            const themeChoice = normalized?.stats?.uiTheme;
-            if (themeChoice === 'modern' || themeChoice === 'classic' || themeChoice === 'crt' || themeChoice === 'matte' || themeChoice === 'kinetic') {
+            // Skip if a site-wide theme is already loaded — site theme takes priority.
+            if (themeIdOverride || siteThemeRef.current) return;
+            const themeChoice = readReportUiTheme(normalized?.stats);
+            if (themeChoice) {
                 setDefaultUiTheme(themeChoice);
-            } else if (normalized?.stats?.webThemeId === MATTE_WEB_THEME_ID) {
-                setDefaultUiTheme('matte');
-            } else if (normalized?.stats?.webThemeId === KINETIC_WEB_THEME_ID || normalized?.stats?.webThemeId === KINETIC_DARK_WEB_THEME_ID) {
-                setDefaultUiTheme('kinetic');
             }
-            const storedThemeId = readStoredThemeId(normalized?.stats?.webThemeId);
+            const storedThemeId = readReportThemeId(normalized?.stats);
             if (storedThemeId) {
                 setDefaultThemeId(storedThemeId);
             } else if (isLegacyKineticReport(normalized?.stats)) {
@@ -1014,7 +1109,11 @@ export function ReportApp() {
                 .then((resp) => (resp.ok ? resp.json() : Promise.reject()))
                 .then((data) => {
                     if (!isMounted) return;
-                    setIndex(Array.isArray(data) ? data : []);
+                    // Support new object format { siteTheme, entries } and legacy plain array.
+                    const entries = Array.isArray(data) ? data : (Array.isArray(data?.entries) ? data.entries : []);
+                    setIndex(entries);
+                    const st = parseSiteTheme(data);
+                    if (st) setSiteTheme(st);
                 })
                 .catch(() => {
                     if (!isMounted) return;
@@ -1042,6 +1141,16 @@ export function ReportApp() {
         }
 
         if (reportId) {
+            // Fetch index.json in parallel with the report to pick up the site-wide theme.
+            // This ensures individual report pages use the same theme as the rest of the site.
+            fetch(`${basePath}reports/index.json`, { cache: 'no-store' })
+                .then((resp) => (resp.ok ? resp.json() : null))
+                .then((data) => {
+                    if (!isMounted || !data) return;
+                    const st = parseSiteTheme(data);
+                    if (st) setSiteTheme(st);
+                })
+                .catch(() => {});
             loadReport().catch(() => {
                 if (reportId) {
                     if (!isMounted) return;
@@ -1132,8 +1241,11 @@ export function ReportApp() {
     }, [isRollupView, report]);
 
     useEffect(() => {
-        if (themeIdOverride) return;
-        const requestedThemeId = readStoredThemeId(report?.stats?.webThemeId);
+        // Skip if a viewer override or site-wide theme is already active.
+        // siteThemeRef guards against overriding the site palette with a stale per-report value
+        // when index.json resolves before report.json (race on individual report pages).
+        if (themeIdOverride || siteThemeRef.current) return;
+        const requestedThemeId = readReportThemeId(report?.stats);
         if (requestedThemeId) {
             setDefaultThemeId(requestedThemeId);
             return;
@@ -1159,57 +1271,8 @@ export function ReportApp() {
     }, [uiTheme, isMatteUi, isKineticDarkTheme, kineticFontChoice]);
 
     useEffect(() => {
-        if (themeIdOverride) return;
-        if (isDevLocalWeb && report?.stats?.webThemeId) return;
-        if (isLegacyKineticReport(report?.stats)) return;
-        let isMounted = true;
-        fetch(joinAssetPath(assetBasePath, 'theme.json'), { cache: 'no-store' })
-            .then((resp) => (resp.ok ? resp.json() : Promise.reject()))
-            .then((data) => {
-                if (!isMounted) return;
-                if (typeof data?.id === 'string' && data.id) {
-                    setDefaultThemeId(data.id);
-                }
-            })
-            .catch(() => {
-                if (!isMounted) return;
-            });
-        return () => {
-            isMounted = false;
-        };
-    }, [assetBasePath, isDevLocalWeb, report, themeIdOverride]);
-
-    useEffect(() => {
-        if (themeIdOverride) return;
-        const reportThemeId = report?.stats?.webThemeId;
-        const reportUiTheme = report?.stats?.uiTheme;
-        const hasReportUiTheme = reportUiTheme === 'modern' || reportUiTheme === 'classic' || reportUiTheme === 'crt' || reportUiTheme === 'matte' || reportUiTheme === 'kinetic';
-        const reportUiThemeLooksStale = (
-            (reportThemeId === MATTE_WEB_THEME_ID && reportUiTheme !== 'matte')
-            || ((reportThemeId === KINETIC_WEB_THEME_ID || reportThemeId === KINETIC_DARK_WEB_THEME_ID) && reportUiTheme !== 'kinetic')
-            || (reportThemeId === 'CRT' && reportUiTheme !== 'crt')
-        );
-        if (hasReportUiTheme && !reportUiThemeLooksStale) {
-            return;
-        }
-        let isMounted = true;
-        fetch(joinAssetPath(assetBasePath, 'ui-theme.json'), { cache: 'no-store' })
-            .then((resp) => (resp.ok ? resp.json() : Promise.reject()))
-            .then((data) => {
-                if (!isMounted) return;
-                const themeChoice = data?.theme;
-                if (themeChoice === 'modern' || themeChoice === 'classic' || themeChoice === 'crt' || themeChoice === 'matte' || themeChoice === 'kinetic') {
-                    setDefaultUiTheme(themeChoice);
-                }
-            })
-            .catch(() => {
-                if (!isMounted) return;
-                // Do not force classic on failure; keep existing theme (e.g. from report)
-            });
-        return () => {
-            isMounted = false;
-        };
-    }, [assetBasePath, report, themeIdOverride]);
+        ensureWebReportThemeStylesheet(uiTheme);
+    }, [uiTheme]);
 
     useEffect(() => {
         let isMounted = true;
@@ -2272,50 +2335,36 @@ export function ReportApp() {
                             <>
                                 <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 mb-6">
                                     <div className={`${glassCard} p-4`} style={glassCardStyle}>
-                                        <div className="text-[11px] uppercase tracking-widest text-gray-400">Duplicate Uploads</div>
-                                        <div className="mt-2 text-2xl font-semibold text-white">{rollupData?.duplicateReportsCollapsed || 0}</div>
-                                    </div>
-                                    <div className={`${glassCard} p-4`} style={glassCardStyle}>
-                                        <div className="text-[11px] uppercase tracking-widest text-gray-400">Included Raids</div>
-                                        <div className="mt-2 text-2xl font-semibold text-white">{rollupData?.uniqueRaids || 0}</div>
+                                        <div className="text-[11px] uppercase tracking-widest text-gray-400">Raids</div>
+                                        <div className="mt-2 text-2xl font-semibold text-white">{rollupData ? rollupData.uniqueRaids : '—'}</div>
                                     </div>
                                     <div className={`${glassCard} p-4`} style={glassCardStyle}>
                                         <div className="text-[11px] uppercase tracking-widest text-gray-400">Commanders</div>
-                                        <div className="mt-2 text-2xl font-semibold text-white">{rollupData?.commanderRows.length || 0}</div>
+                                        <div className="mt-2 text-2xl font-semibold text-white">{rollupData ? rollupData.commanderRows.length : '—'}</div>
                                     </div>
                                     <div className={`${glassCard} p-4`} style={glassCardStyle}>
                                         <div className="text-[11px] uppercase tracking-widest text-gray-400">Players</div>
-                                        <div className="mt-2 text-2xl font-semibold text-white">{rollupData?.playerRows.length || 0}</div>
+                                        <div className="mt-2 text-2xl font-semibold text-white">{rollupData ? rollupData.playerRows.length : '—'}</div>
+                                    </div>
+                                    <div className={`${glassCard} p-4`} style={glassCardStyle}>
+                                        <div className="text-[11px] uppercase tracking-widest text-gray-400">Combat Hours</div>
+                                        <div className="mt-2 text-2xl font-semibold text-white">{rollupData ? formatHoursLabel(rollupData.playerRows.reduce((sum, r) => sum + r.combatTimeMs, 0)) : '—'}</div>
                                     </div>
                                 </div>
 
-                                {(rollupLoading || rollupError || rollupData) && (
+                                {(rollupLoading || rollupError || (rollupData && (failedRollupReports > 0 || rollupData.raidsSkippedMissingRequiredData > 0))) && (
                                     <div className={`${glassCard} px-4 py-3 mb-6 text-xs sm:text-sm text-gray-300`} style={glassCardStyle}>
                                         {rollupLoading && (
-                                            <div>Loading All Reports from {rollupRequestedCount} reports...</div>
+                                            <span>Loading {rollupRequestedCount} reports...</span>
                                         )}
                                         {!rollupLoading && rollupError && (
-                                            <div className="text-amber-200">{rollupError}</div>
+                                            <span className="text-amber-200">{rollupError}</span>
                                         )}
-                                        {!rollupLoading && rollupData && (
-                                            <div className="flex flex-col gap-1">
-                                                <div>
-                                                    Loaded {rollupData.sourceReports} of {rollupRequestedCount} hosted reports and aggregated {rollupData.uniqueRaids} unique raids.
-                                                </div>
-                                                {(failedRollupReports > 0
-                                                    || rollupData.duplicateReportsCollapsed > 0
-                                                    || rollupData.raidsSkippedMissingRequiredData > 0
-                                                    || rollupData.reportsMissingCommanderDetails > 0
-                                                    || rollupData.reportsMissingAttendanceDetails > 0) && (
-                                                    <div className="text-gray-400">
-                                                        {failedRollupReports > 0 ? `${failedRollupReports} failed to load. ` : ''}
-                                                        {rollupData.duplicateReportsCollapsed > 0 ? `${rollupData.duplicateReportsCollapsed} duplicate uploads were collapsed. ` : ''}
-                                                        {rollupData.raidsSkippedMissingRequiredData > 0 ? `${rollupData.raidsSkippedMissingRequiredData} raid windows were skipped because they did not have both commander and attendance data. ` : ''}
-                                                        {rollupData.reportsMissingCommanderDetails > 0 ? `${rollupData.reportsMissingCommanderDetails} lacked detailed commander stats. ` : ''}
-                                                        {rollupData.reportsMissingAttendanceDetails > 0 ? `${rollupData.reportsMissingAttendanceDetails} lacked attendance data.` : ''}
-                                                    </div>
-                                                )}
-                                            </div>
+                                        {!rollupLoading && rollupData && (failedRollupReports > 0 || rollupData.raidsSkippedMissingRequiredData > 0) && (
+                                            <span className="text-amber-200/80">
+                                                {failedRollupReports > 0 ? `${failedRollupReports} report${failedRollupReports === 1 ? '' : 's'} could not be loaded. ` : ''}
+                                                {rollupData.raidsSkippedMissingRequiredData > 0 ? `${rollupData.raidsSkippedMissingRequiredData} raid window${rollupData.raidsSkippedMissingRequiredData === 1 ? '' : 's'} had incomplete data and ${rollupData.raidsSkippedMissingRequiredData === 1 ? 'was' : 'were'} excluded.` : ''}
+                                            </span>
                                         )}
                                     </div>
                                 )}
