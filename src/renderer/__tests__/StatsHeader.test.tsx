@@ -9,7 +9,6 @@ describe('StatsHeader', () => {
                 embedded
                 dashboardTitle="Statistics Dashboard - Overview"
                 totalLogs={4}
-                onBack={() => {}}
                 devMockAvailable={false}
                 devMockUploadState={{ uploading: false }}
                 onDevMockUpload={() => {}}

@@ -5,7 +5,7 @@ import https from 'node:https'
 import { createHash } from 'node:crypto'
 import util from 'node:util'
 import { spawn } from 'node:child_process'
-import { BASE_WEB_THEMES, CRT_WEB_THEME, CRT_WEB_THEME_ID, DEFAULT_WEB_THEME_ID, KINETIC_DARK_WEB_THEME, KINETIC_DARK_WEB_THEME_ID, KINETIC_WEB_THEME, KINETIC_WEB_THEME_ID, MATTE_WEB_THEME, MATTE_WEB_THEME_ID } from '../shared/webThemes';
+import { BASE_WEB_THEMES, CRT_WEB_THEME, CRT_WEB_THEME_ID, DEFAULT_WEB_THEME_ID, KINETIC_DARK_WEB_THEME, KINETIC_DARK_WEB_THEME_ID, KINETIC_WEB_THEME, KINETIC_WEB_THEME_ID, MATTE_WEB_THEME, MATTE_WEB_THEME_ID, type WebTheme } from '../shared/webThemes';
 import { computeOutgoingConditions } from '../shared/conditionsMetrics';
 import { DEFAULT_DISRUPTION_METHOD, DisruptionMethod } from '../shared/metricsSettings';
 import { LogWatcher } from './watcher'
@@ -1956,6 +1956,22 @@ const resolveWebUiThemeChoice = (appUiTheme: unknown, selectedThemeId: unknown):
     return normalizeUiThemeChoice(appUiTheme);
 };
 
+const resolveWebPublishTheme = (uiTheme: string, requestedThemeId: string): { selectedTheme: WebTheme; uiThemeValue: 'classic' | 'modern' | 'crt' | 'matte' | 'kinetic' } => {
+    const availableThemes = uiTheme === 'crt'
+        ? [CRT_WEB_THEME]
+        : (uiTheme === 'kinetic' ? [KINETIC_WEB_THEME, KINETIC_DARK_WEB_THEME] : [...BASE_WEB_THEMES, MATTE_WEB_THEME]);
+    const themeId = uiTheme === 'crt'
+        ? CRT_WEB_THEME_ID
+        : (uiTheme === 'matte'
+            ? MATTE_WEB_THEME_ID
+            : (uiTheme === 'kinetic' && requestedThemeId !== KINETIC_WEB_THEME_ID && requestedThemeId !== KINETIC_DARK_WEB_THEME_ID
+                ? KINETIC_WEB_THEME_ID
+                : requestedThemeId));
+    const selectedTheme = availableThemes.find((theme) => theme.id === themeId) || availableThemes[0];
+    const uiThemeValue = resolveWebUiThemeChoice(uiTheme, selectedTheme?.id);
+    return { selectedTheme, uiThemeValue };
+};
+
 const listGithubRepos = async (token: string) => {
     const repos: Array<{ full_name: string; name: string; owner: string }> = [];
     let page = 1;
@@ -2127,6 +2143,10 @@ const buildWebReportPayload = (
         meta: { ...(reportMeta || {}) },
         stats: {
             ...(sourceStats || {}),
+            reportTheme: {
+                ui: uiThemeValue,
+                paletteId: webThemeId
+            },
             uiTheme: uiThemeValue,
             webThemeId
         } as Record<string, any>
@@ -3849,8 +3869,9 @@ if (!gotTheLock) {
                     return { success: true, reports: [] };
                 }
                 const decoded = Buffer.from(existing.content, 'base64').toString('utf8');
-                const reports = JSON.parse(decoded);
-                return { success: true, reports: Array.isArray(reports) ? reports : [] };
+                const parsed = JSON.parse(decoded);
+                const reports = Array.isArray(parsed) ? parsed : (Array.isArray(parsed?.entries) ? parsed.entries : []);
+                return { success: true, reports };
             } catch (err: any) {
                 return { success: false, error: err?.message || 'Failed to load reports.' };
             }
@@ -3910,20 +3931,26 @@ if (!gotTheLock) {
                     }
                 });
 
-                let existingIndex: any[] = [];
+                let existingEntries: any[] = [];
+                let existingIndexSiteTheme: any = null;
                 try {
                     const existing = await getGithubFile(owner, repo, withPagesPath(pagesPath, 'reports/index.json'), branch, token);
                     if (existing?.content) {
                         const decoded = Buffer.from(existing.content, 'base64').toString('utf8');
-                        existingIndex = JSON.parse(decoded);
+                        const parsed = JSON.parse(decoded);
+                        existingEntries = Array.isArray(parsed) ? parsed : (Array.isArray(parsed?.entries) ? parsed.entries : []);
+                        existingIndexSiteTheme = Array.isArray(parsed) ? null : (parsed?.siteTheme || null);
                     }
                 } catch {
-                    existingIndex = [];
+                    existingEntries = [];
                 }
-                const filteredIndex = Array.isArray(existingIndex)
-                    ? existingIndex.filter((entry: any) => !ids.includes(entry?.id))
-                    : [];
-                const indexContent = Buffer.from(JSON.stringify(filteredIndex, null, 2)).toString('base64');
+                const filteredEntries = ids.length > 0
+                    ? existingEntries.filter((entry: any) => !ids.includes(entry?.id))
+                    : existingEntries;
+                const deletedIndexPayload = existingIndexSiteTheme
+                    ? { siteTheme: existingIndexSiteTheme, entries: filteredEntries }
+                    : filteredEntries;
+                const indexContent = Buffer.from(JSON.stringify(deletedIndexPayload, null, 2)).toString('base64');
                 const indexBlob = await createGithubBlob(owner, repo, token, indexContent, withPagesPath(pagesPath, 'reports/index.json'));
 
                 const commitEntries = [
@@ -4207,7 +4234,7 @@ if (!gotTheLock) {
             }
         });
 
-        ipcMain.handle('apply-github-theme', async (_event, payload?: { themeId?: string }) => {
+        ipcMain.handle('apply-github-theme', async (_event, _payload?: { themeId?: string }) => {
             try {
                 sendGithubThemeStatus('Preparing', 'Updating site theme. This can take a minute...', 5);
                 const token = store.get('githubToken') as string | undefined;
@@ -4228,38 +4255,7 @@ if (!gotTheLock) {
                     pagesPath = getStoredPagesPath();
                 }
 
-                const uiTheme = store.get('uiTheme', 'classic') as string;
-                const availableThemes = uiTheme === 'crt'
-                    ? [CRT_WEB_THEME]
-                    : (uiTheme === 'kinetic' ? [KINETIC_WEB_THEME, KINETIC_DARK_WEB_THEME] : [...BASE_WEB_THEMES, MATTE_WEB_THEME]);
-                const requestedThemeId = payload?.themeId
-                    || (store.get('githubWebTheme', DEFAULT_WEB_THEME_ID) as string)
-                    || DEFAULT_WEB_THEME_ID;
-                const themeId = uiTheme === 'crt'
-                    ? CRT_WEB_THEME_ID
-                    : (uiTheme === 'matte'
-                        ? MATTE_WEB_THEME_ID
-                        : (uiTheme === 'kinetic' && requestedThemeId !== KINETIC_WEB_THEME_ID && requestedThemeId !== KINETIC_DARK_WEB_THEME_ID
-                            ? KINETIC_WEB_THEME_ID
-                            : requestedThemeId));
-                const selectedTheme = availableThemes.find((theme) => theme.id === themeId) || availableThemes[0];
-
-                sendGithubThemeStatus('Preparing', 'Loading report index...', 15);
-                let reportIds: string[] = [];
-                try {
-                    const indexFile = await getGithubFile(owner, repo, withPagesPath(pagesPath, 'reports/index.json'), branch, token);
-                    if (indexFile?.content) {
-                        const decoded = Buffer.from(indexFile.content, 'base64').toString('utf8');
-                        const parsed = JSON.parse(decoded);
-                        if (Array.isArray(parsed)) {
-                            reportIds = parsed.map((entry) => entry?.id).filter((id) => typeof id === 'string');
-                        }
-                    }
-                } catch (err) {
-                    reportIds = [];
-                }
-
-                sendGithubThemeStatus('Preparing', `Updating ${reportIds.length} reports...`, 25);
+                sendGithubThemeStatus('Preparing', 'Removing legacy site theme files...', 25);
                 const headRef = await getGithubRef(owner, repo, branch, token);
                 const headSha = headRef?.object?.sha;
                 if (!headSha) {
@@ -4279,52 +4275,59 @@ if (!gotTheLock) {
                     }
                 });
 
-                const pendingEntries: Array<{ path: string; contentBase64: string; blobSha: string }> = [];
-                const queueFile = (repoPath: string, content: Buffer) => {
-                    if (content.length > MAX_GITHUB_BLOB_BYTES) {
-                        throw new Error(
-                            `File too large for GitHub upload: ${repoPath} (${formatBytes(content.length)}). ` +
-                            `Limit is ${formatBytes(MAX_GITHUB_BLOB_BYTES)} per file.`
-                        );
+                const deleteEntries: Array<{ path: string; sha: null }> = [];
+                ['theme.json', 'ui-theme.json'].forEach((legacyFile) => {
+                    const repoPath = withPagesPath(pagesPath, legacyFile);
+                    if (treeMap.has(repoPath)) {
+                        deleteEntries.push({ path: repoPath, sha: null });
                     }
-                    const blobSha = computeGitBlobSha(content);
-                    const existingSha = treeMap.get(repoPath);
-                    if (existingSha && existingSha === blobSha) return;
-                    pendingEntries.push({
-                        path: repoPath,
-                        contentBase64: content.toString('base64'),
-                        blobSha
-                    });
-                };
-
-                const themeBuffer = Buffer.from(JSON.stringify(selectedTheme, null, 2));
-                queueFile(withPagesPath(pagesPath, 'theme.json'), themeBuffer);
-                reportIds.forEach((id) => {
-                    queueFile(withPagesPath(pagesPath, `reports/${id}/theme.json`), themeBuffer);
                 });
-                const uiThemeValue = resolveWebUiThemeChoice(uiTheme, selectedTheme?.id);
-                const uiThemeBuffer = Buffer.from(JSON.stringify({ theme: uiThemeValue }, null, 2));
-                queueFile(withPagesPath(pagesPath, 'ui-theme.json'), uiThemeBuffer);
 
-                if (pendingEntries.length === 0) {
-                    sendGithubThemeStatus('Complete', 'Theme already up to date.', 100);
+                // Push the stable per-theme CSS files so all reports (including old ones)
+                // get the latest styling without requiring a new report to be published.
+                const THEME_CSS_FILES = ['classic.css', 'modern.css', 'crt.css', 'matte.css', 'kinetic.css'];
+                const themeDir = path.join(getWebRoot(), 'dist-web', 'web-report-themes');
+                const cssUploadEntries: Array<{ path: string; contentBase64: string }> = [];
+                if (fs.existsSync(themeDir)) {
+                    for (const cssFile of THEME_CSS_FILES) {
+                        const absPath = path.join(themeDir, cssFile);
+                        if (!fs.existsSync(absPath)) continue;
+                        const content = fs.readFileSync(absPath);
+                        const blobSha = computeGitBlobSha(content);
+                        const repoPath = withPagesPath(pagesPath, `web-report-themes/${cssFile}`);
+                        if (treeMap.get(repoPath) !== blobSha) {
+                            cssUploadEntries.push({ path: repoPath, contentBase64: content.toString('base64') });
+                        }
+                    }
+                }
+
+                if (deleteEntries.length === 0 && cssUploadEntries.length === 0) {
+                    sendGithubThemeStatus('Complete', 'Site is up to date. Legacy files removed, theme stylesheets are current.', 100);
                     return { success: true };
                 }
 
-                sendGithubThemeStatus('Uploading', 'Uploading theme updates...', 70);
-                const blobEntries: Array<{ path: string; sha: string }> = [];
-                for (const entry of pendingEntries) {
+                sendGithubThemeStatus('Uploading', `Updating ${cssUploadEntries.length > 0 ? 'theme stylesheets' : 'legacy file cleanup'}...`, 55);
+                const cssBlobEntries: Array<{ path: string; sha: string }> = [];
+                for (const entry of cssUploadEntries) {
                     const blob = await createGithubBlob(owner, repo, token, entry.contentBase64, entry.path);
-                    blobEntries.push({ path: entry.path, sha: blob.sha });
+                    cssBlobEntries.push({ path: entry.path, sha: blob.sha });
                 }
 
+                const allTreeEntries: Array<{ path: string; sha: string | null }> = [
+                    ...deleteEntries,
+                    ...cssBlobEntries
+                ];
+                const commitParts: string[] = [];
+                if (deleteEntries.length > 0) commitParts.push('remove legacy web theme defaults');
+                if (cssBlobEntries.length > 0) commitParts.push('update web report theme stylesheets');
+                const commitMessage = commitParts.join(', ');
+
                 sendGithubThemeStatus('Finalizing', 'Publishing theme commit...', 90);
-                const newTree = await createGithubTree(owner, repo, token, baseTreeSha, blobEntries);
-                const commitMessage = `Update web theme to ${selectedTheme.id}`;
+                const newTree = await createGithubTree(owner, repo, token, baseTreeSha, allTreeEntries);
                 const newCommit = await createGithubCommit(owner, repo, token, commitMessage, newTree.sha, headSha);
                 await updateGithubRef(owner, repo, branch, token, newCommit.sha);
 
-                sendGithubThemeStatus('Committed', 'Theme commit pushed. Waiting for Pages build...', 100);
+                sendGithubThemeStatus('Committed', 'Theme update committed. Waiting for Pages build...', 100);
                 return { success: true };
             } catch (err: any) {
                 sendGithubThemeStatus('Error', err?.message || 'Theme update failed.', 100);
@@ -4406,19 +4409,8 @@ if (!gotTheLock) {
                     appVersion: app.getVersion()
                 };
                 const uiTheme = store.get('uiTheme', 'classic') as string;
-                const availableThemes = uiTheme === 'crt'
-                    ? [CRT_WEB_THEME]
-                    : (uiTheme === 'kinetic' ? [KINETIC_WEB_THEME, KINETIC_DARK_WEB_THEME] : [...BASE_WEB_THEMES, MATTE_WEB_THEME]);
                 const requestedThemeId = (store.get('githubWebTheme', DEFAULT_WEB_THEME_ID) as string) || DEFAULT_WEB_THEME_ID;
-                const themeId = uiTheme === 'crt'
-                    ? CRT_WEB_THEME_ID
-                    : (uiTheme === 'matte'
-                        ? MATTE_WEB_THEME_ID
-                        : (uiTheme === 'kinetic' && requestedThemeId !== KINETIC_WEB_THEME_ID && requestedThemeId !== KINETIC_DARK_WEB_THEME_ID
-                            ? KINETIC_WEB_THEME_ID
-                            : requestedThemeId));
-                const selectedTheme = availableThemes.find((theme) => theme.id === themeId) || availableThemes[0];
-                const uiThemeValue = resolveWebUiThemeChoice(uiTheme, selectedTheme?.id);
+                const { selectedTheme, uiThemeValue } = resolveWebPublishTheme(uiTheme, requestedThemeId);
                 const builtReport = buildWebReportPayload(
                     reportMeta,
                     payload.stats || {},
@@ -4491,18 +4483,25 @@ if (!gotTheLock) {
                     })()
                 };
 
-                let existingIndex: any[] = [];
+                let existingEntries: any[] = [];
                 try {
                     const existing = await getGithubFile(owner, repo, withPagesPath(pagesPath, 'reports/index.json'), branch, token);
                     if (existing?.content) {
                         const decoded = Buffer.from(existing.content, 'base64').toString('utf8');
-                        existingIndex = JSON.parse(decoded);
+                        const parsed = JSON.parse(decoded);
+                        // Support both old plain-array format and new object format.
+                        existingEntries = Array.isArray(parsed) ? parsed : (Array.isArray(parsed?.entries) ? parsed.entries : []);
                     }
                 } catch (err) {
-                    existingIndex = [];
+                    existingEntries = [];
                 }
 
-                const mergedIndex = [indexEntry, ...(Array.isArray(existingIndex) ? existingIndex.filter((entry) => entry?.id !== reportMeta.id) : [])];
+                const mergedEntries = [indexEntry, ...existingEntries.filter((entry) => entry?.id !== reportMeta.id)];
+                const kineticFont = (store.get('kineticFontStyle', 'default') as string) === 'original' ? 'original' : 'default';
+                const indexPayload = {
+                    siteTheme: { ui: uiThemeValue, paletteId: selectedTheme?.id || DEFAULT_WEB_THEME_ID, kineticFont },
+                    entries: mergedEntries
+                };
 
                 sendWebUploadStatus('Uploading', 'Preparing upload bundle...', 55);
                 const headRef = await getGithubRef(owner, repo, branch, token);
@@ -4566,14 +4565,15 @@ if (!gotTheLock) {
                     queueFile(repoPath, content);
                 }
 
-                const indexBuffer = Buffer.from(JSON.stringify(mergedIndex, null, 2));
+                const indexBuffer = Buffer.from(JSON.stringify(indexPayload, null, 2));
                 queueFile(withPagesPath(pagesPath, 'reports/index.json'), indexBuffer);
-                if (selectedTheme) {
-                    const themeBuffer = Buffer.from(JSON.stringify(selectedTheme, null, 2));
-                    queueFile(withPagesPath(pagesPath, 'theme.json'), themeBuffer);
-                }
-                const uiThemeBuffer = Buffer.from(JSON.stringify({ theme: uiThemeValue }, null, 2));
-                queueFile(withPagesPath(pagesPath, 'ui-theme.json'), uiThemeBuffer);
+                const deleteEntries: Array<{ path: string; sha: null }> = [];
+                ['theme.json', 'ui-theme.json'].forEach((legacyFile) => {
+                    const repoPath = withPagesPath(pagesPath, legacyFile);
+                    if (treeMap.has(repoPath)) {
+                        deleteEntries.push({ path: repoPath, sha: null });
+                    }
+                });
                 const logoPath = store.get('githubLogoPath') as string | undefined;
                 if (logoPath && fs.existsSync(logoPath)) {
                     const logoBuffer = fs.readFileSync(logoPath);
@@ -4582,7 +4582,7 @@ if (!gotTheLock) {
                     queueFile(withPagesPath(pagesPath, 'logo.json'), logoJson);
                 }
 
-                if (pendingEntries.length === 0) {
+                if (pendingEntries.length === 0 && deleteEntries.length === 0) {
                     sendWebUploadStatus('Complete', 'No changes to upload.', 100);
                     return { success: true, url: reportUrl };
                 }
@@ -4593,10 +4593,11 @@ if (!gotTheLock) {
                     const blob = await createGithubBlob(owner, repo, token, entry.contentBase64, entry.path);
                     blobEntries.push({ path: entry.path, sha: blob.sha });
                 }
+                const commitEntries: Array<{ path: string; sha: string | null }> = [...blobEntries, ...deleteEntries];
 
                 const commitMessage = `Update web report ${reportMeta.id}`;
                 const publishCommit = async (treeBaseSha: string, parentSha: string) => {
-                    const newTree = await createGithubTree(owner, repo, token, treeBaseSha, blobEntries);
+                    const newTree = await createGithubTree(owner, repo, token, treeBaseSha, commitEntries);
                     const newCommit = await createGithubCommit(owner, repo, token, commitMessage, newTree.sha, parentSha);
                     await updateGithubRef(owner, repo, branch, token, newCommit.sha);
                 };
@@ -4660,19 +4661,8 @@ if (!gotTheLock) {
                     appVersion: app.getVersion()
                 };
                 const uiTheme = store.get('uiTheme', 'classic') as string;
-                const availableThemes = uiTheme === 'crt'
-                    ? [CRT_WEB_THEME]
-                    : (uiTheme === 'kinetic' ? [KINETIC_WEB_THEME, KINETIC_DARK_WEB_THEME] : [...BASE_WEB_THEMES, MATTE_WEB_THEME]);
                 const requestedThemeId = (store.get('githubWebTheme', DEFAULT_WEB_THEME_ID) as string) || DEFAULT_WEB_THEME_ID;
-                const themeId = uiTheme === 'crt'
-                    ? CRT_WEB_THEME_ID
-                    : (uiTheme === 'matte'
-                        ? MATTE_WEB_THEME_ID
-                        : (uiTheme === 'kinetic' && requestedThemeId !== KINETIC_WEB_THEME_ID && requestedThemeId !== KINETIC_DARK_WEB_THEME_ID
-                            ? KINETIC_WEB_THEME_ID
-                            : requestedThemeId));
-                const selectedTheme = availableThemes.find((theme) => theme.id === themeId) || availableThemes[0];
-                const uiThemeValue = resolveWebUiThemeChoice(uiTheme, selectedTheme?.id);
+                const { selectedTheme, uiThemeValue } = resolveWebPublishTheme(uiTheme, requestedThemeId);
                 const builtReport = buildWebReportPayload(
                     reportMeta,
                     payload.stats || {},
@@ -4686,12 +4676,8 @@ if (!gotTheLock) {
                 fs.mkdirSync(devRoot, { recursive: true });
                 fs.writeFileSync(path.join(devRoot, 'report.json'), builtReport.jsonBuffer);
                 fs.writeFileSync(path.join(reportDir, 'report.json'), builtReport.jsonBuffer);
-                if (selectedTheme) {
-                    const themePayload = JSON.stringify(selectedTheme, null, 2);
-                    fs.writeFileSync(path.join(webRoot, 'theme.json'), themePayload);
-                }
-                const uiThemePayload = JSON.stringify({ theme: uiThemeValue }, null, 2);
-                fs.writeFileSync(path.join(webRoot, 'ui-theme.json'), uiThemePayload);
+                fs.rmSync(path.join(webRoot, 'theme.json'), { force: true });
+                fs.rmSync(path.join(webRoot, 'ui-theme.json'), { force: true });
 
                 const redirectHtml = `<!DOCTYPE html>
 <html lang="en">
@@ -4744,16 +4730,17 @@ if (!gotTheLock) {
                 };
 
                 const indexPath = path.join(reportsRoot, 'index.json');
-                let existingIndex: any[] = [];
+                let existingLocalEntries: any[] = [];
                 try {
                     if (fs.existsSync(indexPath)) {
                         const decoded = fs.readFileSync(indexPath, 'utf8');
-                        existingIndex = JSON.parse(decoded);
+                        const parsed = JSON.parse(decoded);
+                        existingLocalEntries = Array.isArray(parsed) ? parsed : (Array.isArray(parsed?.entries) ? parsed.entries : []);
                     }
                 } catch {
-                    existingIndex = [];
+                    existingLocalEntries = [];
                 }
-                const normalizedExistingIndex = (Array.isArray(existingIndex) ? existingIndex : []).map((entry) => {
+                const normalizedExistingEntries = existingLocalEntries.map((entry) => {
                     if (!entry || typeof entry !== 'object') return entry;
                     const currentUrl = typeof entry.url === 'string' ? entry.url : '';
                     const normalizedUrl = currentUrl
@@ -4761,8 +4748,13 @@ if (!gotTheLock) {
                         .replace('./web/index.html?report=', './?report=');
                     return normalizedUrl === currentUrl ? entry : { ...entry, url: normalizedUrl };
                 });
-                const mergedIndex = [indexEntry, ...normalizedExistingIndex.filter((entry) => entry?.id !== reportMeta.id)];
-                fs.writeFileSync(indexPath, JSON.stringify(mergedIndex, null, 2));
+                const mergedLocalEntries = [indexEntry, ...normalizedExistingEntries.filter((entry) => entry?.id !== reportMeta.id)];
+                const localKineticFont = (store.get('kineticFontStyle', 'default') as string) === 'original' ? 'original' : 'default';
+                const localIndexPayload = {
+                    siteTheme: { ui: uiThemeValue, paletteId: selectedTheme?.id || DEFAULT_WEB_THEME_ID, kineticFont: localKineticFont },
+                    entries: mergedLocalEntries
+                };
+                fs.writeFileSync(indexPath, JSON.stringify(localIndexPayload, null, 2));
 
                 const baseUrl = VITE_DEV_SERVER_URL.replace(/\/$/, '');
                 return { success: true, url: `${baseUrl}/web/?report=${reportMeta.id}` };
