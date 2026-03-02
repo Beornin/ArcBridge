@@ -4377,17 +4377,27 @@ if (!gotTheLock) {
             };
         });
 
-        ipcMain.handle('upload-web-report', async (_event, payload: { meta: any; stats: any }) => {
+        ipcMain.handle('upload-web-report', async (_event, payload: { meta: any; stats: any; repoFullName?: string; repoOwner?: string; repoName?: string }) => {
             try {
                 if (!hasWebReportContent(payload)) {
                     return { success: false, error: 'Cannot upload an empty web report. Add at least one fight before publishing.' };
                 }
                 sendWebUploadStatus('Preparing', 'Validating settings...', 5);
                 const token = store.get('githubToken') as string | undefined;
-                const owner = store.get('githubRepoOwner') as string | undefined;
-                const repo = store.get('githubRepoName') as string | undefined;
+                const explicitOwner = typeof payload?.repoOwner === 'string' ? payload.repoOwner.trim() : '';
+                const explicitRepo = typeof payload?.repoName === 'string' ? payload.repoName.trim() : '';
+                const requestedRepoFullName = typeof payload?.repoFullName === 'string' ? payload.repoFullName.trim() : '';
+                const requestedRepoParts = requestedRepoFullName.split('/').map((part) => part.trim()).filter(Boolean);
+                const hasExplicitOverride = !!explicitOwner && !!explicitRepo;
+                const hasRepoOverride = hasExplicitOverride || requestedRepoParts.length === 2;
+                const owner = hasRepoOverride
+                    ? (hasExplicitOverride ? explicitOwner : requestedRepoParts[0])
+                    : (store.get('githubRepoOwner') as string | undefined);
+                const repo = hasRepoOverride
+                    ? (hasExplicitOverride ? explicitRepo : requestedRepoParts[1])
+                    : (store.get('githubRepoName') as string | undefined);
                 const branch = (store.get('githubBranch') as string | undefined) || 'main';
-                let baseUrl = (store.get('githubPagesBaseUrl') as string | undefined) || '';
+                let baseUrl = hasRepoOverride ? '' : ((store.get('githubPagesBaseUrl') as string | undefined) || '');
                 if (!token) {
                     return { success: false, error: 'Missing GitHub token. Connect GitHub first.' };
                 }
@@ -4395,16 +4405,24 @@ if (!gotTheLock) {
                     return { success: false, error: 'Select or create a repository in Settings first.' };
                 }
 
+                sendWebUploadStatus('Preparing', `Using ${owner}/${repo}...`, 8);
+
                 sendWebUploadStatus('Preparing', 'Ensuring Pages configuration...', 15);
                 const { pagesInfo, pagesPath } = await resolvePagesSource(owner, repo, branch, token);
                 if (!baseUrl && pagesInfo?.html_url) {
                     baseUrl = pagesInfo.html_url;
-                    store.set('githubPagesBaseUrl', baseUrl);
+                    if (!hasRepoOverride) {
+                        store.set('githubPagesBaseUrl', baseUrl);
+                    }
                 } else if (!baseUrl) {
                     baseUrl = `https://${owner}.github.io/${repo}`;
-                    store.set('githubPagesBaseUrl', baseUrl);
+                    if (!hasRepoOverride) {
+                        store.set('githubPagesBaseUrl', baseUrl);
+                    }
                 }
-                store.set('githubPagesSourcePath', pagesPath);
+                if (!hasRepoOverride) {
+                    store.set('githubPagesSourcePath', pagesPath);
+                }
 
                 sendWebUploadStatus('Preparing', 'Checking web template...', 25);
                 const appRoot = getWebRoot();

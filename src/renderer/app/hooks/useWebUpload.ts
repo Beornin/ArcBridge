@@ -81,7 +81,7 @@ export function useWebUpload() {
         }, 2500);
     }, [webUploadState.stage]);
 
-    const handleWebUpload = useCallback(async (payload: { meta: any; stats: any }) => {
+    const handleWebUpload = useCallback(async (payload: { meta: any; stats: any; repoFullName?: string; repoOwner?: string; repoName?: string }) => {
         if (!window.electronAPI?.uploadWebReport) {
             setWebUploadState((prev) => ({
                 ...prev,
@@ -93,10 +93,18 @@ export function useWebUpload() {
             window.clearTimeout(webUploadClearTimerRef.current);
             webUploadClearTimerRef.current = null;
         }
+        const repoLabel = (() => {
+            if (typeof payload?.repoFullName === 'string' && payload.repoFullName.trim()) {
+                return payload.repoFullName.trim();
+            }
+            const owner = typeof payload?.repoOwner === 'string' ? payload.repoOwner.trim() : '';
+            const repo = typeof payload?.repoName === 'string' ? payload.repoName.trim() : '';
+            return owner && repo ? `${owner}/${repo}` : '';
+        })();
         setWebUploadState((prev) => ({
             ...prev,
             uploading: true,
-            message: 'Preparing report...',
+            message: repoLabel ? `Preparing report for ${repoLabel}...` : 'Preparing report...',
             stage: 'Preparing report',
             progress: 0,
             detail: null,
@@ -112,7 +120,9 @@ export function useWebUpload() {
                 setWebUploadState((prev) => ({
                     ...prev,
                     url,
-                    message: `Uploaded: ${url || 'GitHub Pages'}`,
+                    message: repoLabel
+                        ? `Uploaded to ${repoLabel}: ${url || 'GitHub Pages'}`
+                        : `Uploaded: ${url || 'GitHub Pages'}`,
                     stage: 'Upload complete',
                     progress: 100,
                     buildStatus: 'checking'
