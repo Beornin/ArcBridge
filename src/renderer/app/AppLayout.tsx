@@ -5,6 +5,7 @@ import { BookOpen, ChevronDown, FilePlus2, LayoutGrid, Minus, RefreshCw, Setting
 import { Terminal as TerminalIcon } from 'lucide-react';
 import { SettingsView } from '../SettingsView';
 import { StatsView } from '../StatsView';
+import { StatsErrorBoundary } from '../stats/StatsErrorBoundary';
 import { Terminal } from '../Terminal';
 import { UpdateErrorModal } from '../UpdateErrorModal';
 import { WalkthroughModal } from '../WalkthroughModal';
@@ -602,25 +603,27 @@ export function AppLayout({ ctx }: { ctx: any }) {
                                     </div>
                                 </div>
                             </aside>
-                            <StatsView
-                                logs={logsForStats}
-                                onBack={() => setView('dashboard')}
-                                mvpWeights={mvpWeights}
-                                disruptionMethod={disruptionMethod}
-                                statsViewSettings={statsViewSettings}
-                                precomputedStats={precomputedStats || undefined}
-                                aggregationResult={{ stats: computedStats, skillUsageData: computedSkillUsageData, aggregationProgress, aggregationDiagnostics }}
-                                statsDataProgress={statsDataProgress}
-                                onStatsViewSettingsChange={(next) => {
-                                    setStatsViewSettings(next);
-                                    window.electronAPI?.saveSettings?.({ statsViewSettings: next });
-                                }}
-                                uiTheme={uiTheme}
-                                webUploadState={webUploadState}
-                                onWebUpload={handleWebUpload}
-                                canShareDiscord={!!selectedWebhookId}
-                                sectionVisibility={statsSectionVisibility}
-                            />
+                            <StatsErrorBoundary>
+                                <StatsView
+                                    logs={logsForStats}
+                                    onBack={() => setView('dashboard')}
+                                    mvpWeights={mvpWeights}
+                                    disruptionMethod={disruptionMethod}
+                                    statsViewSettings={statsViewSettings}
+                                    precomputedStats={precomputedStats || undefined}
+                                    aggregationResult={{ stats: computedStats, skillUsageData: computedSkillUsageData, aggregationProgress, aggregationDiagnostics }}
+                                    statsDataProgress={statsDataProgress}
+                                    onStatsViewSettingsChange={(next) => {
+                                        setStatsViewSettings(next);
+                                        window.electronAPI?.saveSettings?.({ statsViewSettings: next });
+                                    }}
+                                    uiTheme={uiTheme}
+                                    webUploadState={webUploadState}
+                                    onWebUpload={handleWebUpload}
+                                    canShareDiscord={!!selectedWebhookId}
+                                    sectionVisibility={statsSectionVisibility}
+                                />
+                            </StatsErrorBoundary>
                         </div>
                     </div>
                 )}

@@ -74,11 +74,3 @@ export const getPlayerDashboardTotals = (player: Player, method: DisruptionMetho
     cc: computeOutgoingCrowdControl(player, method),
 });
 
-export {
-    computeIncomingDisruptions as getIncomingDisruptions,
-    computeDownContribution as getPlayerDownContribution,
-    computeSquadHealing as getPlayerSquadHealing,
-    computeSquadBarrier as getPlayerSquadBarrier,
-    computeOutgoingCrowdControl as getPlayerOutgoingCrowdControl,
-    applySquadStabilityGeneration as applyStabilityGeneration,
-} from './combatMetrics';

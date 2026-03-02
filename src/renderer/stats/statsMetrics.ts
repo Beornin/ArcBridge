@@ -1,14 +1,4 @@
-export const NON_DAMAGING_CONDITIONS = new Set([
-    'Vulnerability',
-    'Weakness',
-    'Blind',
-    'Cripple',
-    'Chill',
-    'Immobilize',
-    'Slow',
-    'Fear',
-    'Taunt'
-]);
+export { NON_DAMAGING_CONDITIONS } from '../../shared/conditionsMetrics';
 
 export const OFFENSE_METRICS: Array<{
     id: string;

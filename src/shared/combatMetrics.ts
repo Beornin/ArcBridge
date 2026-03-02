@@ -1,6 +1,7 @@
 import { Player } from './dpsReportTypes';
 import { getPlayerBoonGenerationMs } from './boonGeneration';
 import { DisruptionMethod, METRICS_SPEC, DEFAULT_DISRUPTION_METHOD } from './metricsSettings';
+import { STABILITY_BOON_ID } from './constants';
 
 const toSeconds = (ms: number) => (ms || 0) / 1000;
 
@@ -76,7 +77,7 @@ export function applySquadStabilityGeneration(
         const self = getPlayerBoonGenerationMs(
             player,
             'selfBuffs',
-            1122,
+            STABILITY_BOON_ID,
             durationMs,
             groupCount,
             squadCount,
@@ -85,7 +86,7 @@ export function applySquadStabilityGeneration(
         const squad = getPlayerBoonGenerationMs(
             player,
             'squadBuffs',
-            1122,
+            STABILITY_BOON_ID,
             durationMs,
             groupCount,
             squadCount,

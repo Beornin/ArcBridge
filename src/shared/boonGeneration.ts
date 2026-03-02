@@ -37,6 +37,12 @@ export interface BoonTable {
 
 const BOON_CATEGORIES: Array<Exclude<BoonCategory, 'totalBuffs'>> = ['selfBuffs', 'groupBuffs', 'squadBuffs'];
 
+const CATEGORY_COUNT: Record<Exclude<BoonCategory, 'totalBuffs'>, (groupCount: number, squadCount: number) => number> = {
+    selfBuffs: () => 1,
+    groupBuffs: (groupCount) => Math.max(groupCount - 1, 0),
+    squadBuffs: (_groupCount, squadCount) => Math.max(squadCount - 1, 0),
+};
+
 const safeDiv = (a: number, b: number, fallback = 0) => (b ? a / b : fallback);
 
 const isBoon = (meta?: BuffInfo) => {
@@ -61,11 +67,7 @@ const computeGenerationMs = (
     groupCount: number,
     squadCount: number,
 ) => {
-    const count = category === 'selfBuffs'
-        ? 1
-        : category === 'groupBuffs'
-            ? Math.max(groupCount - 1, 0)
-            : Math.max(squadCount - 1, 0);
+    const count = CATEGORY_COUNT[category](groupCount, squadCount);
 
     if (!count || !durationMs) {
         return { generationMs: 0, wastedMs: 0 };

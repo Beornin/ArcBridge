@@ -1,11 +1,9 @@
 import axios from 'axios';
 import FormData from 'form-data';
 import {
-    applyStabilityGeneration,
     getPlayerDamage,
     getPlayerDps,
     getPlayerDownsTaken,
-    getPlayerDownContribution,
     getPlayerBreakbarDamage,
     getPlayerCleanses,
     getPlayerDamageTaken,
@@ -16,16 +14,21 @@ import {
     getPlayerBlocked,
     getPlayerEvaded,
     getPlayerResurrects,
-    getPlayerSquadHealing,
-    getPlayerSquadBarrier,
-    getPlayerOutgoingCrowdControl,
     getPlayerStrips,
-    getIncomingDisruptions,
     getTargetStatTotal,
 } from '../shared/dashboardMetrics';
+import {
+    applySquadStabilityGeneration as applyStabilityGeneration,
+    computeDownContribution as getPlayerDownContribution,
+    computeSquadHealing as getPlayerSquadHealing,
+    computeSquadBarrier as getPlayerSquadBarrier,
+    computeOutgoingCrowdControl as getPlayerOutgoingCrowdControl,
+    computeIncomingDisruptions as getIncomingDisruptions,
+} from '../shared/combatMetrics';
 import { DEFAULT_DISRUPTION_METHOD, DisruptionMethod } from '../shared/metricsSettings';
 import { getProfessionAbbrev, getProfessionBase, getProfessionEmoji } from '../shared/professionUtils';
 import { Player } from '../shared/dpsReportTypes';
+import { TIMESTAMP_MS_THRESHOLD } from '../shared/constants';
 
 const DISCORD_WEBHOOK_AVATAR_URL = 'https://raw.githubusercontent.com/darkharasho/ArcBridge/main/public/img/ArcBridgeDiscord.png';
 
@@ -93,11 +96,11 @@ const resolveFightTimestampMs = (jsonDetails: any, logData: any) => {
         ?? logData?.uploadTime;
     if (raw === undefined || raw === null || raw === '') return 0;
     if (typeof raw === 'number' && Number.isFinite(raw) && raw > 0) {
-        return raw > 1e12 ? raw : raw * 1000;
+        return raw > TIMESTAMP_MS_THRESHOLD ? raw : raw * 1000;
     }
     const numeric = Number(raw);
     if (Number.isFinite(numeric) && numeric > 0) {
-        return numeric > 1e12 ? numeric : numeric * 1000;
+        return numeric > TIMESTAMP_MS_THRESHOLD ? numeric : numeric * 1000;
     }
     const parsed = Date.parse(String(raw));
     return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;

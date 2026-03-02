@@ -88,13 +88,19 @@ App.tsx reduced from ~2015 → ~1771 lines (−244 lines). Remaining inline: log
 
 Functions like `getPlayerDownContribution()` are single-line wrappers around `combatMetrics.ts` with no added semantics.
 
+**Status:** Complete. 6 re-export aliases removed from `dashboardMetrics.ts`. Call sites (`computeStatsAggregation.ts`, `computeFightDiffMode.ts`, `discord.ts`, `ExpandableLogCard.tsx`) now import directly from `combatMetrics`.
+
 ### 7. Extract magic numbers to `src/shared/constants.ts`
 
 `1e12` (timestamp threshold), `10 * 1024 * 1024` (max image bytes), stability boon ID `1122`, etc. are scattered across files.
 
+**Status:** Complete. `src/shared/constants.ts` created with `TIMESTAMP_MS_THRESHOLD` (1e12), `STABILITY_BOON_ID` (1122), and `BULK_PROCESS_CONCURRENCY` (3). Replaced in `combatMetrics.ts`, `timestampUtils.ts`, `detailsProcessing.ts`, `discord.ts`, `ExpandableLogCard.tsx`, `uploadHandlers.ts`. Dead-code duplicate in `index.ts` removed.
+
 ### 8. Add error boundaries around stats aggregation in `StatsView.tsx`
 
 No fallback UI if the worker fails or log data is malformed.
+
+**Status:** Complete. `src/renderer/stats/StatsErrorBoundary.tsx` created (class-based, shows error message + retry button). `StatsView` wrapped in `AppLayout.tsx`.
 
 ---
 

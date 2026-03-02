@@ -1,3 +1,15 @@
+export const NON_DAMAGING_CONDITIONS = new Set([
+    'Vulnerability',
+    'Weakness',
+    'Blind',
+    'Cripple',
+    'Chill',
+    'Immobilize',
+    'Slow',
+    'Fear',
+    'Taunt',
+]);
+
 const CONDITION_NAME_MAP = new Map<string, string>([
     ['bleeding', 'Bleeding'],
     ['burning', 'Burning'],
