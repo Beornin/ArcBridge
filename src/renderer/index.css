@@ -1231,6 +1231,18 @@ body.theme-matte .matte-log-list>.space-y-3 {
     padding-left: 0;
 }
 
+/* File picker: calendar selected cell (border all sides) and list selected item (border-bottom only) */
+.file-picker-selected-cell {
+    background-color: var(--accent-bg-strong, rgba(122, 215, 240, 0.22)) !important;
+    border-color: var(--accent-border, rgba(122, 215, 240, 0.45)) !important;
+    color: var(--text-primary, #f5f7fa) !important;
+}
+
+.file-picker-selected-item {
+    background-color: var(--accent-bg-strong, rgba(122, 215, 240, 0.22)) !important;
+    color: var(--text-primary, #f5f7fa) !important;
+}
+
 body.theme-matte .file-picker-modal {
     background-color: rgba(9, 10, 11, 0.7) !important;
     backdrop-filter: none !important;
@@ -3094,6 +3106,7 @@ body.theme-kinetic {
     --scrollbar-thumb: rgba(120, 106, 89, 0.42);
     --scrollbar-thumb-hover: rgba(98, 85, 70, 0.56);
     --accent-bg: rgba(96, 86, 74, 0.1);
+    --accent-bg-strong: rgba(96, 86, 74, 0.18);
     --accent-border: rgba(86, 75, 63, 0.2);
     background: var(--bg-base);
     background-image: none;
@@ -3819,6 +3832,16 @@ body.theme-kinetic .whats-new-modal__body {
     background: var(--bg-card) !important;
     background-image: none !important;
     border-color: var(--border-default) !important;
+}
+
+body.theme-kinetic .file-picker-date-panel {
+    background: var(--bg-hover) !important;
+    background-image: none !important;
+}
+
+body.theme-kinetic.theme-kinetic-dark.theme-kinetic-slate .file-picker-date-panel {
+    background: #18202a !important;
+    background-image: none !important;
 }
 
 body.theme-kinetic .app-modal-card .bg-black\/20,

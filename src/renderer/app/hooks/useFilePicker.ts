@@ -28,9 +28,13 @@ export function useFilePicker({
     const [filePickerMonthWindow, setFilePickerMonthWindow] = useState(1);
     const [filePickerSelected, setFilePickerSelected] = useState<Set<string>>(new Set());
     const [filePickerFilter, setFilePickerFilter] = useState('');
+
+    // Simplified Filter Modes
     const [selectSinceOpen, setSelectSinceOpen] = useState(false);
     const [selectDayOpen, setSelectDayOpen] = useState(false);
     const [selectBetweenOpen, setSelectBetweenOpen] = useState(false);
+
+    // Date states (Custom UI states)
     const [selectDayDate, setSelectDayDate] = useState<Date | null>(null);
     const [selectSinceDate, setSelectSinceDate] = useState<Date | null>(null);
     const [selectBetweenStart, setSelectBetweenStart] = useState<string>('');
@@ -40,9 +44,13 @@ export function useFilePicker({
     const [selectSinceMinute, setSelectSinceMinute] = useState<number>(0);
     const [selectSinceMeridiem, setSelectSinceMeridiem] = useState<'AM' | 'PM'>('AM');
     const [selectSinceMonthOpen, setSelectSinceMonthOpen] = useState(false);
+
     const [filePickerError, setFilePickerError] = useState<string | null>(null);
     const [filePickerLoading, setFilePickerLoading] = useState(false);
     const [filePickerAtBottom, setFilePickerAtBottom] = useState(false);
+
+    // Keyboard navigation
+    const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
 
     const lastPickedIndexRef = useRef<number | null>(null);
     const filePickerListRef = useRef<HTMLDivElement | null>(null);
@@ -71,6 +79,7 @@ export function useFilePicker({
                 setFilePickerMonthWindow(1);
                 setFilePickerAvailable([]);
                 setFilePickerAtBottom(false);
+                setFocusedIndex(null);
             } else {
                 setFilePickerError(result?.error || 'Failed to load logs.');
             }
@@ -181,22 +190,22 @@ export function useFilePicker({
         setSelectBetweenOpen,
         selectDayDate,
         setSelectDayDate,
-        setSelectSinceView,
+        selectSinceDate,
         setSelectSinceDate,
+        selectSinceView,
+        setSelectSinceView,
+        selectSinceHour,
         setSelectSinceHour,
+        selectSinceMinute,
         setSelectSinceMinute,
+        selectSinceMeridiem,
         setSelectSinceMeridiem,
+        selectSinceMonthOpen,
         setSelectSinceMonthOpen,
         selectBetweenStart,
         setSelectBetweenStart,
         selectBetweenEnd,
         setSelectBetweenEnd,
-        selectSinceDate,
-        selectSinceHour,
-        selectSinceMinute,
-        selectSinceMeridiem,
-        selectSinceView,
-        selectSinceMonthOpen,
         filePickerFilter,
         setFilePickerFilter,
         filePickerLoading,
@@ -209,6 +218,8 @@ export function useFilePicker({
         filePickerAtBottom,
         setFilePickerMonthWindow,
         ensureMonthWindowForSince,
-        handleAddSelectedFiles
+        handleAddSelectedFiles,
+        focusedIndex,
+        setFocusedIndex
     };
 }

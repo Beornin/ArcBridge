@@ -178,52 +178,6 @@ function App() {
         bulkUploadExpectedRef,
         bulkUploadCompletedRef
     });
-    const {
-        filePickerOpen,
-        setFilePickerOpen,
-        filePickerError,
-        setFilePickerError,
-        filePickerSelected,
-        setFilePickerSelected,
-        loadLogFiles,
-        selectSinceOpen,
-        setSelectSinceOpen,
-        selectDayOpen,
-        setSelectDayOpen,
-        selectBetweenOpen,
-        setSelectBetweenOpen,
-        selectDayDate,
-        setSelectDayDate,
-        setSelectSinceView,
-        setSelectSinceDate,
-        setSelectSinceHour,
-        setSelectSinceMinute,
-        setSelectSinceMeridiem,
-        setSelectSinceMonthOpen,
-        selectBetweenStart,
-        setSelectBetweenStart,
-        selectBetweenEnd,
-        setSelectBetweenEnd,
-        selectSinceDate,
-        selectSinceHour,
-        selectSinceMinute,
-        selectSinceMeridiem,
-        selectSinceView,
-        selectSinceMonthOpen,
-        filePickerFilter,
-        setFilePickerFilter,
-        filePickerLoading,
-        filePickerAvailable,
-        filePickerAll,
-        filePickerListRef,
-        setFilePickerAtBottom,
-        lastPickedIndexRef,
-        filePickerHasMore,
-        filePickerAtBottom,
-        setFilePickerMonthWindow,
-        ensureMonthWindowForSince,
-        handleAddSelectedFiles
-    } = filePickerState;
 
     // Persistence removed
 
@@ -981,7 +935,7 @@ function App() {
                 </h2>
                 <div className="flex items-center gap-2">
                     <button
-                        onClick={() => setFilePickerOpen(true)}
+                        onClick={() => filePickerState.setFilePickerOpen(true)}
                         className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border border-white/10 bg-white/5 text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
                         title="Select logs to upload"
                     >
@@ -1126,7 +1080,7 @@ function App() {
         devDatasetsEnabled, devDatasetsOpen, loadDevDatasets, devDatasetRefreshing, setDevDatasetsOpen, devDatasetName, setDevDatasetName, devDatasetSaving, setDevDatasetSaving, devDatasetSavingIdRef, setDevDatasetSaveProgress, computedStats, computedSkillUsageData, appVersion, view, expandedLogId, notificationType, embedStatSettings, mvpWeights, statsViewSettings, disruptionMethod, uiTheme, selectedWebhookId, bulkUploadMode, logs, setDevDatasets, setDevDatasetLoadModes, devDatasetSaveProgress, devDatasets, devDatasetLoadModes, setDevDatasetLoadingId, setDevDatasetLoadProgress, setLogs, setLogsForStats, logsRef, setPrecomputedStats, setScreenshotData, canceledLogsRef, datasetLoadRef, devDatasetStreamingIdRef, applyDevDatasetSnapshot, setDevDatasetDeleteConfirmId, devDatasetDeleteConfirmId, devDatasetLoadingId
     };
     const filePickerCtx = {
-        filePickerOpen, setFilePickerOpen, setFilePickerError, setFilePickerSelected, filePickerError, filePickerSelected, loadLogFiles, logDirectory, selectSinceOpen, setSelectSinceOpen, selectDayOpen, setSelectDayOpen, selectBetweenOpen, setSelectBetweenOpen, selectDayDate, setSelectDayDate, setSelectSinceView, setSelectSinceDate, setSelectSinceHour, setSelectSinceMinute, setSelectSinceMeridiem, setSelectSinceMonthOpen, selectBetweenStart, setSelectBetweenStart, selectBetweenEnd, setSelectBetweenEnd, selectSinceDate, selectSinceHour, selectSinceMinute, selectSinceMeridiem, selectSinceView, selectSinceMonthOpen, filePickerFilter, setFilePickerFilter, filePickerLoading, filePickerAvailable, filePickerAll, filePickerListRef, setFilePickerAtBottom, lastPickedIndexRef, filePickerHasMore, filePickerAtBottom, setFilePickerMonthWindow, ensureMonthWindowForSince, handleAddSelectedFiles, uiTheme
+        ...filePickerState, logDirectory, uiTheme
     };
     const appLayoutCtx = {
         shellClassName, isDev, arcbridgeLogoStyle, updateAvailable, updateDownloaded, updateProgress, updateStatus, autoUpdateSupported, autoUpdateDisabledReason, view, settingsUpdateCheckRef, versionClickTimesRef, versionClickTimeoutRef, setDeveloperSettingsTrigger, appVersion, setView, showTerminal, setShowTerminal, devDatasetsEnabled, setDevDatasetsOpen, webUploadState, isModernTheme, setWebUploadState, statsViewMounted, logsForStats, mvpWeights, disruptionMethod, statsViewSettings, precomputedStats, computedStats, computedSkillUsageData, aggregationProgress, aggregationDiagnostics, statsDataProgress, setStatsViewSettings, uiTheme, dashboardLayout, handleWebUpload, selectedWebhookId, setEmbedStatSettings, setMvpWeights, setDisruptionMethod, setUiTheme, setKineticFontStyle, setKineticThemeVariant, setDashboardLayout, setGithubWebTheme, developerSettingsTrigger, helpUpdatesFocusTrigger, handleHelpUpdatesFocusConsumed, setWalkthroughOpen, setWhatsNewOpen, statsTilesPanel, activityPanel, configurationPanel, screenshotData, embedStatSettings, showClassIcons, enabledTopListCount, devDatasetsCtx, filePickerCtx, webhookDropdownOpen, webhookDropdownStyle, webhookDropdownPortalRef, webhooks, handleUpdateSettings, setSelectedWebhookId, setWebhookDropdownOpen, webhookModalOpen, setWebhookModalOpen, setWebhooks, showUpdateErrorModal, setShowUpdateErrorModal, updateError, whatsNewOpen, handleWhatsNewClose, whatsNewVersion, whatsNewNotes, walkthroughOpen, handleWalkthroughClose, handleWalkthroughLearnMore
