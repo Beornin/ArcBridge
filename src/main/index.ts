@@ -43,6 +43,11 @@ import {
     compareVersion,
     extractReleaseNotesRangeFromFile,
 } from './versionUtils';
+import {
+    extractAutoUpdateErrorMessage,
+    formatAutoUpdateErrorMessage,
+    isRetryableAutoUpdateError,
+} from '../shared/autoUpdateErrors';
 import { fetchImageBuffer } from './imageFetcher';
 import { setupConsoleLogger } from './consoleLogger';
 import {
@@ -166,6 +171,8 @@ let isQuitting = false
 let watcher: LogWatcher | null = null
 let uploader: Uploader | null = null
 let discord: DiscordNotifier | null = null
+let autoUpdateRetryAttempts = 0;
+let autoUpdateRetryTimer: NodeJS.Timeout | null = null;
 let resolvedRetryCount = 0;
 const activeUploads = new Set<string>();
 const pendingDiscordLogs = new Map<string, { result: any, jsonDetails: any }>();
@@ -783,23 +790,54 @@ function createWindow() {
 }
 
 function setupAutoUpdater() {
+    const clearAutoUpdateRetryState = () => {
+        autoUpdateRetryAttempts = 0;
+        if (autoUpdateRetryTimer) {
+            clearTimeout(autoUpdateRetryTimer);
+            autoUpdateRetryTimer = null;
+        }
+    };
+
     autoUpdater.on('checking-for-update', () => {
         log.info('Checking for update...');
         win?.webContents.send('update-message', 'Checking for update...');
     });
     autoUpdater.on('update-available', (info: any) => {
+        clearAutoUpdateRetryState();
         log.info('Update available.');
         win?.webContents.send('update-available', info);
     });
     autoUpdater.on('update-not-available', (info: any) => {
+        clearAutoUpdateRetryState();
         log.info('Update not available.');
         win?.webContents.send('update-not-available', info);
     });
     autoUpdater.on('error', (err: any) => {
-        log.error('Error in auto-updater. ' + err);
-        win?.webContents.send('update-error', err);
+        const rawMessage = extractAutoUpdateErrorMessage(err);
+        if (isRetryableAutoUpdateError(err) && autoUpdateRetryAttempts < 1) {
+            autoUpdateRetryAttempts += 1;
+            const retryDelayMs = 2000;
+            log.warn(`[AutoUpdater] Retryable error "${rawMessage}". Retrying in ${retryDelayMs}ms (${autoUpdateRetryAttempts}/1)`);
+            win?.webContents.send('update-message', 'Temporary network issue while checking for updates. Retrying...');
+            if (autoUpdateRetryTimer) {
+                clearTimeout(autoUpdateRetryTimer);
+            }
+            autoUpdateRetryTimer = setTimeout(() => {
+                autoUpdateRetryTimer = null;
+                autoUpdater.checkForUpdates().catch((retryErr: any) => {
+                    log.error('[AutoUpdater] Retry attempt failed:', extractAutoUpdateErrorMessage(retryErr));
+                });
+            }, retryDelayMs);
+            return;
+        }
+        log.error('Error in auto-updater. ' + rawMessage);
+        win?.webContents.send('update-error', {
+            message: formatAutoUpdateErrorMessage(err),
+            rawMessage,
+        });
     });
     autoUpdater.on('download-progress', (progressObj: any) => {
+        clearAutoUpdateRetryState();
         let log_message = "Download speed: " + progressObj.bytesPerSecond;
         log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
         log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
@@ -807,6 +845,7 @@ function setupAutoUpdater() {
         win?.webContents.send('download-progress', progressObj);
     });
     autoUpdater.on('update-downloaded', (info: any) => {
+        clearAutoUpdateRetryState();
         log.info('Update downloaded');
         win?.webContents.send('update-downloaded', info);
     });
@@ -921,7 +960,10 @@ if (!gotTheLock) {
                 log.info('[AutoUpdater] Update check completed:', result);
             } catch (err: any) {
                 log.error('[AutoUpdater] Update check failed:', err?.message || err);
-                win?.webContents.send('update-error', { message: err?.message || 'Update check failed' });
+                win?.webContents.send('update-error', {
+                    message: formatAutoUpdateErrorMessage(err),
+                    rawMessage: extractAutoUpdateErrorMessage(err),
+                });
             }
         }, 3000);
 

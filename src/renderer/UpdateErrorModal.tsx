@@ -4,10 +4,11 @@ import { X, AlertCircle } from 'lucide-react';
 interface UpdateErrorModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onRetry: () => void;
     error: string | null;
 }
 
-export function UpdateErrorModal({ isOpen, onClose, error }: UpdateErrorModalProps) {
+export function UpdateErrorModal({ isOpen, onClose, onRetry, error }: UpdateErrorModalProps) {
     if (!isOpen) return null;
 
     return (
@@ -51,7 +52,13 @@ export function UpdateErrorModal({ isOpen, onClose, error }: UpdateErrorModalPro
                     </div>
 
                     {/* Footer */}
-                    <div className="flex justify-end px-6 py-4 border-t border-white/5 bg-black/20">
+                    <div className="flex justify-end gap-3 px-6 py-4 border-t border-white/5 bg-black/20">
+                        <button
+                            onClick={onRetry}
+                            className="px-4 py-2 bg-red-500/15 text-red-100 rounded-lg text-sm font-medium border border-red-400/25 hover:bg-red-500/25 transition-colors"
+                        >
+                            Try Again
+                        </button>
                         <button
                             onClick={onClose}
                             className="px-4 py-2 bg-white/10 text-white rounded-lg text-sm font-medium hover:bg-white/20 transition-colors"

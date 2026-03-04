@@ -771,6 +771,10 @@ export function AppLayout({ ctx }: { ctx: any }) {
             <UpdateErrorModal
                 isOpen={showUpdateErrorModal}
                 onClose={() => setShowUpdateErrorModal(false)}
+                onRetry={() => {
+                    setShowUpdateErrorModal(false);
+                    window.electronAPI.checkForUpdates();
+                }}
                 error={updateError}
             />
 

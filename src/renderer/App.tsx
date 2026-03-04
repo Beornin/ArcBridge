@@ -18,6 +18,7 @@ import { shouldAttemptStatsSyncRecovery } from './stats/utils/statsSyncRecovery'
 import { normalizeQueuedLogStatus, useLogQueue } from './app/hooks/useLogQueue';
 import { useDetailsHydration } from './app/hooks/useDetailsHydration';
 import { useUploadListeners } from './app/hooks/useUploadListeners';
+import { extractDroppedLogFiles } from './app/utils/droppedFiles';
 
 function App() {
     const [logs, setLogs] = useState<ILogData[]>([]);
@@ -906,24 +907,16 @@ function App() {
                 e.preventDefault();
                 e.stopPropagation();
                 setIsDragging(false);
-                const files = Array.from(e.dataTransfer.files);
-                const validFiles: string[] = [];
-                const optimisticLogs: ILogData[] = [];
-
-                files.forEach(file => {
-                    const filePath = (file as any).path;
-                    if (filePath && (file.name.endsWith('.evtc') || file.name.endsWith('.zevtc'))) {
-                        validFiles.push(filePath);
-                        optimisticLogs.push({
-                            id: file.name,
-                            filePath: filePath,
-                            status: 'pending',
-                            fightName: file.name,
-                            uploadTime: Date.now() / 1000,
-                            permalink: ''
-                        });
-                    }
-                });
+                const droppedLogs = extractDroppedLogFiles(e.dataTransfer);
+                const validFiles = droppedLogs.map((entry) => entry.filePath);
+                const optimisticLogs: ILogData[] = droppedLogs.map(({ filePath, fileName }) => ({
+                    id: fileName,
+                    filePath,
+                    status: 'queued',
+                    fightName: fileName,
+                    uploadTime: Date.now() / 1000,
+                    permalink: ''
+                }));
 
                 if (validFiles.length > 0) {
                     setLogs(currentLogs => {

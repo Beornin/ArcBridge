@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from 'electron'
+import { contextBridge, ipcRenderer, webUtils } from 'electron'
 
 contextBridge.exposeInMainWorld('electronAPI', {
     selectDirectory: () => ipcRenderer.invoke('select-directory'),
@@ -22,6 +22,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
             ipcRenderer.removeAllListeners('upload-status')
         }
     },
+    resolveDroppedFilePath: (file: File) => webUtils.getPathForFile(file),
     setDiscordWebhook: (url: string) => ipcRenderer.send('set-discord-webhook', url),
     windowControl: (action: 'minimize' | 'maximize' | 'close') => ipcRenderer.send('window-control', action),
     getSettings: () => ipcRenderer.invoke('get-settings'),
