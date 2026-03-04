@@ -5,6 +5,7 @@ import https from 'node:https';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { parseVersion, compareVersion, extractReleaseNotesRangeFromFile } from '../versionUtils';
+import { formatAutoUpdateErrorMessage } from '../../shared/autoUpdateErrors';
 
 // ─── Release notes fetcher (GitHub API) ──────────────────────────────────────
 
@@ -113,7 +114,7 @@ export function registerAppHandlers(opts: AppHandlerOptions) {
             await autoUpdater.checkForUpdates();
         } catch (err: any) {
             log.error('[AutoUpdater] Manual check failed:', err?.message || err);
-            getWindow()?.webContents.send('update-error', { message: err?.message || 'Update check failed' });
+            getWindow()?.webContents.send('update-error', { message: formatAutoUpdateErrorMessage(err) });
         }
     });
 
