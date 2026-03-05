@@ -2,10 +2,10 @@ import { useStatsSharedContext } from '../StatsViewContext';
 
 export const OverviewSection = () => {
     const { stats, isSectionVisible, isFirstVisibleSection, sectionClass } = useStatsSharedContext();
-    const alliedDeaths = Math.max(0, Number(stats.totalEnemyKills || 0));
-    const enemyDeaths = Math.max(0, Number(stats.totalSquadKills || 0));
-    const alliedDowns = Math.max(0, Number(stats.totalEnemyDowns || 0)) + alliedDeaths;
-    const enemyDowns = Math.max(0, Number(stats.totalSquadDowns || 0)) + enemyDeaths;
+    const alliedDeaths = Math.max(0, Number(stats.totalSquadDeaths || 0));
+    const enemyDeaths = Math.max(0, Number(stats.totalEnemyDeaths || 0));
+    const alliedDowns = Math.max(0, Number(stats.totalSquadDowns || 0));
+    const enemyDowns = Math.max(0, Number(stats.totalEnemyDowns || 0));
 
     return (
         <>
