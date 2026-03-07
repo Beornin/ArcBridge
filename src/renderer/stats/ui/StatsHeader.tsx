@@ -100,7 +100,7 @@ export const StatsHeader = ({
                     <button
                         onClick={onDevMockUpload}
                         disabled={devMockUploadState.uploading || actionsDisabled}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 bg-amber-500/15 text-amber-200 border border-amber-500/30 hover:bg-amber-500/25"
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 bg-amber-500/15 text-amber-200 border border-amber-500/30 enabled:hover:bg-amber-500/25"
                     >
                         <Sparkles className="w-4 h-4" />
                         {devMockUploadState.uploading ? 'Building...' : 'Dev Mock Upload'}
@@ -112,7 +112,7 @@ export const StatsHeader = ({
                             onClick={onWebUpload}
                             disabled={uploadDisabled}
                             aria-disabled={uploadDisabled}
-                            className={`stats-action-upload flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${alternateUploadTargets.length > 0 ? 'rounded-l-lg rounded-r-none' : 'rounded-lg'}`}
+                            className={`stats-action-upload flex items-center gap-2 px-4 py-2 bg-emerald-600 enabled:hover:bg-emerald-500 text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${alternateUploadTargets.length > 0 ? 'rounded-l-lg rounded-r-none' : 'rounded-lg'}`}
                         >
                             <UploadCloud className="w-4 h-4" />
                             {uploadingWeb ? 'Uploading...' : 'Upload to Web'}
@@ -124,7 +124,7 @@ export const StatsHeader = ({
                                 disabled={uploadDisabled}
                                 aria-haspopup="menu"
                                 aria-expanded={uploadMenuOpen}
-                                className="stats-action-upload flex items-center justify-center px-2 bg-emerald-700 hover:bg-emerald-600 text-white rounded-r-lg border-l border-emerald-400/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="stats-action-upload flex items-center justify-center px-2 bg-emerald-700 enabled:hover:bg-emerald-600 text-white rounded-r-lg border-l border-emerald-400/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 title="Choose upload repository"
                             >
                                 <ChevronDown className={`w-4 h-4 transition-transform ${uploadMenuOpen ? 'rotate-180' : ''}`} />
@@ -159,7 +159,7 @@ export const StatsHeader = ({
                         onClick={onShare}
                         disabled={shareDisabled}
                         aria-disabled={shareDisabled}
-                        className="stats-action-discord flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="stats-action-discord flex items-center gap-2 px-4 py-2 bg-indigo-600 enabled:hover:bg-indigo-500 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <Share2 className="w-4 h-4" />
                         {shareLabel}
