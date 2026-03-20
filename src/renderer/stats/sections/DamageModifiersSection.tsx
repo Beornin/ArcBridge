@@ -390,7 +390,7 @@ const CollapsedView = ({
                                     )}
                                     <span className="flex flex-col min-w-0">
                                         <span className="truncate">{mod.name}</span>
-                                        <span className="text-[10px] text-gray-500 font-normal">
+                                        <span className={`text-[10px] font-normal ${mod.squadDamageGain < 0 ? 'text-teal-500' : 'text-gray-500'}`}>
                                             {mod.squadDamageGain >= 0 ? '+' : ''}{formatWithCommas(mod.squadDamageGain, 0)} squad total
                                         </span>
                                     </span>
@@ -471,17 +471,17 @@ const CollapsedView = ({
                                             const barWidthPct = maxAbsGain > 0
                                                 ? (Math.abs(row.damageGain) / maxAbsGain) * 100
                                                 : 0;
-                                            const isReduction = incoming && row.damageGain < 0;
-                                            const barStyle = incoming
-                                                ? (isReduction
-                                                    ? 'linear-gradient(to left, rgba(20,184,166,0.2), rgba(20,184,166,0.05))'
-                                                    : 'linear-gradient(to right, rgba(239,68,68,0.2), rgba(239,68,68,0.05))')
-                                                : config.barGradientStyle;
+                                            const isNegative = row.damageGain < 0;
+                                            const barStyle = isNegative
+                                                ? 'linear-gradient(to left, rgba(20,184,166,0.2), rgba(20,184,166,0.05))'
+                                                : incoming
+                                                    ? 'linear-gradient(to right, rgba(239,68,68,0.2), rgba(239,68,68,0.05))'
+                                                    : config.barGradientStyle;
                                             return (
                                                 <div key={`${row.account}-${idx}`} className="relative border-t border-white/5">
-                                                    {/* Bar overlay — mitigation grows from right, damage from left */}
+                                                    {/* Bar overlay — negative grows from right, positive from left */}
                                                     <div
-                                                        className={`absolute inset-y-0 pointer-events-none ${isReduction ? 'right-0' : 'left-0'}`}
+                                                        className={`absolute inset-y-0 pointer-events-none ${isNegative ? 'right-0' : 'left-0'}`}
                                                         style={{ width: `${barWidthPct}%`, background: barStyle }}
                                                     />
                                                     {/* Row content */}
@@ -491,7 +491,7 @@ const CollapsedView = ({
                                                             {renderProfessionIcon(row.profession, row.professionList, 'w-4 h-4')}
                                                             <span className="truncate">{row.account}</span>
                                                         </div>
-                                                        <div className="text-right font-mono text-gray-300">
+                                                        <div className={`text-right font-mono ${isNegative ? 'text-teal-400' : incoming ? 'text-red-400' : config.accentText}`}>
                                                             {row.damageGain >= 0 ? '+' : ''}{formatWithCommas(row.damageGain, 0)}
                                                         </div>
                                                         <div className="text-right font-mono text-gray-400">
