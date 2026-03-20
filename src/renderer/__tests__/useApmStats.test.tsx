@@ -76,4 +76,67 @@ describe('useApmStats', () => {
         expect(skill.playerRows[0].count).toBe(12);
         expect(skill.totalApm).toBe(12);
     });
+
+    it('computes apmNoProcs excluding auto + trait proc + gear proc + unconditional proc casts', () => {
+        const data = {
+            logRecords: [],
+            skillOptions: [
+                { id: 's1', name: 'Sword Strike', total: 0, autoAttack: true },
+                { id: 's2', name: 'Fireball', total: 0, autoAttack: false },
+                { id: 's3', name: 'Windborne Notes', total: 0, autoAttack: false, isTraitProc: true },
+                { id: 's4', name: 'Sigil of Fire', total: 0, autoAttack: false, isGearProc: true },
+                { id: 's5', name: 'Selfless Daring', total: 0, autoAttack: false, isUnconditionalProc: true },
+            ],
+            players: [
+                {
+                    key: 'acct|Guardian',
+                    account: 'acct',
+                    displayName: 'acct',
+                    profession: 'Guardian',
+                    professionList: ['Guardian'],
+                    logs: 1,
+                    totalActiveSeconds: 60,
+                    skillTotals: { s1: 10, s2: 20, s3: 5, s4: 3, s5: 2 }
+                }
+            ]
+        } as SkillUsageSummary;
+
+        const { result } = renderHook(() => useApmStats(data));
+        const row = result.current.apmSpecBuckets[0].playerRows[0];
+        // Total: 10+20+5+3+2 = 40
+        expect(row.apm).toBe(40);
+        // No auto: 40-10 = 30
+        expect(row.apmNoAuto).toBe(30);
+        // No procs: 40-10(auto)-5(trait)-3(gear)-2(uncond) = 20 (only Fireball)
+        expect(row.apmNoProcs).toBe(20);
+    });
+
+    it('does not double-count a skill that is both auto and proc', () => {
+        const data = {
+            logRecords: [],
+            skillOptions: [
+                { id: 's1', name: 'Weird Skill', total: 0, autoAttack: true, isTraitProc: true },
+                { id: 's2', name: 'Normal Skill', total: 0, autoAttack: false },
+            ],
+            players: [
+                {
+                    key: 'acct|Mesmer',
+                    account: 'acct',
+                    displayName: 'acct',
+                    profession: 'Mesmer',
+                    professionList: ['Mesmer'],
+                    logs: 1,
+                    totalActiveSeconds: 60,
+                    skillTotals: { s1: 10, s2: 20 }
+                }
+            ]
+        } as SkillUsageSummary;
+
+        const { result } = renderHook(() => useApmStats(data));
+        const row = result.current.apmSpecBuckets[0].playerRows[0];
+        expect(row.apm).toBe(30);
+        expect(row.apmNoAuto).toBe(20);
+        // s1 excluded (auto+proc), only s2 remains = 20
+        expect(row.apmNoProcs).toBe(20);
+    });
 });

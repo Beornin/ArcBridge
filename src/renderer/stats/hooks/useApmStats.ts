@@ -26,6 +26,15 @@ export const useApmStats = (skillUsageData: SkillUsageSummary) => {
             return val;
         };
 
+        const procCache = new Map<string, boolean>();
+        const isProc = (id: string) => {
+            if (procCache.has(id)) return procCache.get(id)!;
+            const option = skillOptionsById.get(id);
+            const val = option?.isTraitProc === true || option?.isGearProc === true || option?.isUnconditionalProc === true;
+            procCache.set(id, val);
+            return val;
+        };
+
         (skillUsageData.players || []).forEach((player) => {
             const profession = player?.profession || 'Unknown';
             let bucket = buckets.get(profession);
@@ -37,6 +46,7 @@ export const useApmStats = (skillUsageData: SkillUsageSummary) => {
                     totalActiveSeconds: 0,
                     totalCasts: 0,
                     totalAutoCasts: 0,
+                    totalProcCasts: 0,
                     skills: [],
                     skillMap: new Map<string, ApmSkillEntry>()
                 };
@@ -50,6 +60,7 @@ export const useApmStats = (skillUsageData: SkillUsageSummary) => {
 
             let pCasts = 0;
             let pAutoCasts = 0;
+            let pProcCasts = 0;
             const playerSkillTotals = player && typeof player.skillTotals === 'object' && player.skillTotals !== null
                 ? player.skillTotals
                 : {};
@@ -65,6 +76,7 @@ export const useApmStats = (skillUsageData: SkillUsageSummary) => {
 
                 pCasts += count;
                 if (auto) pAutoCasts += count;
+                if (!auto && isProc(skillId)) pProcCasts += count;
 
                 // Add to bucket skill map
                 let skillEntry = bucket!.skillMap.get(skillId);
@@ -86,13 +98,17 @@ export const useApmStats = (skillUsageData: SkillUsageSummary) => {
 
             bucket.totalCasts += pCasts;
             bucket.totalAutoCasts += pAutoCasts;
+            bucket.totalProcCasts += pProcCasts;
 
             const activeMinutes = safeActiveSeconds / 60;
             const apm = activeMinutes > 0 ? pCasts / activeMinutes : 0;
             const castsNoAuto = Math.max(0, pCasts - pAutoCasts);
             const apmNoAuto = activeMinutes > 0 ? castsNoAuto / activeMinutes : 0;
+            const castsNoProcs = Math.max(0, pCasts - pAutoCasts - pProcCasts);
+            const apmNoProcs = activeMinutes > 0 ? castsNoProcs / activeMinutes : 0;
             const aps = safeActiveSeconds > 0 ? pCasts / safeActiveSeconds : 0;
             const apsNoAuto = safeActiveSeconds > 0 ? castsNoAuto / safeActiveSeconds : 0;
+            const apsNoProcs = safeActiveSeconds > 0 ? castsNoProcs / safeActiveSeconds : 0;
 
             const row: ApmPlayerRow = {
                 key: player?.key || `${player?.account || 'Unknown'}|${profession}`,
@@ -104,10 +120,13 @@ export const useApmStats = (skillUsageData: SkillUsageSummary) => {
                 totalActiveSeconds: safeActiveSeconds,
                 totalCasts: pCasts,
                 totalAutoCasts: pAutoCasts,
+                totalProcCasts: pProcCasts,
                 apm,
                 apmNoAuto,
+                apmNoProcs,
                 aps,
-                apsNoAuto
+                apsNoAuto,
+                apsNoProcs
             };
             bucket.playerRows.push(row);
         });
@@ -122,6 +141,9 @@ export const useApmStats = (skillUsageData: SkillUsageSummary) => {
             (bucket as any).totalApmNoAuto = totalMinutes > 0 ? nonAutoCasts / totalMinutes : 0;
             (bucket as any).totalAps = safeBucketSeconds > 0 ? Number(bucket.totalCasts || 0) / safeBucketSeconds : 0;
             (bucket as any).totalApsNoAuto = safeBucketSeconds > 0 ? nonAutoCasts / safeBucketSeconds : 0;
+            const nonAutoNonProcCasts = Math.max(0, nonAutoCasts - Number(bucket.totalProcCasts || 0));
+            (bucket as any).totalApmNoProcs = totalMinutes > 0 ? nonAutoNonProcCasts / totalMinutes : 0;
+            (bucket as any).totalApsNoProcs = safeBucketSeconds > 0 ? nonAutoNonProcCasts / safeBucketSeconds : 0;
 
             bucket.skills = Array.from(bucket.skillMap.values())
                 .map((skill) => {
