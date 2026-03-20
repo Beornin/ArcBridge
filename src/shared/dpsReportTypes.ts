@@ -2,9 +2,9 @@ export interface DamageModifierInfo {
     name: string;
     icon: string;
     description: string;
-    nonMultiplier: boolean;
-    skillBased: boolean;
-    approximate: boolean;
+    nonMultiplier?: boolean;
+    skillBased?: boolean;
+    approximate?: boolean;
     incoming: boolean;
 }
 
