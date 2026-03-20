@@ -207,7 +207,7 @@ export const DamageModifiersSection = ({
                                 ? `${config.accentBg} ${config.accentText} ${config.accentBorder}`
                                 : 'border-white/10 bg-white/5 text-gray-400 hover:text-white hover:border-white/30'
                         }`}
-                        title={showHypothetical ? 'Showing all modifiers (including hypothetical)' : 'Show hypothetical shared modifiers'}
+                        title={showHypothetical ? 'Showing all modifiers including shared squad buffs (banners, spirits, etc.) that are attributed to every benefiting player — not just the provider' : 'Show hypothetical shared modifiers — squad-wide buffs where damage gain is attributed to all benefiting players, not the buff source'}
                     >
                         Hypothetical
                     </button>
