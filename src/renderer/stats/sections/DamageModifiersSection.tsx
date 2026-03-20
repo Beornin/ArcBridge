@@ -406,10 +406,11 @@ const CollapsedView = ({
                                     <div className="flex flex-col min-w-0">
                                         <div className="text-sm font-semibold text-gray-200">{activeModInfo.name}</div>
                                         {activeModInfo.description && (
-                                            <div
-                                                className="text-[11px] text-gray-400 leading-tight mt-0.5"
-                                                dangerouslySetInnerHTML={{ __html: activeModInfo.description }}
-                                            />
+                                            <div className="text-[11px] text-gray-400 leading-tight mt-0.5">
+                                                {activeModInfo.description.split(/<br\s*\/?>/).map((part, i, arr) => (
+                                                    <span key={i}>{part}{i < arr.length - 1 && <br />}</span>
+                                                ))}
+                                            </div>
                                         )}
                                     </div>
                                 </div>
