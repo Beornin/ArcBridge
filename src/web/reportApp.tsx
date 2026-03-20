@@ -45,7 +45,9 @@ import {
     Route,
     Target,
     ChevronDown,
-    GitCompareArrows
+    GitCompareArrows,
+    Flame,
+    ShieldMinus
 } from 'lucide-react';
 
 interface ReportMeta {
@@ -899,9 +901,10 @@ export function ReportApp() {
             id: 'offense',
             label: 'Offensive Stats',
             icon: Swords,
-            sectionIds: ['offense-detailed', 'player-breakdown', 'damage-breakdown', 'spike-damage', 'conditions-outgoing'],
+            sectionIds: ['offense-detailed', 'damage-modifiers', 'player-breakdown', 'damage-breakdown', 'spike-damage', 'conditions-outgoing'],
             items: [
                 { id: 'offense-detailed', label: 'Offense Detailed', icon: OffenseSwordIcon },
+                { id: 'damage-modifiers', label: 'Damage Modifiers', icon: Flame },
                 { id: 'player-breakdown', label: 'Player Breakdown', icon: ListTree },
                 { id: 'damage-breakdown', label: 'Damage Breakdown', icon: BarChart3 },
                 { id: 'spike-damage', label: 'Spike Damage', icon: Zap },
@@ -912,9 +915,10 @@ export function ReportApp() {
             id: 'defense',
             label: 'Defensive Stats',
             icon: Shield,
-            sectionIds: ['defense-detailed', 'incoming-strike-damage', 'defense-mitigation', 'boon-output', 'boon-timeline', 'boon-uptime', 'support-detailed', 'healing-stats', 'heal-effectiveness'],
+            sectionIds: ['defense-detailed', 'incoming-damage-modifiers', 'incoming-strike-damage', 'defense-mitigation', 'boon-output', 'boon-timeline', 'boon-uptime', 'support-detailed', 'healing-stats', 'heal-effectiveness'],
             items: [
                 { id: 'defense-detailed', label: 'Defense Detailed', icon: Shield },
+                { id: 'incoming-damage-modifiers', label: 'Incoming Damage Modifiers', icon: ShieldMinus },
                 { id: 'incoming-strike-damage', label: 'Incoming Strike Damage', icon: ShieldAlert },
                 { id: 'defense-mitigation', label: 'Damage Mitigation', icon: Gw2DamMitIcon },
                 { id: 'boon-output', label: 'Boon Output', icon: Gw2BoonIcon },

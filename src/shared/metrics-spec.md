@@ -1156,6 +1156,112 @@ appears in the squad).
 
 Implementation: `src/renderer/stats/computeStatsAggregation.ts`.
 
+## Damage Modifiers (Outgoing + Incoming)
+
+Damage modifiers represent the impact of buffs, traits, relics, sigils, and food
+on a player's outgoing or incoming damage. The data comes from EI's damage
+modifier system and quantifies how much extra damage was gained (or reduced) due
+to each effect.
+
+### Input Contract
+
+- `damageModMap?: Record<string, DamageModifierInfo>` — lookup table mapping
+  modifier IDs (keyed as `"d{id}"`) to metadata:
+  - `name`, `icon`, `description`
+  - `incoming: boolean` — `true` for incoming (defense), `false` for outgoing
+    (offense)
+  - `nonMultiplier`, `skillBased`, `approximate` — EI classification flags
+- `personalDamageMods?: Record<string, number[]>` — mapping of profession names
+  to arrays of modifier IDs that are personal (player-specific) rather than
+  shared (squad-wide)
+- `players[*].damageModifiers?: DamageModifierData[]` — per-player outgoing
+  modifier stats
+- `players[*].incomingDamageModifiers?: DamageModifierData[]` — per-player
+  incoming modifier stats
+
+Each `DamageModifierData` entry contains:
+
+```
+{
+    id: number;                  // modifier ID (maps to "d{id}" in damageModMap)
+    damageModifiers: Array<{     // per-phase stats (phase 0 = full fight)
+        hitCount: number;        // hits affected by this modifier
+        totalHitCount: number;   // total hits during modifier duration
+        damageGain: number;      // net damage change from modifier
+        totalDamage: number;     // total damage dealt during modifier duration
+    }>;
+}
+```
+
+### Aggregation
+
+Per player per modifier, across all fights:
+
+- Key: `"d${entry.id}"`
+- Sum `damageGain`, `hitCount`, `totalHitCount`, `totalDamage` from
+  `entry.damageModifiers[0]` (phase 0 / full-fight stats)
+- Outgoing modifiers stored in `damageModTotals`
+- Incoming modifiers stored in `incomingDamageModTotals`
+
+The `damageModMap` is merged across all logs to produce a unified modifier
+lookup (different logs may contain different modifier sets).
+
+### Personal vs Shared (Hypothetical) Modifiers
+
+Modifiers are classified as **personal** or **shared**:
+
+- **Personal modifiers** are specific to a player's build — traits, relic
+  procs, food effects, and other buffs that only the player themselves can
+  provide. These represent the player's actual build choices.
+- **Shared (hypothetical) modifiers** are squad-wide buffs that could come from
+  any player in the squad — e.g., banners, spirits, empower allies. These are
+  labeled "hypothetical" because the damage gain is attributed to every player
+  who benefited, not to the player who provided the buff.
+
+Classification source: `personalDamageMods` from EI JSON maps profession names
+to arrays of personal modifier IDs. During aggregation, these are collected into
+a `personalDamageModKeys` set (format `"d{id}"`).
+
+UI behavior:
+- By default, only personal modifiers are shown
+- The "Hypothetical" toggle reveals shared modifiers
+- Shared modifiers render at 50% opacity to visually distinguish them
+
+### Damage Gain Interpretation
+
+- **Positive `damageGain`**: the modifier increased damage dealt (offense) or
+  damage taken (defense)
+- **Negative `damageGain`**: the modifier reduced damage (relevant for incoming
+  modifiers representing damage reduction effects like protection, armor, etc.)
+
+### Hit Coverage
+
+`hitCoverage = hitCount / totalHitCount` — the fraction of hits that occurred
+while the modifier was active.
+
+### UI Sections
+
+Two instances of the same component, parameterized by direction:
+
+| Property | Outgoing | Incoming |
+|----------|----------|----------|
+| Section ID | `damage-modifiers` | `incoming-damage-modifiers` |
+| Placement | After `offense-detailed` | After `defense-detailed` |
+| Accent color | Rose/red | Blue |
+| Data source | `damageModTotals` | `incomingDamageModTotals` |
+| Bar direction | All positive (right) | Bidirectional: negative = teal/left (damage reduced), positive = red/right (damage increased) |
+
+Collapsed view: sidebar modifier list + bar chart + sortable detail table.
+Expanded view: dense table with modifiers as columns and players as rows.
+
+### Implementation
+
+- Types: `src/shared/dpsReportTypes.ts` (`DamageModifierInfo`, `DamageModifierData`)
+- Pruning: `src/renderer/stats/utils/pruneStatsLog.ts`
+- Player aggregation: `src/renderer/stats/computePlayerAggregation.ts`
+- Stats aggregation: `src/renderer/stats/computeStatsAggregation.ts`
+- UI component: `src/renderer/stats/sections/DamageModifiersSection.tsx`
+
 ## Known Caveats
 
 - EI JSON versions can add/remove fields; missing fields always fall back to `0`.
