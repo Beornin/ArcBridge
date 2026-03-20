@@ -66,10 +66,13 @@ export interface ApmPlayerRow {
     totalActiveSeconds: number;
     totalCasts: number;
     totalAutoCasts: number;
+    totalProcCasts: number;
     apm: number;
     apmNoAuto: number;
+    apmNoProcs: number;
     aps: number;
     apsNoAuto: number;
+    apsNoProcs: number;
 }
 
 export interface ApmSkillEntry {
@@ -87,6 +90,7 @@ export interface ApmSpecBucket {
     totalActiveSeconds: number;
     totalCasts: number;
     totalAutoCasts: number;
+    totalProcCasts: number;
     skills: ApmSkillEntry[];
     skillMap: Map<string, ApmSkillEntry>;
 }
