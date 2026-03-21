@@ -24,7 +24,7 @@ export function useDetailsHydration({
 
     const applyHydratedStatsBatch = useCallback((batch: Array<{ filePath: string; details: any }>) => {
         if (batch.length === 0) return;
-        // Details written to state below — cache populated lazily via get() when needed
+        // logsForStats is metadata-only — details live in DetailsCache (populated by hydration)
         setLogsForStats((currentStatsLogs) => {
             const updatesByPath = new Map(batch.map((entry) => [entry.filePath, entry.details]));
             let changed = false;
