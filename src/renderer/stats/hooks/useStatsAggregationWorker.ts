@@ -1,7 +1,8 @@
-import { startTransition, useEffect, useMemo, useRef, useState } from 'react';
+import { startTransition, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import type { DisruptionMethod, IMvpWeights, IStatsViewSettings } from '../../global.d';
 import { computeStatsAggregation } from '../computeStatsAggregation';
 import { pruneLogForStats } from '../utils/pruneStatsLog';
+import { DetailsCacheContext } from '../../cache/DetailsCacheContext';
 
 interface UseStatsAggregationProps {
     logs: any[];
@@ -46,6 +47,7 @@ export interface AggregationDiagnosticsState {
 }
 
 export const useStatsAggregationWorker = ({ logs, precomputedStats, mvpWeights, statsViewSettings, disruptionMethod }: UseStatsAggregationProps) => {
+    const detailsCache = useContext(DetailsCacheContext);
     const workerLogLimit = 8;
     const shouldUseWorker = logs.length > workerLogLimit;
     const [result, setResult] = useState(() => {
@@ -97,21 +99,22 @@ export const useStatsAggregationWorker = ({ logs, precomputedStats, mvpWeights, 
             streamIdleCallbackRef.current = null;
         }
     };
-    const getPrunedLogForWorker = (log: any, index: number) => {
+    const getPrunedLogForWorker = (log: any, details: any, index: number) => {
+        const logWithDetails = details ? { ...log, details } : log;
         const cacheKey = String(log?.filePath || log?.id || `idx-${index}`);
-        const detailsRef = log?.details && typeof log.details === 'object' ? log.details : null;
+        const detailsRef = details && typeof details === 'object' ? details : null;
         const cached = prunedLogCacheRef.current.get(cacheKey);
         if (cached) {
             if (detailsRef && cached.sourceDetails === detailsRef) {
                 return cached.pruned;
             }
-            if (!detailsRef && cached.sourceLog === log) {
+            if (!detailsRef && cached.sourceLog === logWithDetails) {
                 return cached.pruned;
             }
         }
-        const pruned = pruneLogForStats(log);
+        const pruned = pruneLogForStats(logWithDetails);
         prunedLogCacheRef.current.set(cacheKey, {
-            sourceLog: log,
+            sourceLog: logWithDetails,
             sourceDetails: detailsRef,
             pruned
         });
@@ -304,6 +307,19 @@ export const useStatsAggregationWorker = ({ logs, precomputedStats, mvpWeights, 
                     };
                 });
             };
+            const prefetchAndStep = async () => {
+                if (cancelled || streamSessionRef.current !== streamSession || !workerRef.current) return;
+                // Pre-fetch next batch of details into the LRU so peek() hits in step()
+                const prefetchEnd = Math.min(index + 4, totalLogs);
+                for (let i = index; i < prefetchEnd; i++) {
+                    const log = logs[i];
+                    const logId = log?.id || log?.filePath;
+                    if (detailsCache && logId && !detailsCache.peek(logId)) {
+                        try { await detailsCache.get(logId); } catch { /* fallback to log.details */ }
+                    }
+                }
+                scheduleStep();
+            };
             const scheduleStep = () => {
                 if (cancelled || streamSessionRef.current !== streamSession || !workerRef.current) return;
                 const requestIdle = (window as any).requestIdleCallback;
@@ -331,17 +347,21 @@ export const useStatsAggregationWorker = ({ logs, precomputedStats, mvpWeights, 
                     : 1;
                 let processed = 0;
                 while (processed < chunkSize && index < totalLogs) {
+                    const log = logs[index];
+                    const logId = log?.id || log?.filePath;
+                    // peek is synchronous — details were pre-fetched into LRU by prefetchAndStep
+                    const details = (detailsCache && logId ? detailsCache.peek(logId) : null) || log?.details;
                     workerRef.current.postMessage({
                         type: 'log',
                         token: activeToken,
-                        payload: getPrunedLogForWorker(logs[index], index)
+                        payload: getPrunedLogForWorker(log, details, index)
                     });
                     index += 1;
                     processed += 1;
                 }
                 if (index < totalLogs) {
                     publishProgress('streaming');
-                    scheduleStep();
+                    prefetchAndStep();
                 } else {
                     publishProgress('computing', true);
                     workerRef.current.postMessage({ type: 'flush', token: activeToken });
@@ -353,7 +373,7 @@ export const useStatsAggregationWorker = ({ logs, precomputedStats, mvpWeights, 
                 workerRef.current.postMessage({ type: 'flush', token: activeToken });
             } else {
                 publishProgress('streaming', true);
-                scheduleStep();
+                prefetchAndStep();
             }
         } catch (err) {
             console.warn('[StatsWorker] Failed to postMessage payload. Falling back to main thread.', err);
@@ -381,7 +401,16 @@ export const useStatsAggregationWorker = ({ logs, precomputedStats, mvpWeights, 
         if (!workerFailed && typeof Worker !== 'undefined' && shouldUseWorker) return null;
         const startedAt = Date.now();
         const computeStartedAt = performance.now();
-        const result = computeStatsAggregation({ logs, precomputedStats, mvpWeights, statsViewSettings: aggregationStatsViewSettings, disruptionMethod });
+        // Assemble details from cache for inline computation
+        const logsWithDetails = logs.map((log: any) => {
+            const logId = log?.id || log?.filePath;
+            const cachedDetails = detailsCache && logId ? detailsCache.peek(logId) : null;
+            if (cachedDetails && !log?.details) {
+                return { ...log, details: cachedDetails };
+            }
+            return log;
+        });
+        const result = computeStatsAggregation({ logs: logsWithDetails, precomputedStats, mvpWeights, statsViewSettings: aggregationStatsViewSettings, disruptionMethod });
         const computeMs = Math.max(0, performance.now() - computeStartedAt);
         const completedAt = Date.now();
         return { result, computeMs, startedAt, completedAt };
