@@ -8,6 +8,7 @@ import { DEFAULT_DISRUPTION_METHOD, DEFAULT_EMBED_STATS, DisruptionMethod, IEmbe
 import { getProfessionAbbrev, getProfessionEmoji } from '../shared/professionUtils';
 import { getProfessionIconPath } from './classIconUtils';
 import { TIMESTAMP_MS_THRESHOLD } from '../shared/constants';
+import { useLogDetails } from './cache/useLogDetails';
 
 interface ExpandableLogCardProps {
     log: any;
@@ -35,7 +36,10 @@ interface ExpandableLogCardProps {
 
 const ExpandableLogCardBase = forwardRef<HTMLDivElement, ExpandableLogCardProps>(
     ({ log, isExpanded, onToggle, onCancel, onRemove, layoutEnabled = true, motionEnabled = true, screenshotMode, embedStatSettings, disruptionMethod, screenshotSection, useClassIcons }, ref) => {
-    const details = log.details || {};
+    const { details: cachedDetails } = useLogDetails(
+        (isExpanded || screenshotMode || Boolean(screenshotSection)) ? log.id : undefined
+    );
+    const details = cachedDetails || log.details || {};
     const shouldComputeDetails = isExpanded || screenshotMode || Boolean(screenshotSection);
     const allPlayers: Player[] = Array.isArray(details.players) ? details.players : [];
     const allTargets = Array.isArray(details.targets) ? details.targets : [];

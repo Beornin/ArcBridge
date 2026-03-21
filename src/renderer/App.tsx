@@ -193,6 +193,18 @@ function App() {
             },
         });
     }
+    // Write-through: when details arrive via existing hydration, populate cache
+    useEffect(() => {
+        const cache = detailsCacheRef.current;
+        if (!cache) return;
+        for (const log of logsRef.current) {
+            if (log.details && log.id) {
+                if (!cache.peek(log.id)) {
+                    cache.putSync(log.id, log.details);
+                }
+            }
+        }
+    }, [logs]);
     const filePickerState = useFilePicker({
         logDirectory,
         setLogs,
