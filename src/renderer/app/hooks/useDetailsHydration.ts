@@ -26,9 +26,12 @@ export function useDetailsHydration({
         if (batch.length === 0) return;
         // Write details to cache instead of React state
         if (detailsCache) {
-            batch.forEach((entry) => {
-                if (entry.details && entry.filePath) {
-                    detailsCache.putSync(entry.filePath, entry.details);
+            batch.forEach((batchEntry) => {
+                if (batchEntry.details && batchEntry.filePath) {
+                    // Resolve log.id for cache key — must match how consumers look up
+                    const matchedLog = logsRef.current.find((l) => l.filePath === batchEntry.filePath);
+                    const cacheKey = matchedLog?.id || batchEntry.filePath;
+                    detailsCache.putSync(cacheKey, batchEntry.details);
                 }
             });
         }
@@ -253,7 +256,8 @@ export function useDetailsHydration({
                         if (result?.success && result.details) {
                             detailsHydrationAttemptsRef.current.delete(filePath);
                             if (detailsCache) {
-                                detailsCache.putSync(filePath, result.details);
+                                const cacheKey = log.id || filePath;
+                                detailsCache.putSync(cacheKey, result.details);
                             }
                             hydratedBatch.push({ filePath, details: result.details });
                             if (hydratedBatch.length >= flushThreshold) {
