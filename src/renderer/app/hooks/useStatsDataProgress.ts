@@ -36,7 +36,7 @@ export function useStatsDataProgress(
         let pending = 0;
         let unavailable = 0;
         logs.forEach((log) => {
-            if (log.details || log.statsDetailsLoaded) {
+            if (log.detailsAvailable || log.statsDetailsLoaded) {
                 return;
             }
             if (log.detailsKnownUnavailable) {

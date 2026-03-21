@@ -1,4 +1,6 @@
+import { useContext } from 'react';
 import { ExpandableLogCard } from '../ExpandableLogCard';
+import { DetailsCacheContext } from '../cache/DetailsCacheContext';
 
 export function ScreenshotContainer({
     screenshotData,
@@ -45,8 +47,10 @@ export function ScreenshotContainer({
         return Array.from(teamIds).sort((a, b) => a - b);
     };
 
+    const detailsCache = useContext(DetailsCacheContext);
     const splitEnemiesByTeam = Boolean((screenshotData as any)?.splitEnemiesByTeam);
-    const enemyTeamIds = splitEnemiesByTeam ? resolveEnemyTeamIds((screenshotData as any)?.details || {}) : [];
+    const screenshotDetails = detailsCache && screenshotData?.id ? detailsCache.peek(screenshotData.id) : null;
+    const enemyTeamIds = splitEnemiesByTeam ? resolveEnemyTeamIds(screenshotDetails || (screenshotData as any)?.details || {}) : [];
 
     return (
         <div className="fixed top-0 left-0 pointer-events-none opacity-0 overflow-hidden z-[-9999]">

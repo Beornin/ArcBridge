@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { computeStatsAggregation } from '../computeStatsAggregation';
+import { DetailsCacheContext } from '../../cache/DetailsCacheContext';
 
 interface UseStatsUploadsProps {
     logs: any[];
@@ -20,6 +21,8 @@ export const useStatsUploads = ({
     embedded,
     onWebUpload
 }: UseStatsUploadsProps) => {
+    const detailsCache = useContext(DetailsCacheContext);
+
     const [devMockUploadState, setDevMockUploadState] = useState<{
         uploading: boolean;
         message: string | null;
@@ -76,7 +79,7 @@ export const useStatsUploads = ({
         let lastEnd: Date | null = null;
 
         logs.forEach((log) => {
-            const details = log.details;
+            const details = (detailsCache && log?.id ? detailsCache.peek(log.id) : null) || log.details;
             if (!details) return;
             const timeStart = details.timeStartStd || details.timeStart || details.uploadTime || log.uploadTime;
             const timeEnd = details.timeEndStd || details.timeEnd || details.uploadTime || log.uploadTime;

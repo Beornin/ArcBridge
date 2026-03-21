@@ -1,13 +1,13 @@
 import { startTransition, useCallback, useEffect, useRef } from 'react';
 
 export const normalizeQueuedLogStatus = (candidate: ILogData): ILogData => {
-    if ((candidate.details || candidate.detailsAvailable) && candidate.detailsFetchExhausted) {
+    if (candidate.detailsAvailable && candidate.detailsFetchExhausted) {
         candidate = { ...candidate, detailsFetchExhausted: false };
     }
-    if ((candidate.details || candidate.detailsAvailable) && candidate.detailsKnownUnavailable) {
+    if (candidate.detailsAvailable && candidate.detailsKnownUnavailable) {
         candidate = { ...candidate, detailsKnownUnavailable: false };
     }
-    const detailsResolved = Boolean(candidate.details)
+    const detailsResolved = Boolean(candidate.detailsAvailable)
         || Boolean(candidate.statsDetailsLoaded)
         || Boolean(candidate.detailsKnownUnavailable)
         || (candidate.detailsAvailable === false)
@@ -18,7 +18,6 @@ export const normalizeQueuedLogStatus = (candidate: ILogData): ILogData => {
     if (
         candidate.status === 'success'
         && candidate.detailsAvailable
-        && !candidate.details
         && !candidate.statsDetailsLoaded
         && !candidate.detailsFetchExhausted
         && !candidate.detailsKnownUnavailable

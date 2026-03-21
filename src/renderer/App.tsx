@@ -193,18 +193,7 @@ function App() {
             },
         });
     }
-    // Write-through: when details arrive via existing hydration, populate cache
-    useEffect(() => {
-        const cache = detailsCacheRef.current;
-        if (!cache) return;
-        for (const log of logsRef.current) {
-            if (log.details && log.id) {
-                if (!cache.peek(log.id)) {
-                    cache.putSync(log.id, log.details);
-                }
-            }
-        }
-    }, [logs]);
+    // Write-through effect removed — hydration now writes directly to the DetailsCache
     const filePickerState = useFilePicker({
         logDirectory,
         setLogs,
@@ -261,7 +250,7 @@ function App() {
             let changed = false;
             const next = currentLogs.map<ILogData>((log) => {
                 if (log.status === 'calculating') {
-                    if (log.detailsAvailable && !log.details && !log.statsDetailsLoaded) {
+                    if (log.detailsAvailable && !detailsCacheRef.current?.peek(log.id) && !log.statsDetailsLoaded) {
                         return log;
                     }
                     changed = true;
@@ -281,6 +270,7 @@ function App() {
         setLogs,
         setLogsDeferred,
         setLogsForStats,
+        detailsCache: detailsCacheRef.current,
     });
 
     const enabledTopListCount = [
@@ -367,7 +357,7 @@ function App() {
     useEffect(() => {
         if (bulkUploadMode) return;
         const hasPendingDetailsHydration = logs.some((log) => {
-            if (log.details || log.statsDetailsLoaded) return false;
+            if (detailsCacheRef.current?.peek(log.id) || log.statsDetailsLoaded) return false;
             if (log.detailsFetchExhausted || log.detailsKnownUnavailable) return false;
             if (log.detailsAvailable) return true;
             const status = log.status || 'queued';

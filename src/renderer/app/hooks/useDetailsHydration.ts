@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
+import type { DetailsCache } from '../../cache/DetailsCache';
 
 export function useDetailsHydration({
     viewRef,
@@ -6,12 +7,14 @@ export function useDetailsHydration({
     setLogs,
     setLogsDeferred,
     setLogsForStats,
+    detailsCache,
 }: {
     viewRef: React.MutableRefObject<string>;
     logsRef: React.MutableRefObject<ILogData[]>;
     setLogs: React.Dispatch<React.SetStateAction<ILogData[]>>;
     setLogsDeferred: (updater: (currentLogs: ILogData[]) => ILogData[]) => void;
     setLogsForStats: React.Dispatch<React.SetStateAction<ILogData[]>>;
+    detailsCache: DetailsCache | null;
 }) {
     const pendingDetailsRef = useRef<Set<string>>(new Set());
     const hydrateDetailsQueueRef = useRef<number | null>(null);
@@ -21,21 +24,27 @@ export function useDetailsHydration({
 
     const applyHydratedStatsBatch = useCallback((batch: Array<{ filePath: string; details: any }>) => {
         if (batch.length === 0) return;
+        // Write details to cache instead of React state
+        if (detailsCache) {
+            batch.forEach((entry) => {
+                if (entry.details && entry.filePath) {
+                    detailsCache.putSync(entry.filePath, entry.details);
+                }
+            });
+        }
         setLogsForStats((currentStatsLogs) => {
-            const updatesByPath = new Map(batch.map((entry) => [entry.filePath, entry.details]));
+            const updatesByPath = new Set(batch.map((entry) => entry.filePath));
             let changed = false;
             const next = currentStatsLogs.map((entry) => {
                 const filePath = entry.filePath || '';
-                const details = updatesByPath.get(filePath);
-                if (!details) return entry;
+                if (!updatesByPath.has(filePath)) return entry;
                 updatesByPath.delete(filePath);
-                if (entry.details === details && entry.statsDetailsLoaded === true && entry.status === 'success') {
+                if (entry.statsDetailsLoaded === true && entry.status === 'success') {
                     return entry;
                 }
                 changed = true;
                 return {
                     ...entry,
-                    details,
                     statsDetailsLoaded: true,
                     detailsFetchExhausted: false,
                     status: 'success' as const
@@ -45,11 +54,10 @@ export function useDetailsHydration({
                 return changed ? next : currentStatsLogs;
             }
             const additions: ILogData[] = [];
-            updatesByPath.forEach((details, filePath) => {
+            updatesByPath.forEach((filePath) => {
                 const base = logsRef.current.find((log) => log.filePath === filePath);
                 additions.push({
                     ...(base || { id: filePath, filePath, permalink: '' }),
-                    details,
                     statsDetailsLoaded: true,
                     detailsFetchExhausted: false,
                     status: 'success'
@@ -59,10 +67,10 @@ export function useDetailsHydration({
             if (!changed) return currentStatsLogs;
             return additions.length > 0 ? [...additions, ...next] : next;
         });
-    }, [setLogsForStats, logsRef]);
+    }, [setLogsForStats, logsRef, detailsCache]);
 
     const fetchLogDetails = useCallback(async (log: ILogData) => {
-        if (log.details || !log.filePath || !window.electronAPI?.getLogDetails) return;
+        if ((detailsCache?.peek(log.id)) || !log.filePath || !window.electronAPI?.getLogDetails) return;
         setLogs((currentLogs) => {
             const idx = currentLogs.findIndex((entry) => entry.filePath === log.filePath);
             if (idx < 0) return currentLogs;
@@ -105,6 +113,9 @@ export function useDetailsHydration({
             });
             return;
         }
+        if (detailsCache && result.details && log.id) {
+            detailsCache.putSync(log.id, result.details);
+        }
         setLogs((currentLogs) => {
             const existingIndex = currentLogs.findIndex((entry) => entry.filePath === log.filePath);
             if (existingIndex < 0) return currentLogs;
@@ -112,14 +123,15 @@ export function useDetailsHydration({
             const existing = updated[existingIndex];
             updated[existingIndex] = {
                 ...existing,
-                details: result.details,
+                detailsAvailable: true,
+                statsDetailsLoaded: true,
                 detailsLoading: false,
                 detailsFetchExhausted: false,
                 status: 'success'
             };
             return updated;
         });
-    }, [setLogs]);
+    }, [setLogs, detailsCache]);
 
     const scheduleDetailsHydration = useCallback((force = false) => {
         if (hydrateDetailsQueueRef.current !== null && !force) return;
@@ -133,14 +145,15 @@ export function useDetailsHydration({
             const rawCandidates = logsRef.current
                 .filter((log) => {
                     if (!log.filePath) return false;
-                    // Re-hydrate if details exist but are missing fields added in later versions,
+                    // Re-hydrate if cached details exist but are missing fields added in later versions,
                     // or if targets are missing buffs data needed for outgoing condition uptime
-                    const targetsLackBuffs = Array.isArray(log.details?.targets) &&
-                        log.details.targets.length > 1 &&
-                        !log.details.targets.some((t: any) => Array.isArray(t?.buffs) && t.buffs.length > 0);
-                    const hasStaleDetails = log.details && (!log.details.damageModMap || !log.details.conditionMetrics || targetsLackBuffs);
+                    const cachedDetails = detailsCache?.peek(log.id);
+                    const targetsLackBuffs = Array.isArray(cachedDetails?.targets) &&
+                        cachedDetails.targets.length > 1 &&
+                        !cachedDetails.targets.some((t: any) => Array.isArray(t?.buffs) && t.buffs.length > 0);
+                    const hasStaleDetails = cachedDetails && (!cachedDetails.damageModMap || !cachedDetails.conditionMetrics || targetsLackBuffs);
                     if (hasStaleDetails) return Boolean(log.permalink);
-                    if (log.details || log.statsDetailsLoaded) return false;
+                    if (cachedDetails || log.statsDetailsLoaded) return false;
                     if (log.detailsAvailable) return true;
                     return (log.status === 'success' || log.status === 'calculating' || log.status === 'discord') && Boolean(log.permalink);
                 })
@@ -194,15 +207,15 @@ export function useDetailsHydration({
                 }
                 setLogsDeferred((currentLogs) => {
                     if (batch.length === 0) return currentLogs;
-                    const updatesByPath = new Map(batch.map((entry) => [entry.filePath, entry.details]));
+                    const updatedPaths = new Set(batch.map((entry) => entry.filePath));
                     let changed = false;
                     const next = currentLogs.map((entry) => {
-                        const details = updatesByPath.get(entry.filePath || '');
-                        if (!details) return entry;
+                        const filePath = entry.filePath || '';
+                        if (!updatedPaths.has(filePath)) return entry;
+                        if (entry.statsDetailsLoaded && entry.status === 'success') return entry;
                         changed = true;
                         return {
                             ...entry,
-                            details,
                             statsDetailsLoaded: true,
                             detailsFetchExhausted: false,
                             status: 'success' as const
@@ -239,6 +252,9 @@ export function useDetailsHydration({
                         });
                         if (result?.success && result.details) {
                             detailsHydrationAttemptsRef.current.delete(filePath);
+                            if (detailsCache) {
+                                detailsCache.putSync(filePath, result.details);
+                            }
                             hydratedBatch.push({ filePath, details: result.details });
                             if (hydratedBatch.length >= flushThreshold) {
                                 flushHydratedBatch();
@@ -314,7 +330,7 @@ export function useDetailsHydration({
                 }, delayMs);
             }
         });
-    }, [applyHydratedStatsBatch, setLogsDeferred, viewRef, logsRef]);
+    }, [applyHydratedStatsBatch, setLogsDeferred, viewRef, logsRef, detailsCache]);
 
     useEffect(() => {
         return () => {
