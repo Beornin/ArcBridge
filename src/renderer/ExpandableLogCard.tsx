@@ -39,7 +39,7 @@ const ExpandableLogCardBase = forwardRef<HTMLDivElement, ExpandableLogCardProps>
     const { details: cachedDetails } = useLogDetails(
         (isExpanded || screenshotMode || Boolean(screenshotSection)) ? log.id : undefined
     );
-    const details = cachedDetails || log.details || {};
+    const details = cachedDetails || {};
     const shouldComputeDetails = isExpanded || screenshotMode || Boolean(screenshotSection);
     const allPlayers: Player[] = Array.isArray(details.players) ? details.players : [];
     const allTargets = Array.isArray(details.targets) ? details.targets : [];
@@ -95,7 +95,7 @@ const ExpandableLogCardBase = forwardRef<HTMLDivElement, ExpandableLogCardProps>
                         : isDiscord ? 'discord'
                             : hasError ? 'error'
                                 : 'success';
-    const isCancellable = Boolean(!log.details && !isExpanded && onCancel && (isQueued || isPending || isUploading || isRetrying));
+    const isCancellable = Boolean(!log.detailsAvailable && !isExpanded && onCancel && (isQueued || isPending || isUploading || isRetrying));
     const canRemove = Boolean(onRemove && !isCancellable);
     const squadDisplayCount = shouldComputeDetails ? squadPlayers.length : squadPlayerCount;
     const nonSquadDisplayCount = shouldComputeDetails ? nonSquadPlayers.length : nonSquadPlayerCount;
@@ -1150,12 +1150,12 @@ const ExpandableLogCardBase = forwardRef<HTMLDivElement, ExpandableLogCardProps>
                             }
                             onToggle();
                         }}
-                        disabled={Boolean(log.detailsLoading) || (!log.details && !isExpanded && !onCancel)}
+                        disabled={Boolean(log.detailsLoading) || (!log.detailsAvailable && !isExpanded && !onCancel)}
                         className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 border ${isCancellable
                             ? 'bg-red-500/10 text-red-300 border-red-500/30 hover:bg-red-500/20'
                             : log.detailsLoading
                                 ? 'bg-white/5 text-gray-500 border-white/10 cursor-not-allowed'
-                                : !log.details && !isExpanded && !onCancel
+                                : !log.detailsAvailable && !isExpanded && !onCancel
                                     ? 'bg-white/5 text-gray-600 border-white/5 cursor-not-allowed opacity-50'
                                     : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:text-white group-hover:border-white/20'
                             }`}

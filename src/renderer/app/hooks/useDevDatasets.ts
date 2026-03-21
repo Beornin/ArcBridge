@@ -1,4 +1,4 @@
-import { type Dispatch, type SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
+import { type Dispatch, type SetStateAction, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import {
     DEFAULT_EMBED_STATS,
     DEFAULT_STATS_VIEW_SETTINGS,
@@ -10,6 +10,7 @@ import {
     type IStatsViewSettings,
     type UiTheme
 } from '../../global.d';
+import { DetailsCacheContext } from '../../cache/DetailsCacheContext';
 
 interface UseDevDatasetsOptions {
     view: 'dashboard' | 'stats' | 'history' | 'settings';
@@ -44,6 +45,7 @@ export function useDevDatasets({
     setSelectedWebhookId,
     setBulkUploadMode
 }: UseDevDatasetsOptions) {
+    const detailsCache = useContext(DetailsCacheContext);
     const devDatasetsEnabled = import.meta.env.DEV;
 
     const [devDatasetName, setDevDatasetName] = useState('');
@@ -69,7 +71,7 @@ export function useDevDatasets({
     const lastPublishedStatsKeyRef = useRef('');
     const [statsViewMounted, setStatsViewMounted] = useState(false);
     const hasPendingStatsDetails = logs.some((log) => {
-        if (log.details || log.statsDetailsLoaded) return false;
+        if (detailsCache?.peek(log.id) || log.statsDetailsLoaded) return false;
         if (log.detailsKnownUnavailable) return false;
         if (log.detailsAvailable) return true;
         return (log.status === 'success' || log.status === 'calculating' || log.status === 'discord') && Boolean(log.permalink) && !log.detailsFetchExhausted;
@@ -87,7 +89,8 @@ export function useDevDatasets({
     const buildStatsSnapshotKey = useCallback((entries: ILogData[]) => {
         let key = `len:${entries.length}`;
         entries.forEach((log, index) => {
-            const details = log?.details && typeof log.details === 'object' ? log.details : null;
+            const cached = detailsCache?.peek(log?.id);
+            const details = cached || (log?.details && typeof log.details === 'object' ? log.details : null);
             const detailsId = details ? getStatsObjectId(details) : 0;
             const logId = details ? 0 : getStatsObjectId(log);
             const identifier = String(log?.filePath || log?.id || `idx-${index}`);
@@ -98,7 +101,7 @@ export function useDevDatasets({
             key += `|${identifier}:${detailsId}:${logId}:${uploadTime}:${successToken}:${permalink}`;
         });
         return key;
-    }, [getStatsObjectId]);
+    }, [getStatsObjectId, detailsCache]);
     const mergeLogsForStatsSnapshot = useCallback((entries: ILogData[], previous: ILogData[]) => {
         if (entries.length === 0) return entries;
         if (previous.length === 0) return entries;
@@ -113,17 +116,19 @@ export function useDevDatasets({
             const identity = String(entry?.filePath || entry?.id || `idx-${index}`);
             const previousEntry = previousByIdentity.get(identity);
             if (!previousEntry) return entry;
-            const shouldCarryDetails = !entry.details && !!previousEntry.details;
+            // Ensure cache has details from previous snapshot
+            if (previousEntry.details && previousEntry.id && detailsCache) {
+                if (!detailsCache.peek(previousEntry.id)) {
+                    detailsCache.putSync(previousEntry.id, previousEntry.details);
+                }
+            }
             const shouldCarryStatsLoaded = !entry.statsDetailsLoaded && !!previousEntry.statsDetailsLoaded;
             const shouldPromoteStatus = shouldCarryStatsLoaded && entry.status === 'calculating';
-            if (!shouldCarryDetails && !shouldCarryStatsLoaded && !shouldPromoteStatus) {
+            if (!shouldCarryStatsLoaded && !shouldPromoteStatus) {
                 return entry;
             }
             changed = true;
             const nextEntry: ILogData = { ...entry };
-            if (shouldCarryDetails) {
-                nextEntry.details = previousEntry.details;
-            }
             if (shouldCarryStatsLoaded) {
                 nextEntry.statsDetailsLoaded = true;
             }
@@ -133,7 +138,7 @@ export function useDevDatasets({
             return nextEntry;
         });
         return changed ? merged : entries;
-    }, []);
+    }, [detailsCache]);
     const publishLogsForStats = useCallback((entries: ILogData[]) => {
         setLogsForStats((prev) => {
             const mergedEntries = mergeLogsForStatsSnapshot(entries, prev);
