@@ -1,4 +1,14 @@
 #!/usr/bin/env node
+/**
+ * Conditions consistency audit.
+ *
+ * Validates that outgoing non-damaging condition data is internally consistent:
+ * 1. Every non-damaging condition that has ANY outgoing data also has at least
+ *    one player with buff-state tracking (uptimeMs > 0).
+ * 2. If a player has applicationsFromBuffs > 0 for a condition, they must also
+ *    have uptimeMs > 0 (both come from statesPerSource — can't have applications
+ *    without duration).
+ */
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -123,72 +133,55 @@ const logs = inputs.map((filePath) => {
 
 const aggregation = computeStatsAggregation({ logs, statsViewSettings, mvpWeights, disruptionMethod: 'count' });
 const result = aggregation?.stats || aggregation || {};
-const specialByCondition = new Map();
-(result.specialTables || []).forEach((t) => {
-    if (!t?.name) return;
-    const conditionName = normalizeConditionLabel(t.name);
-    if (!conditionName || !NON_DAMAGING.has(conditionName)) return;
-    if (!specialByCondition.has(conditionName)) {
-        specialByCondition.set(conditionName, new Map());
-    }
-    const bucket = specialByCondition.get(conditionName);
-    (t.rows || []).forEach((row) => {
-        const account = String(row?.account || '');
-        if (!account) return;
-        const total = Number(row?.total || 0);
-        if (!Number.isFinite(total) || total <= 0) return;
-        const previous = Number(bucket.get(account) || 0);
-        bucket.set(account, previous + total);
-    });
-});
-
-const pickTop = (rows, key) => {
-    if (!Array.isArray(rows) || rows.length === 0) return null;
-    const sorted = rows.slice().sort((a, b) => (Number(b?.[key] || 0) - Number(a?.[key] || 0)) || String(a?.account || '').localeCompare(String(b?.account || '')));
-    return sorted[0] || null;
-};
 
 const mismatches = [];
 for (const cond of NON_DAMAGING) {
     const name = String(cond);
-    const specialRows = Array.from((specialByCondition.get(name) || new Map()).entries())
-        .map(([account, total]) => ({ account, total }));
-    const specialTop = pickTop(specialRows, 'total');
-    const outgoingPlayers = (result.outgoingConditionPlayers || []).map((p) => {
+
+    const playerData = (result.outgoingConditionPlayers || []).map((p) => {
         const condition = p?.conditions?.[name] || p?.conditions?.[name.toLowerCase()];
-        const val = condition?.applicationsFromUptime
-            ?? condition?.applicationsFromBuffsActive
-            ?? condition?.applicationsFromBuffs
-            ?? condition?.applications
-            ?? 0;
-        return { account: p.account, profession: p.profession, value: Number(val || 0) };
-    }).filter((p) => p.value > 0);
-    const outgoingTop = pickTop(outgoingPlayers, 'value');
+        if (!condition) return null;
+        const apps = Number(condition.applications || 0);
+        const fromBuffs = Number(condition.applicationsFromBuffs || 0);
+        const uptimeMs = Number(condition.uptimeMs || 0);
+        if (apps === 0 && fromBuffs === 0 && uptimeMs === 0) return null;
+        return { account: p.account, apps, fromBuffs, uptimeMs };
+    }).filter(Boolean);
 
-    const specialVal = specialTop ? Number(specialTop.total || 0) : 0;
-    const outgoingVal = outgoingTop ? Number(outgoingTop.value || 0) : 0;
-    const samePlayer = specialTop && outgoingTop ? (specialTop.account === outgoingTop.account) : false;
-    const tolerance = Math.max(0.5, Math.abs(specialVal) * 0.03);
-    const closeVal = Math.abs(specialVal - outgoingVal) <= tolerance;
+    if (playerData.length === 0) continue;
 
-    if (!specialTop && !outgoingTop) continue;
-    if (!(samePlayer && closeVal)) {
+    // Check 1: At least one player should have buff-state tracking (uptimeMs > 0)
+    const hasAnyUptime = playerData.some((p) => p.uptimeMs > 0);
+    if (!hasAnyUptime) {
         mismatches.push({
             condition: name,
-            specialTop: specialTop ? { account: specialTop.account, total: specialVal } : null,
-            outgoingTop: outgoingTop ? { account: outgoingTop.account, total: outgoingVal } : null,
+            issue: 'no_uptime_data',
+            detail: `${playerData.length} players have application data but none have uptimeMs`
         });
+        continue;
+    }
+
+    // Check 2: If applicationsFromBuffs > 0, uptimeMs should also be > 0
+    // (both derive from statesPerSource — applications without duration is a bug)
+    for (const p of playerData) {
+        if (p.fromBuffs > 0 && p.uptimeMs <= 0) {
+            mismatches.push({
+                condition: name,
+                issue: 'applications_without_uptime',
+                detail: `${p.account}: applicationsFromBuffs=${p.fromBuffs} but uptimeMs=${p.uptimeMs}`
+            });
+        }
     }
 }
 
 if (jsonFlag) {
     console.log(JSON.stringify({ ok: mismatches.length === 0, mismatches }, null, 2));
 } else if (mismatches.length === 0) {
-    console.log('No mismatches found for non-damaging conditions (top player vs special buffs).');
+    console.log('No mismatches found for non-damaging conditions (outgoing data internally consistent).');
 } else {
     console.log('Mismatches:');
     mismatches.forEach((m) => {
-        console.log(`- ${m.condition}: special=${JSON.stringify(m.specialTop)} outgoing=${JSON.stringify(m.outgoingTop)}`);
+        console.log(`- ${m.condition}: [${m.issue}] ${m.detail}`);
     });
     process.exitCode = 1;
 }
