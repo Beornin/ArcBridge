@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog, shell, Tray, Menu, nativeImage } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog, shell, Tray, Menu, nativeImage, crashReporter } from 'electron'
 import fs from 'fs'
 import path from 'node:path'
 import https from 'node:https'
@@ -126,6 +126,15 @@ process.stderr?.on?.('error', (err: NodeJS.ErrnoException) => {
 // Configure autoUpdater logger
 log.transports.file.level = 'info';
 autoUpdater.logger = log;
+
+// Crash reporting — native dumps go to userData/Crashpad/, JS exceptions go to the electron-log file
+crashReporter.start({ uploadToServer: false });
+process.on('uncaughtException', (err) => {
+    log.error('[Crash] Uncaught exception:', err?.stack || err);
+});
+process.on('unhandledRejection', (reason) => {
+    log.error('[Crash] Unhandled promise rejection:', reason instanceof Error ? reason.stack : reason);
+});
 
 if (!app.isPackaged) {
     const devUserDataDir = path.join(app.getPath('appData'), 'ArcBridge-Dev');
