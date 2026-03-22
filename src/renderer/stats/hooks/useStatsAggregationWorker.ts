@@ -407,16 +407,6 @@ export const useStatsAggregationWorker = ({ logs, precomputedStats, mvpWeights, 
         const startedAt = Date.now();
         const computeStartedAt = performance.now();
 
-        // Check aggregation cache for matching log count + settings
-        const settingsHash = hashAggregationSettings(mvpWeights, aggregationStatsViewSettings, disruptionMethod);
-        const cache = getAggregationCache();
-        const cachedResult = cache.get(logs.length, settingsHash);
-        if (cachedResult) {
-            const computeMs = 0; // Cache hit is instant
-            const completedAt = Date.now();
-            return { result: cachedResult, computeMs, startedAt, completedAt };
-        }
-
         // Assemble details from cache for inline computation
         const logsWithDetails = logs.map((log: any) => {
             const logId = log?.id || log?.filePath;
@@ -426,9 +416,21 @@ export const useStatsAggregationWorker = ({ logs, precomputedStats, mvpWeights, 
             }
             return log;
         });
+
+        // Check aggregation cache — include details count so cache invalidates when details arrive
+        const detailsCount = logsWithDetails.reduce((n: number, log: any) => n + (log.details ? 1 : 0), 0);
+        const settingsHash = hashAggregationSettings(mvpWeights, aggregationStatsViewSettings, disruptionMethod) + ':d' + detailsCount;
+        const cache = getAggregationCache();
+        const cachedResult = cache.get(logs.length, settingsHash);
+        if (cachedResult) {
+            const computeMs = 0; // Cache hit is instant
+            const completedAt = Date.now();
+            return { result: cachedResult, computeMs, startedAt, completedAt };
+        }
+
         const result = computeStatsAggregation({ logs: logsWithDetails, precomputedStats, mvpWeights, statsViewSettings: aggregationStatsViewSettings, disruptionMethod });
 
-        // Store in cache for future calls with same log count + settings
+        // Store in cache for future calls with same log count + details + settings
         cache.set(logs.length, settingsHash, result);
 
         const computeMs = Math.max(0, performance.now() - computeStartedAt);
