@@ -106,6 +106,7 @@ export const SquadDamageComparisonSection = () => {
                                 />
                                 <ReferenceLine y={0} stroke="rgba(255,255,255,0.2)" />
                                 <Tooltip
+                                    cursor={{ fill: 'rgba(255,255,255,0.04)' }}
                                     contentStyle={{ backgroundColor: '#161c24', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '0.5rem' }}
                                     content={({ payload }: any) => {
                                         const point = payload?.[0]?.payload;
@@ -128,7 +129,7 @@ export const SquadDamageComparisonSection = () => {
                                     {chartData.map((entry) => (
                                         <Cell
                                             key={entry.fightId}
-                                            fill="#16a34a"
+                                            fill="#22c55e"
                                         />
                                     ))}
                                 </Bar>
@@ -136,7 +137,7 @@ export const SquadDamageComparisonSection = () => {
                                     {chartData.map((entry) => (
                                         <Cell
                                             key={entry.fightId}
-                                            fill="#dc2626"
+                                            fill="#ef4444"
                                         />
                                     ))}
                                 </Bar>
