@@ -1,4 +1,4 @@
-import { PlayerSkillDamageEntry } from './statsTypes';
+import { PlayerSkillDamageEntry, PlayerHealingSkillEntry, PlayerHealingBreakdown } from './statsTypes';
 
 export function computeSpecialTables(
     specialBuffAgg: Map<string, Map<string, {
@@ -32,7 +32,16 @@ export function computeSpecialTables(
         totalFightMs: number;
         skills: Map<string, PlayerSkillDamageEntry>;
     }>,
-    shouldIncludePlayerSkillMap: boolean
+    shouldIncludePlayerSkillMap: boolean,
+    healingBreakdownMap: Map<string, {
+        key: string;
+        account: string;
+        displayName: string;
+        profession: string;
+        professionList: string[];
+        healingSkills: Map<string, PlayerHealingSkillEntry>;
+        barrierSkills: Map<string, PlayerHealingSkillEntry>;
+    }>
 ) {
     const buildSpecialRows = (players: Map<string, {
         key: string;
@@ -117,5 +126,25 @@ export function computeSpecialTables(
         })
         .sort((a, b) => a.displayName.localeCompare(b.displayName));
 
-    return { specialTables, playerSkillBreakdowns };
+    const healingBreakdownPlayers: PlayerHealingBreakdown[] = Array.from(healingBreakdownMap.values())
+        .map((entry) => {
+            const healingSkills = Array.from(entry.healingSkills.values())
+                .sort((a, b) => b.total - a.total);
+            const barrierSkills = Array.from(entry.barrierSkills.values())
+                .sort((a, b) => b.total - a.total);
+            return {
+                key: entry.key,
+                account: entry.account,
+                displayName: entry.displayName,
+                profession: entry.profession,
+                professionList: entry.professionList,
+                totalHealing: healingSkills.reduce((sum, s) => sum + s.total, 0),
+                totalBarrier: barrierSkills.reduce((sum, s) => sum + s.total, 0),
+                healingSkills,
+                barrierSkills,
+            };
+        })
+        .sort((a, b) => a.displayName.localeCompare(b.displayName));
+
+    return { specialTables, playerSkillBreakdowns, healingBreakdownPlayers };
 }
