@@ -10,6 +10,7 @@ type KillPressurePoint = {
     fullLabel: string;
     isWin: boolean | null;
     kdr: number;
+    logKdr: number;
     enemyDeaths: number;
     squadDeaths: number;
 };
@@ -35,6 +36,7 @@ export const SquadKillPressureSection = () => {
             const enemyDeaths = Number(fight.enemyDeaths || 0);
             const squadDeaths = Number(fight.alliesDead || 0);
             const kdr = squadDeaths > 0 ? enemyDeaths / squadDeaths : enemyDeaths;
+            const safeKdr = Math.max(kdr, 0.01);
             return {
                 index: idx,
                 fightId: fight.id || `fight-${idx}`,
@@ -42,16 +44,27 @@ export const SquadKillPressureSection = () => {
                 fullLabel: `${fight.mapName || fight.label || 'Unknown'} • ${fight.duration || '--:--'}`,
                 isWin: fight.isWin,
                 kdr: Math.round(kdr * 100) / 100,
+                logKdr: Math.log2(safeKdr),
                 enemyDeaths,
                 squadDeaths,
             };
         });
     }, [fights]);
 
-    const yMax = useMemo(() => {
-        if (chartData.length === 0) return 5;
-        return Math.max(5, ...chartData.map((d) => d.kdr));
+    const yExtent = useMemo(() => {
+        if (chartData.length === 0) return 2;
+        const maxAbs = Math.max(1, ...chartData.map((d) => Math.abs(d.logKdr)));
+        return Math.ceil(maxAbs);
     }, [chartData]);
+
+    const yTicks = useMemo(() => {
+        const ticks: number[] = [0];
+        for (let i = 1; i <= yExtent; i++) {
+            ticks.push(i);
+            ticks.push(-i);
+        }
+        return ticks.sort((a, b) => a - b);
+    }, [yExtent]);
 
     return (
         <div
@@ -90,7 +103,7 @@ export const SquadKillPressureSection = () => {
                         <div>
                             <div className="text-xs font-semibold uppercase tracking-[0.3em] text-gray-400">Kill/Death Ratio per Fight</div>
                             <div className="text-[11px] text-gray-500 mt-1">
-                                KDR = enemy deaths ÷ squad deaths. Dashed line at 1.0 is break-even.
+                                Baseline is KDR 1.0. Green above = winning attrition. Red below = losing attrition. Scale is logarithmic.
                             </div>
                         </div>
                         <div className="text-[11px] text-gray-500 shrink-0">
@@ -107,11 +120,15 @@ export const SquadKillPressureSection = () => {
                                 />
                                 <YAxis
                                     tick={{ fill: '#e2e8f0', fontSize: 10 }}
-                                    domain={[0, yMax]}
-                                    tickFormatter={(value: number) => value.toFixed(1)}
+                                    domain={[-yExtent, yExtent]}
+                                    ticks={yTicks}
+                                    tickFormatter={(value: number) => {
+                                        const kdr = Math.pow(2, value);
+                                        return kdr >= 1 ? kdr.toFixed(0) : kdr.toFixed(1);
+                                    }}
                                 />
                                 <ReferenceLine
-                                    y={1}
+                                    y={0}
                                     stroke="rgba(251,191,36,0.5)"
                                     strokeDasharray="6 4"
                                     label={{ value: 'KDR 1.0', position: 'right', fill: '#fbbf24', fontSize: 9 }}
@@ -135,11 +152,11 @@ export const SquadKillPressureSection = () => {
                                         );
                                     }}
                                 />
-                                <Bar dataKey="kdr" name="KDR">
+                                <Bar dataKey="logKdr" name="KDR">
                                     {chartData.map((entry) => (
                                         <Cell
                                             key={entry.fightId}
-                                            fill={entry.isWin === false ? '#f87171' : '#22c55e'}
+                                            fill={entry.logKdr >= 0 ? '#22c55e' : '#ef4444'}
                                         />
                                     ))}
                                 </Bar>
@@ -149,11 +166,11 @@ export const SquadKillPressureSection = () => {
                     <div className="flex justify-center gap-4 mt-2">
                         <div className="flex items-center gap-1.5">
                             <div className="w-2.5 h-2.5 rounded-sm bg-green-500" />
-                            <span className="text-[9px] text-gray-400">Win</span>
+                            <span className="text-[9px] text-gray-400">KDR &gt; 1.0</span>
                         </div>
                         <div className="flex items-center gap-1.5">
                             <div className="w-2.5 h-2.5 rounded-sm bg-red-400" />
-                            <span className="text-[9px] text-gray-400">Loss</span>
+                            <span className="text-[9px] text-gray-400">KDR &lt; 1.0</span>
                         </div>
                         <div className="flex items-center gap-1.5">
                             <div className="w-3 h-0 border-t border-dashed border-amber-400" />
