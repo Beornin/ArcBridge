@@ -139,13 +139,23 @@ export const SquadTagDistanceDeathsSection = ({ fights }: SquadTagDistanceDeaths
                                         tickFormatter={(value: number) => formatWithCommas(value, 0)}
                                     />
                                     <Tooltip
-                                        contentStyle={{ backgroundColor: '#161c24', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '0.5rem' }}
-                                        formatter={(value: any) => [`${formatWithCommas(Number(value || 0), 0)} in`, 'Avg Distance']}
-                                        labelFormatter={(_, payload?: readonly any[]) => {
+                                        cursor={{ fill: 'rgba(255,255,255,0.04)' }}
+                                        content={({ payload }: any) => {
                                             const point = payload?.[0]?.payload;
-                                            if (!point) return '';
+                                            if (!point) return null;
                                             const extra = !point.hasReplayData ? ' (no data)' : ` (${point.eventCount} deaths)`;
-                                            return `${point.fullLabel}${extra}`;
+                                            return (
+                                                <div style={{ backgroundColor: '#161c24', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0.5rem', padding: '10px 12px', fontSize: '12px' }}>
+                                                    <p style={{ margin: 0, color: '#94a3b8' }}>
+                                                        {point.fullLabel}{' '}
+                                                        {point.isWin === true && <span style={{ color: '#22c55e', fontWeight: 700 }}>W</span>}
+                                                        {point.isWin === false && <span style={{ color: '#ef4444', fontWeight: 700 }}>L</span>}
+                                                    </p>
+                                                    <p style={{ margin: '4px 0 0', color: '#e2e8f0' }}>
+                                                        Avg Distance : {formatWithCommas(point.avgDistance, 0)} in{extra}
+                                                    </p>
+                                                </div>
+                                            );
                                         }}
                                     />
                                     <Bar dataKey="avgDistance" name="Avg Distance" style={{ cursor: 'pointer' }}>
@@ -232,9 +242,9 @@ export const SquadTagDistanceDeathsSection = ({ fights }: SquadTagDistanceDeaths
                                                 const point = payload?.[0]?.payload;
                                                 if (!point) return null;
                                                 return (
-                                                    <div className="bg-[#161c24] border border-white/10 rounded-lg px-3 py-2 text-xs">
-                                                        <div className="text-gray-300 font-medium">{point.playerAccount}</div>
-                                                        <div className="text-gray-400 mt-0.5">{point.x}s — {formatWithCommas(point.y, 0)} inches from tag</div>
+                                                    <div style={{ backgroundColor: '#161c24', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0.5rem', padding: '10px 12px', fontSize: '12px' }}>
+                                                        <p style={{ margin: 0, color: '#94a3b8' }}>{point.playerAccount}</p>
+                                                        <p style={{ margin: '4px 0 0', color: '#e2e8f0' }}>{point.x}s — {formatWithCommas(point.y, 0)} inches from tag</p>
                                                     </div>
                                                 );
                                             }}
