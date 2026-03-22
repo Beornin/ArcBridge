@@ -103,7 +103,7 @@ export const SquadTagDistanceDeathsSection = ({ fights }: SquadTagDistanceDeaths
                     <div className="flex gap-4 mb-4">
                         <div className="px-3 py-2 rounded-lg bg-black/20 border border-white/5">
                             <div className="text-[10px] uppercase tracking-[0.25em] text-gray-500">Avg Distance</div>
-                            <div className="text-sm font-mono text-gray-200 mt-0.5">{formatWithCommas(overallAvg, 0)} in</div>
+                            <div className="text-sm font-mono text-gray-200 mt-0.5">{formatWithCommas(overallAvg, 0)}</div>
                         </div>
                         <div className="px-3 py-2 rounded-lg bg-black/20 border border-white/5">
                             <div className="text-[10px] uppercase tracking-[0.25em] text-gray-500">Total Deaths</div>
@@ -117,7 +117,7 @@ export const SquadTagDistanceDeathsSection = ({ fights }: SquadTagDistanceDeaths
                             <div>
                                 <div className="text-xs font-semibold uppercase tracking-[0.3em] text-gray-400">Avg Death Distance from Tag</div>
                                 <div className="text-[11px] text-gray-500 mt-1">
-                                    Average distance (inches) from commander tag at moment of death. Click a bar to see individual deaths.
+                                    Average distance from commander tag at moment of death. Click a bar to see individual deaths.
                                 </div>
                             </div>
                         </div>
@@ -152,7 +152,7 @@ export const SquadTagDistanceDeathsSection = ({ fights }: SquadTagDistanceDeaths
                                                         {point.isWin === false && <span style={{ color: '#ef4444', fontWeight: 700 }}>L</span>}
                                                     </p>
                                                     <p style={{ margin: '4px 0 0', color: '#e2e8f0' }}>
-                                                        Avg Distance : {formatWithCommas(point.avgDistance, 0)} in{extra}
+                                                        Avg Distance : {formatWithCommas(point.avgDistance, 0)}{extra}
                                                     </p>
                                                 </div>
                                             );
@@ -199,7 +199,7 @@ export const SquadTagDistanceDeathsSection = ({ fights }: SquadTagDistanceDeaths
                                 {selectedFight ? (
                                     <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-gray-400">
                                         <span>{selectedFight.eventCount} death{selectedFight.eventCount !== 1 ? 's' : ''}</span>
-                                        <span>Avg: {formatWithCommas(selectedFight.avgDistance, 0)} in from tag</span>
+                                        <span>Avg: {formatWithCommas(selectedFight.avgDistance, 0)} from tag</span>
                                     </div>
                                 ) : (
                                     <div className="text-xs text-gray-500 mt-1">Click a bar above to see individual death events for that fight.</div>
@@ -232,7 +232,7 @@ export const SquadTagDistanceDeathsSection = ({ fights }: SquadTagDistanceDeaths
                                             type="number"
                                             dataKey="y"
                                             name="Distance"
-                                            unit=" in"
+                                            unit=""
                                             tick={{ fill: '#e2e8f0', fontSize: 10 }}
                                             domain={[0, scatterMaxY]}
                                             tickFormatter={(value: number) => formatWithCommas(value, 0)}
@@ -244,7 +244,7 @@ export const SquadTagDistanceDeathsSection = ({ fights }: SquadTagDistanceDeaths
                                                 return (
                                                     <div style={{ backgroundColor: '#161c24', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0.5rem', padding: '10px 12px', fontSize: '12px' }}>
                                                         <p style={{ margin: 0, color: '#94a3b8' }}>{point.playerAccount}</p>
-                                                        <p style={{ margin: '4px 0 0', color: '#e2e8f0' }}>{point.x}s — {formatWithCommas(point.y, 0)} inches from tag</p>
+                                                        <p style={{ margin: '4px 0 0', color: '#e2e8f0' }}>{point.x}s — {formatWithCommas(point.y, 0)} from tag</p>
                                                     </div>
                                                 );
                                             }}
