@@ -120,6 +120,35 @@ and `extHealingStats.outgoingHealingAllies` respectively.
 
 Implementation: `src/shared/combatMetrics.ts` (computeSquadBarrier, computeSquadHealing).
 
+## Healing Breakdown (Per-Skill)
+
+Per-player, per-skill healing and barrier totals aggregated across all selected fights.
+
+### Source Fields
+
+- `players[*].extHealingStats.totalHealingDist[0]` — per-skill healing distribution (phase 0)
+- `players[*].extBarrierStats.totalBarrierDist[0]` — per-skill barrier distribution (phase 0)
+
+### Entry Fields
+
+Each entry contains: `id` (skill ID), `totalHealing`/`totalBarrier`, `hits`, `max`. (`min` is available in the EI JSON but not tracked in aggregation.)
+
+### Aggregation
+
+For each player across all logs:
+- **total**: summed across fights
+- **hits**: summed across fights
+- **max**: global maximum single hit across all fights
+- **avg**: derived at render time as total / hits
+- **pct**: derived at render time as skill total / player grand total
+
+### Implementation
+
+- Aggregation: `src/renderer/stats/computePlayerAggregation.ts`
+- Finalization: `src/renderer/stats/computeSpecialTables.ts`
+- Types: `src/renderer/stats/statsTypes.ts` (PlayerHealingSkillEntry, PlayerHealingBreakdown)
+- UI: `src/renderer/stats/sections/HealingBreakdownSection.tsx`
+
 ## Stability Generation
 
 Stability generation uses the EI buff data via `getPlayerBoonGenerationMs`
