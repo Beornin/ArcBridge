@@ -3716,16 +3716,16 @@ type SpikeFight = {
                 devMockAvailable={devMockAvailable}
                 devMockUploadState={devMockUploadState}
             />
-            {showDissolveLoading && (
+            {statsSettling.active && (
                 <div className="mb-3 text-xs">
                     <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-2 text-[11px]" style={{ color: 'var(--text-secondary)' }}>
-                            <span className="stats-dissolve-heartbeat" />
+                            {!embedded && <span className="stats-dissolve-heartbeat" />}
                             <span className="font-medium">{dissolveBarTitle}</span>
                             <span style={{ opacity: 0.7 }}>{dissolveBarMeta}</span>
                         </div>
                     </div>
-                    {statsSettling.active && (
+                    {!embedded && statsSettling.active && (
                         <div className="stats-dissolve-bar">
                             <div
                                 className="stats-dissolve-bar__fill"
