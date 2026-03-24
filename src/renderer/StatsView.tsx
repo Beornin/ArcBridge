@@ -318,12 +318,12 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
         }
     }, [statsSettling.progressPercent, statsSettling.active, embedded]);
 
-    // Only clear dissolveCompleting early if settling never reached 100% (e.g. cancelled)
+    // Only clear dissolveCompleting early if settling never reached 100% or embedded flips
     useEffect(() => {
-        if (!statsSettling.active && statsSettling.progressPercent < 100) {
+        if ((!statsSettling.active && statsSettling.progressPercent < 100) || embedded) {
             setDissolveCompleting(false);
         }
-    }, [statsSettling.active, statsSettling.progressPercent]);
+    }, [statsSettling.active, statsSettling.progressPercent, embedded]);
 
     const dissolveActive = (showDissolveLoading && statsSettling.progressPercent < 100) || dissolveCompleting;
 
