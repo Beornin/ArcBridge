@@ -311,7 +311,7 @@ export function AppLayout({ ctx }: { ctx: any }) {
                         <span style={{ color: 'var(--brand-primary)' }}>Bridge</span>
                     </span>
                     {isDev ? (
-                        <span className="dev-build-badge ml-1 rounded-full border border-amber-500/50 bg-amber-500/15 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.3em] text-amber-300">
+                        <span className="dev-build-badge ml-1 rounded-md border border-amber-500/50 bg-amber-500/15 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.3em] text-amber-300">
                             Dev Build
                         </span>
                     ) : null}

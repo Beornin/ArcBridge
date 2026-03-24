@@ -100,10 +100,9 @@ export const StatsHeader = ({
                     <button
                         onClick={onDevMockUpload}
                         disabled={devMockUploadState.uploading || actionsDisabled}
-                        className="flex items-center gap-2 px-4 py-2 rounded-md font-medium text-sm transition-colors disabled:opacity-50"
-                        style={{ background: 'var(--accent-bg)', color: 'var(--text-primary)', border: '1px solid var(--accent-border)' }}
+                        className="flex items-center gap-2 px-4 py-2 rounded-md font-medium text-sm transition-colors disabled:opacity-50 bg-amber-500/15 text-amber-200 border border-amber-500/30 enabled:hover:bg-amber-500/25"
                     >
-                        <Sparkles className="w-4 h-4" style={{ color: 'var(--brand-primary)' }} />
+                        <Sparkles className="w-4 h-4 text-amber-400" />
                         {devMockUploadState.uploading ? 'Building...' : 'Dev Mock Upload'}
                     </button>
                 )}
