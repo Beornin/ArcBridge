@@ -617,16 +617,16 @@ export function AppLayout({ ctx }: { ctx: any }) {
                 ) : view === 'history' ? (
                     <FightReportHistoryView />
                 ) : view === 'stats' ? null : (
-                    <div className="dashboard-view dashboard-modern flex flex-col gap-4 flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 matte-dashboard-shell">
-                        <div className="matte-panel-shell">
+                    <div className="dashboard-view dashboard-modern flex flex-col gap-0 flex-1 min-h-0 overflow-hidden matte-dashboard-shell">
+                        <div className="matte-panel-shell shrink-0 pb-4">
                             {statsTilesPanel}
                         </div>
-                        <div className="grid grid-cols-1 gap-4 flex-1 min-h-0 content-start">
-                            <div className="order-2 min-h-0 matte-activity-shell">
-                                {activityPanel}
-                            </div>
-                            <div className="dashboard-rail order-1 flex flex-col gap-4 overflow-y-auto pr-0 matte-panel-shell matte-rail-shell">
+                        <div className="grid grid-cols-[300px_1fr] gap-0 flex-1 min-h-0">
+                            <div className="dashboard-rail flex flex-col gap-4 overflow-y-auto border-r border-[var(--border-subtle,rgba(255,255,255,0.07))] pr-4 matte-panel-shell matte-rail-shell">
                                 {configurationPanel}
+                            </div>
+                            <div className="min-h-0 overflow-y-auto pl-4 matte-activity-shell">
+                                {activityPanel}
                             </div>
                         </div>
                     </div>
