@@ -2173,36 +2173,34 @@ export function ReportApp() {
                 <div id="report-list-container" className="rounded-2xl border border-white/5 bg-black/20 p-4 sm:p-6">
                     <div id="report-top" className={`${glassCard} p-5 sm:p-6 mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between`} style={glassCardStyle}>
                         <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 min-h-[56px] text-center sm:text-left">
-                            {logoUrl && (
-                                logoIsDefault ? (
-                                    <div
-                                        className="w-20 h-20 sm:w-28 sm:h-28 mx-auto sm:mx-0 shrink-0"
-                                        style={{
-                                            backgroundColor: defaultLogoColor,
-                                            maskImage: `url("${logoUrl}")`,
-                                            WebkitMaskImage: `url("${logoUrl}")`,
-                                            maskRepeat: 'no-repeat',
-                                            WebkitMaskRepeat: 'no-repeat',
-                                            maskPosition: 'center',
-                                            WebkitMaskPosition: 'center',
-                                            maskSize: 'contain',
-                                            WebkitMaskSize: 'contain',
-                                            maskMode: 'alpha'
-                                        }}
-                                        aria-label="ArcBridge logo"
-                                    />
-                                ) : (
-                                    <img
-                                        src={logoUrl}
-                                        alt="Squad logo"
-                                        className="w-20 h-20 sm:w-28 sm:h-28 rounded-lg object-cover mx-auto sm:mx-0 shrink-0"
-                                    />
-                                )
+                            {logoUrl && !logoIsDefault ? (
+                                <img
+                                    src={logoUrl}
+                                    alt="Squad logo"
+                                    className="w-20 h-20 sm:w-28 sm:h-28 rounded-lg object-cover mx-auto sm:mx-0 shrink-0"
+                                />
+                            ) : (
+                                <div
+                                    className="w-20 h-20 sm:w-28 sm:h-28 mx-auto sm:mx-0 shrink-0"
+                                    style={{
+                                        backgroundColor: defaultLogoColor,
+                                        maskImage: `url("${logoUrl || joinAssetPath(assetBasePath, 'svg/AxiBridge.svg')}")`,
+                                        WebkitMaskImage: `url("${logoUrl || joinAssetPath(assetBasePath, 'svg/AxiBridge.svg')}")`,
+                                        maskRepeat: 'no-repeat',
+                                        WebkitMaskRepeat: 'no-repeat',
+                                        maskPosition: 'center',
+                                        WebkitMaskPosition: 'center',
+                                        maskSize: 'contain',
+                                        WebkitMaskSize: 'contain',
+                                        maskMode: 'alpha'
+                                    }}
+                                    aria-label="ArcBridge logo"
+                                />
                             )}
                             <div>
-                                <div className="text-lg sm:text-xl tracking-[0.06em] font-medium" style={{ fontFamily: '"Cinzel", serif' }}><span className="text-white">Arc</span><span style={{ color: 'var(--brand-primary)' }}>Bridge</span></div>
-                                <h1 className="text-2xl sm:text-3xl font-bold mt-1">Command Reports</h1>
-                                <p className="text-xs sm:text-sm text-gray-400 mt-1">Select a report to view the full stats dashboard.</p>
+                                <div className="text-2xl sm:text-3xl tracking-[0.06em] font-medium" style={{ fontFamily: '"Cinzel", serif' }}><span className="text-white">Arc</span><span style={{ color: 'var(--brand-primary)' }}>Bridge</span></div>
+                                <div className="text-xs sm:text-sm uppercase tracking-[0.3em] text-gray-400 mt-1">Reports</div>
+                                <p className="text-xs text-gray-500 mt-1">Select a report to view the full stats dashboard.</p>
                             </div>
                         </div>
                         <div className="flex flex-col sm:flex-row sm:items-end gap-3">
