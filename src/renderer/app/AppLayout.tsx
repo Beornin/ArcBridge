@@ -306,7 +306,10 @@ export function AppLayout({ ctx }: { ctx: any }) {
             <div className="app-titlebar h-10 shrink-0 w-full flex justify-between items-center px-4 border-b drag-region select-none z-50" style={{ background: 'var(--bg-base)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-2">
                     <span className="arcbridge-logo h-4 w-4" style={arcbridgeLogoStyle} aria-label="ArcBridge logo" />
-                    <span className="text-xs font-medium arcbridge-gradient-text">ArcBridge</span>
+                    <span style={{ fontFamily: '"Cinzel", serif', fontSize: '0.84rem', letterSpacing: '0.06em', fontWeight: 500 }}>
+                        <span style={{ color: '#ffffff' }}>Arc</span>
+                        <span style={{ color: 'var(--brand-primary)' }}>Bridge</span>
+                    </span>
                     {isDev ? (
                         <span className="dev-build-badge ml-1 rounded-full border border-amber-500/50 bg-amber-500/15 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.3em] text-amber-300">
                             Dev Build

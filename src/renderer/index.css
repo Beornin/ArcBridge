@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
@@ -718,9 +718,7 @@ body:not(.web-report) .modal-pane .dense-table.fight-breakdown-dense .dense-tabl
 
 .arcbridge-logo {
     display: inline-block;
-    background-image: var(--arcbridge-gradient);
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
+    background-color: #ffffff;
     -webkit-mask-size: contain;
     mask-size: contain;
     -webkit-mask-position: center;
