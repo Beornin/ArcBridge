@@ -36,7 +36,7 @@ export function WalkthroughModal({ isOpen, onClose, onLearnMore }: WalkthroughMo
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="app-modal-overlay fixed inset-0 z-[72] flex items-center justify-center bg-black/70 backdrop-blur-md"
+                className="app-modal-overlay fixed inset-0 z-[72] flex items-center justify-center bg-black/70"
                 onClick={(e) => e.target === e.currentTarget && onClose()}
             >
                 <motion.div
@@ -44,11 +44,12 @@ export function WalkthroughModal({ isOpen, onClose, onLearnMore }: WalkthroughMo
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.96, y: 18 }}
                     transition={{ duration: 0.2 }}
-                    className="app-modal-card w-full max-w-3xl mx-4 overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-slate-900 via-slate-900/95 to-blue-950/40 shadow-[0_20px_80px_rgba(0,0,0,0.6)]"
+                    className="app-modal-card w-full max-w-3xl mx-4 overflow-hidden rounded-[4px]"
+                    style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-card)' }}
                 >
-                    <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-white/5">
+                    <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--border-default)' }}>
                         <div className="flex items-center gap-3">
-                            <div className="rounded-xl border border-blue-500/30 bg-blue-500/20 p-1.5">
+                            <div className="rounded-[4px] border border-blue-500/30 bg-blue-500/20 p-1.5">
                                 <span className="arcbridge-logo h-7 w-7 rounded-lg" style={arcbridgeLogoStyle} aria-label="ArcBridge logo" />
                             </div>
                             <div>
@@ -58,7 +59,7 @@ export function WalkthroughModal({ isOpen, onClose, onLearnMore }: WalkthroughMo
                         </div>
                         <button
                             onClick={onClose}
-                            className="p-1.5 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white transition-colors"
+                            className="p-1.5 rounded-[4px] hover:bg-white/10 text-gray-300 hover:text-white transition-colors"
                         >
                             <X className="w-5 h-5" />
                         </button>
@@ -71,9 +72,10 @@ export function WalkthroughModal({ isOpen, onClose, onLearnMore }: WalkthroughMo
                                 return (
                                     <div
                                         key={step.title}
-                                        className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4 flex gap-4 items-start"
+                                        className="rounded-[4px] px-4 py-4 flex gap-4 items-start"
+                                        style={{ background: 'var(--bg-card-inner)', border: '1px solid var(--border-default)' }}
                                     >
-                                        <div className="mt-0.5 rounded-lg border border-blue-500/30 bg-blue-500/15 p-2">
+                                        <div className="mt-0.5 rounded-[4px] border border-blue-500/30 bg-blue-500/15 p-2">
                                             <Icon className="w-4 h-4 text-blue-300" />
                                         </div>
                                         <div>
@@ -89,16 +91,17 @@ export function WalkthroughModal({ isOpen, onClose, onLearnMore }: WalkthroughMo
                         </div>
                     </div>
 
-                    <div className="flex justify-end gap-2 px-6 py-4 border-t border-white/10 bg-white/5">
+                    <div className="flex justify-end gap-2 px-6 py-4" style={{ borderTop: '1px solid var(--border-default)' }}>
                         <button
                             onClick={() => onLearnMore?.()}
-                            className="px-4 py-2 rounded-lg bg-white/5 text-gray-200 border border-white/20 hover:bg-white/10 transition-colors text-sm font-medium"
+                            className="px-4 py-2 rounded-[4px] text-gray-200 hover:bg-white/10 transition-colors text-sm font-medium"
+                            style={{ background: 'var(--bg-card-inner)', border: '1px solid var(--border-default)' }}
                         >
                             Learn More
                         </button>
                         <button
                             onClick={onClose}
-                            className="px-4 py-2 rounded-lg bg-blue-500/20 text-blue-200 border border-blue-500/30 hover:bg-blue-500/30 transition-colors text-sm font-medium"
+                            className="px-4 py-2 rounded-[4px] bg-blue-500/20 text-blue-200 border border-blue-500/30 hover:bg-blue-500/30 transition-colors text-sm font-medium"
                         >
                             Get Started
                         </button>

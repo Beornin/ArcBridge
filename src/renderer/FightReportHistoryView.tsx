@@ -118,7 +118,7 @@ export function FightReportHistoryView() {
     if (error) {
         return (
             <div className="flex-1 min-h-0 flex items-center justify-center">
-                <div className="rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-red-300">
+                <div className="rounded-[4px] px-4 py-3 text-sm text-red-300" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)' }}>
                     {error}
                 </div>
             </div>
@@ -136,16 +136,17 @@ export function FightReportHistoryView() {
     return (
         <div className="flex-1 min-h-0 -mx-8 -mb-2 flex flex-col">
             <div className="px-8 pb-3">
-                <div className="rounded-2xl border border-white/10 bg-black/25 px-4 py-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div className="rounded-[4px] px-4 py-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)' }}>
                     <div className="min-w-0">
-                        <div className="text-[10px] uppercase tracking-[0.22em] text-cyan-200/65">History Source</div>
+                        <div className="text-[10px] uppercase tracking-[0.22em]" style={{ color: 'var(--text-secondary)' }}>History Source</div>
                         <div className="text-xs text-gray-400">Switch between your default and starred GitHub Pages sites.</div>
                     </div>
                     <div className="relative w-full md:w-80 shrink-0">
                         <select
                             value={selectedOption.key}
                             onChange={(event) => setSelectedRepoKey(event.target.value)}
-                            className="w-full appearance-none bg-black/50 border border-white/10 rounded-xl pl-3 pr-9 py-2.5 text-sm text-gray-200 focus:outline-none focus:border-cyan-400/50"
+                            className="w-full appearance-none rounded-[4px] pl-3 pr-9 py-2.5 text-sm focus:outline-none focus:border-blue-500/50"
+                            style={{ background: 'var(--bg-input)', border: '1px solid var(--border-default)', color: 'var(--text-primary)' }}
                             aria-label="Select GitHub Pages history source"
                         >
                             {repoOptions.map((option) => (

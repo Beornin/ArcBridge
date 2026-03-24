@@ -125,11 +125,12 @@ const Toggle = memo(function Toggle({ enabled, onChange, label, description }: {
                 )}
             </div>
             <div
-                className={`relative w-11 h-6 rounded-md transition-colors border ${enabled ? 'bg-blue-500/30 border-blue-500/40 toggle-track--on' : 'bg-white/5 border-white/10 toggle-track--off'
+                className={`relative w-11 h-6 rounded-[4px] transition-colors border ${enabled ? 'bg-blue-500/30 border-blue-500/40 toggle-track--on' : 'border-white/10 toggle-track--off'
                     } toggle-track`}
+                style={!enabled ? { background: 'var(--bg-input)' } : undefined}
             >
                 <div
-                    className={`absolute top-1 w-4 h-4 rounded-md bg-white shadow-md transition-transform toggle-knob ${enabled ? 'translate-x-6' : 'translate-x-1'
+                    className={`absolute top-1 w-4 h-4 rounded-[4px] bg-white shadow-md transition-transform toggle-knob ${enabled ? 'translate-x-6' : 'translate-x-1'
                         }`}
                 />
             </div>
@@ -155,14 +156,15 @@ function SettingsSection({ title, icon: Icon, children, delay = 0, action, secti
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay }}
-            className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl"
+            className="rounded-[4px] p-6"
+            style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-card)' }}
             id={sectionId}
             data-settings-section={sectionId ? 'true' : undefined}
             data-settings-label={sectionId ? title : undefined}
         >
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-500/20 rounded-lg border border-blue-500/30">
+                    <div className="p-2 bg-blue-500/20 rounded-[4px] border border-blue-500/30">
                         <Icon className="w-5 h-5 text-blue-400" />
                     </div>
                     <h3 className="text-lg font-semibold text-gray-200">{title}</h3>
@@ -1127,7 +1129,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                 className="flex items-center justify-between gap-4 mb-6"
             >
                 <div className="flex items-start gap-3 sm:items-center sm:gap-4">
-                    <div className="p-2 rounded-xl bg-white/5 border border-white/10 text-amber-300 shrink-0">
+                    <div className="p-2 rounded-[4px] bg-white/5 border border-white/10 text-amber-300 shrink-0">
                         <Settings className="w-5 h-5" />
                     </div>
                     <div className="space-y-0">
@@ -1164,7 +1166,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                     <button
                         type="button"
                         onClick={() => window.electronAPI?.openExternal?.('https://discord.gg/UjzMXMGXEg')}
-                        className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-gray-300 hover:text-white hover:border-white/30 transition-colors"
+                        className="flex items-center gap-2 rounded-[4px] border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-gray-300 hover:text-white hover:border-white/30 transition-colors"
                     >
                         <ExternalLink className="w-4 h-4" />
                         Support Discord
@@ -1175,17 +1177,17 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
             <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[220px_minmax(0,1fr)] gap-4">
                 {(
                     <aside className="hidden lg:flex flex-col gap-3 min-h-0">
-                        <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
+                        <div className="rounded-[4px] p-3" style={{ background: 'var(--bg-card-inner)', border: '1px solid var(--border-default)' }}>
                             <div className="text-[11px] uppercase tracking-[0.25em] text-gray-500 mb-2">Quick Actions</div>
                             <button
                                 onClick={() => scrollToSettingsSection('appearance')}
-                                className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-white/10 bg-white/5 text-xs font-semibold text-gray-200 hover:bg-white/10 transition-colors"
+                                className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-[4px] border border-white/10 bg-white/5 text-xs font-semibold text-gray-200 hover:bg-white/10 transition-colors"
                             >
                                 <span>Jump to Top</span>
                                 <ChevronDown className="w-3.5 h-3.5 -rotate-90" />
                             </button>
                         </div>
-                        <div className="rounded-2xl border border-white/10 bg-white/5 p-3 flex-1 min-h-0">
+                        <div className="rounded-[4px] p-3 flex-1 min-h-0" style={{ background: 'var(--bg-card-inner)', border: '1px solid var(--border-default)' }}>
                             <div className="text-[11px] uppercase tracking-[0.25em] text-gray-500 mb-2">Sections</div>
                             <div className="flex-1 min-h-0 overflow-y-auto pr-1 space-y-2">
                                 {SETTINGS_SECTIONS.map((item, index) => {
@@ -1223,13 +1225,13 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                         key={palette.id}
                                         type="button"
                                         onClick={() => setColorPalette(palette.id)}
-                                        className={`rounded-xl border px-3 py-3 text-left transition-colors ${isActive
+                                        className={`rounded-[4px] border px-3 py-3 text-left transition-colors ${isActive
                                             ? 'border-white/40 bg-white/10'
                                             : 'border-white/10 bg-white/5 hover:border-white/30'
                                             }`}
                                     >
                                         <div
-                                            className="w-full h-8 rounded-lg mb-2 border border-white/10"
+                                            className="w-full h-8 rounded-[4px] mb-2 border border-white/10"
                                             style={{ backgroundImage: palette.gradient }}
                                         />
                                         <div className="text-xs font-semibold text-gray-200">{palette.label}</div>
@@ -1263,12 +1265,13 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                             value={dpsReportToken}
                             onChange={(e) => setDpsReportToken(e.target.value)}
                             placeholder="Enter your dps.report token..."
-                            className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-gray-300 placeholder-gray-600 focus:border-blue-500/50 focus:outline-none transition-colors"
+                            className="w-full rounded-[4px] px-4 py-3 text-sm text-gray-300 placeholder-gray-600 focus:border-blue-500/50 focus:outline-none transition-colors"
+                            style={{ background: 'var(--bg-input)', border: '1px solid var(--border-default)' }}
                         />
                         <div className="mt-4 flex flex-wrap items-center gap-3">
                             <button
                                 onClick={handleClearDpsCache}
-                                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 text-sm font-semibold border border-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex items-center gap-2 px-4 py-2 rounded-[4px] bg-white/5 hover:bg-white/10 text-gray-300 text-sm font-semibold border border-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 disabled={dpsCacheBusy}
                             >
                                 <Trash2 className="w-4 h-4" />
@@ -1322,7 +1325,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                         <div className="flex flex-wrap items-center gap-3 mb-4">
                             <button
                                 onClick={handleGithubConnect}
-                                className="github-connect-btn flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-semibold transition-colors"
+                                className="github-connect-btn flex items-center gap-2 px-4 py-2 rounded-[4px] bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-semibold transition-colors"
                             >
                                 <LinkIcon className="w-4 h-4" />
                                 {githubAuthStatus === 'connected' ? 'Re-connect GitHub' : 'Connect GitHub'}
@@ -1345,7 +1348,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                         setGithubRepos([]);
                                         setGithubRepoName('');
                                     }}
-                                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 text-sm font-semibold border border-white/10 transition-colors"
+                                    className="flex items-center gap-2 px-4 py-2 rounded-[4px] bg-white/5 hover:bg-white/10 text-gray-300 text-sm font-semibold border border-white/10 transition-colors"
                                 >
                                     Disconnect
                                 </button>
@@ -1355,7 +1358,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                             )}
                         </div>
                         {githubUserCode && githubVerificationUri && (
-                            <div className="bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-gray-300 mb-4 animate-[fadeUp_0.6s_ease-out]">
+                            <div className="bg-black/40 border border-white/10 rounded-[4px] px-4 py-3 text-sm text-gray-300 mb-4 animate-[fadeUp_0.6s_ease-out]">
                                 <div className="text-xs uppercase tracking-widest text-gray-500 mb-1">Authorize in Browser</div>
                                 <div className="flex items-center justify-between gap-3">
                                     <div className="font-mono text-lg text-white">{githubUserCode}</div>
@@ -1370,7 +1373,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                             </div>
                         )}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-                            <div className="md:col-span-2 bg-black/30 border border-white/10 rounded-xl p-3">
+                            <div className="md:col-span-2 bg-black/30 border border-white/10 rounded-[4px] p-3">
                                 <div className="flex items-center justify-between mb-2">
                                     <div className="text-xs uppercase tracking-widest text-gray-500">Repository</div>
                                     <div className="flex items-center gap-2">
@@ -1403,11 +1406,11 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                                 value={githubRepoSearch}
                                                 onChange={(e) => setGithubRepoSearch(e.target.value)}
                                                 placeholder="Search repositories..."
-                                                className="flex-1 bg-black/40 border border-white/5 rounded-lg px-3 py-2 text-xs text-gray-300 placeholder-gray-600 focus:border-cyan-400/50 focus:outline-none"
+                                                className="flex-1 bg-black/40 border border-white/5 rounded-[4px] px-3 py-2 text-xs text-gray-300 placeholder-gray-600 focus:border-cyan-400/50 focus:outline-none"
                                             />
                                             <button
                                                 onClick={refreshGithubRepos}
-                                                className="p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-gray-300"
+                                                className="p-2 rounded-[4px] bg-white/5 border border-white/10 hover:bg-white/10 text-gray-300"
                                                 title="Refresh repos"
                                             >
                                                 <RefreshCw className={`w-4 h-4 ${loadingRepos ? 'animate-spin' : ''}`} />
@@ -1444,7 +1447,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                                                     setGithubCreateOwner(githubOrgs.some((org) => org.login === repo.owner) ? repo.owner : '');
                                                                 }
                                                             }}
-                                                            className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold border transition-colors flex items-center justify-between gap-2 cursor-pointer ${selectedGithubRepoKey === repo.full_name
+                                                            className={`w-full text-left px-3 py-2 rounded-[4px] text-xs font-semibold border transition-colors flex items-center justify-between gap-2 cursor-pointer ${selectedGithubRepoKey === repo.full_name
                                                                 ? 'bg-cyan-500/20 text-cyan-200 border-cyan-500/40'
                                                                 : 'bg-white/5 text-gray-300 border-white/10 hover:text-white'
                                                                 }`}
@@ -1478,7 +1481,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                                 <select
                                                     value={githubCreateOwner}
                                                     onChange={(event) => setGithubCreateOwner(event.target.value)}
-                                                    className="w-full h-full appearance-none bg-black/50 border border-white/10 rounded-lg pl-3 pr-8 py-2 text-xs text-gray-200 focus:outline-none focus:border-cyan-400/50"
+                                                    className="w-full h-full appearance-none bg-black/50 border border-white/10 rounded-[4px] pl-3 pr-8 py-2 text-xs text-gray-200 focus:outline-none focus:border-cyan-400/50"
                                                     aria-label="Repository owner"
                                                 >
                                                     <option value="">Personal account</option>
@@ -1498,7 +1501,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                                 setGithubRepoError(validateRepoName(next));
                                             }}
                                             placeholder="New repository name"
-                                            className={`flex-1 bg-black/40 border rounded-lg px-3 py-2 text-xs text-gray-300 placeholder-gray-600 focus:outline-none ${githubRepoError ? 'border-rose-500/60 focus:border-rose-500/80' : 'border-white/5 focus:border-cyan-400/50'}`}
+                                            className={`flex-1 bg-black/40 border rounded-[4px] px-3 py-2 text-xs text-gray-300 placeholder-gray-600 focus:outline-none ${githubRepoError ? 'border-rose-500/60 focus:border-rose-500/80' : 'border-white/5 focus:border-cyan-400/50'}`}
                                         />
                                         <div className="text-xs text-gray-500 flex items-center gap-1">
                                             <Plus className="w-4 h-4 text-cyan-300" />
@@ -1506,7 +1509,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                         <button
                                             onClick={handleCreateGithubRepo}
                                             disabled={creatingRepo || !!githubRepoError || githubAuthStatus !== 'connected'}
-                                            className="px-3 py-2 rounded-lg text-xs font-semibold border bg-cyan-600/20 text-cyan-200 border-cyan-500/40 disabled:opacity-50"
+                                            className="px-3 py-2 rounded-[4px] text-xs font-semibold border bg-cyan-600/20 text-cyan-200 border-cyan-500/40 disabled:opacity-50"
                                         >
                                             {creatingRepo ? 'Creating...' : 'Create Now'}
                                         </button>
@@ -1537,7 +1540,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                         {githubTemplateStatus}
                                     </div>
                                 )}
-                                <div className="github-pages-url-card bg-black/40 border border-white/5 rounded-xl px-4 py-3 flex items-center gap-3 mt-3">
+                                <div className="github-pages-url-card bg-black/40 border border-white/5 rounded-[4px] px-4 py-3 flex items-center gap-3 mt-3">
                                     <div className="flex-1 min-w-0">
                                         <div className="text-xs uppercase tracking-widest text-gray-500 mb-1">GitHub Pages URL</div>
                                         <input
@@ -1550,7 +1553,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                     <button
                                         onClick={handleCopyPagesUrl}
                                         disabled={!inferredPagesUrl}
-                                        className="github-pages-url-copy px-3 py-2 rounded-lg text-xs font-semibold border bg-white/5 text-gray-200 border-white/10 hover:border-white/30 disabled:opacity-50"
+                                        className="github-pages-url-copy px-3 py-2 rounded-[4px] text-xs font-semibold border bg-white/5 text-gray-200 border-white/10 hover:border-white/30 disabled:opacity-50"
                                     >
                                         {pagesUrlCopied ? 'Copied' : 'Copy'}
                                     </button>
@@ -1558,7 +1561,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                             </div>
 
                         </div>
-                        <div className="bg-black/30 border border-white/10 rounded-xl p-4 mb-4">
+                        <div className="bg-black/30 border border-white/10 rounded-[4px] p-4 mb-4">
                             <div className="text-xs uppercase tracking-widest text-gray-500 mb-3">Logo</div>
                             <div className="flex items-center gap-3">
                                 <button
@@ -1569,14 +1572,14 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                             setGithubLogoPath(path);
                                         }
                                     }}
-                                    className="px-3 py-2 rounded-lg text-xs font-semibold border bg-white/5 text-gray-300 border-white/10 hover:text-white"
+                                    className="px-3 py-2 rounded-[4px] text-xs font-semibold border bg-white/5 text-gray-300 border-white/10 hover:text-white"
                                 >
                                     {githubLogoPath ? 'Replace Logo' : 'Choose Logo'}
                                 </button>
                                 {githubLogoPath && (
                                     <button
                                         onClick={() => setGithubLogoPath(null)}
-                                        className="px-3 py-2 rounded-lg text-xs font-semibold border bg-white/5 text-gray-400 border-white/10 hover:text-white"
+                                        className="px-3 py-2 rounded-[4px] text-xs font-semibold border bg-white/5 text-gray-400 border-white/10 hover:text-white"
                                     >
                                         Remove
                                     </button>
@@ -1675,7 +1678,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                             <div className="grid grid-cols-3 gap-2">
                                 <button
                                     onClick={() => updateClassDisplay('off')}
-                                    className={`rounded-xl border px-3 py-2 text-xs font-semibold transition-colors ${embedStats.classDisplay === 'off'
+                                    className={`rounded-[4px] border px-3 py-2 text-xs font-semibold transition-colors ${embedStats.classDisplay === 'off'
                                         ? 'bg-blue-500/20 text-blue-200 border-blue-500/40'
                                         : 'bg-black/20 text-gray-400 border-white/10 hover:text-gray-200'
                                         }`}
@@ -1684,7 +1687,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                 </button>
                                 <button
                                     onClick={() => updateClassDisplay('short')}
-                                    className={`rounded-xl border px-3 py-2 text-xs font-semibold transition-colors ${embedStats.classDisplay === 'short'
+                                    className={`rounded-[4px] border px-3 py-2 text-xs font-semibold transition-colors ${embedStats.classDisplay === 'short'
                                         ? 'bg-blue-500/20 text-blue-200 border-blue-500/40'
                                         : 'bg-black/20 text-gray-400 border-white/10 hover:text-gray-200'
                                         }`}
@@ -1693,7 +1696,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                 </button>
                                 <button
                                     onClick={() => updateClassDisplay('emoji')}
-                                    className={`rounded-xl border px-3 py-2 text-xs font-semibold transition-colors ${embedStats.classDisplay === 'emoji'
+                                    className={`rounded-[4px] border px-3 py-2 text-xs font-semibold transition-colors ${embedStats.classDisplay === 'emoji'
                                         ? 'bg-blue-500/20 text-blue-200 border-blue-500/40'
                                         : 'bg-black/20 text-gray-400 border-white/10 hover:text-gray-200'
                                         }`}
@@ -1823,21 +1826,21 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                             <div className="space-y-2">
                                 <button
                                     onClick={() => setHowToOpen(true)}
-                                    className="w-full flex items-center justify-center gap-2 rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-4 py-3 text-sm font-medium text-cyan-200 hover:bg-cyan-500/20 transition-colors"
+                                    className="w-full flex items-center justify-center gap-2 rounded-[4px] border border-cyan-500/30 bg-cyan-500/10 px-4 py-3 text-sm font-medium text-cyan-200 hover:bg-cyan-500/20 transition-colors"
                                 >
                                     <BookOpen className="w-4 h-4" />
                                     How To
                                 </button>
                                 <button
                                     onClick={() => onOpenWalkthrough?.()}
-                                    className="w-full flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-sm font-medium text-gray-200 hover:bg-white/10 transition-colors"
+                                    className="w-full flex items-center justify-center gap-2 rounded-[4px] border border-white/20 bg-white/5 px-4 py-3 text-sm font-medium text-gray-200 hover:bg-white/10 transition-colors"
                                 >
                                     <Compass className="w-4 h-4" />
                                     Open Walkthrough
                                 </button>
                                 <button
                                     onClick={() => onOpenWhatsNew?.()}
-                                    className="w-full flex items-center justify-center gap-2 rounded-xl border border-blue-500/30 bg-blue-500/10 px-4 py-3 text-sm font-medium text-blue-200 hover:bg-blue-500/20 transition-colors"
+                                    className="w-full flex items-center justify-center gap-2 rounded-[4px] border border-blue-500/30 bg-blue-500/10 px-4 py-3 text-sm font-medium text-blue-200 hover:bg-blue-500/20 transition-colors"
                                 >
                                     <Sparkles className="w-4 h-4" />
                                     View What's New
@@ -1930,7 +1933,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                                 key={option.id}
                                                 type="button"
                                                 onClick={() => updateStatsViewSettingValue('topSkillDamageSource', option.id)}
-                                                className={`text-left rounded-xl border px-4 py-3 transition-colors ${isActive
+                                                className={`text-left rounded-[4px] border px-4 py-3 transition-colors ${isActive
                                                     ? 'bg-blue-500/15 border-blue-500/40 text-blue-100'
                                                     : 'bg-black/20 border-white/10 text-gray-300 hover:text-white hover:border-white/20'
                                                     }`}
@@ -1984,7 +1987,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                                 key={option.id}
                                                 type="button"
                                                 onClick={() => updateStatsViewSettingValue('topSkillsMetric', option.id)}
-                                                className={`text-left rounded-xl border px-4 py-3 transition-colors ${isActive
+                                                className={`text-left rounded-[4px] border px-4 py-3 transition-colors ${isActive
                                                     ? 'bg-blue-500/15 border-blue-500/40 text-blue-100'
                                                     : 'bg-black/20 border-white/10 text-gray-300 hover:text-white hover:border-white/20'
                                                     }`}
@@ -2021,7 +2024,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                             <button
                                                 key={key}
                                                 onClick={() => setDisruptionMethod(key as DisruptionMethod)}
-                                                className={`text-left rounded-xl border px-4 py-3 transition-colors ${isActive
+                                                className={`text-left rounded-[4px] border px-4 py-3 transition-colors ${isActive
                                                     ? 'bg-blue-500/15 border-blue-500/40 text-blue-100'
                                                     : 'bg-black/20 border-white/10 text-gray-300 hover:text-white hover:border-white/20'
                                                     }`}
@@ -2152,7 +2155,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                         <div className="grid grid-cols-2 gap-3">
                             <button
                                 onClick={() => setCloseBehavior('minimize')}
-                                className={`flex flex-col items-center justify-center gap-3 py-4 rounded-xl border transition-all ${closeBehavior === 'minimize'
+                                className={`flex flex-col items-center justify-center gap-3 py-4 rounded-[4px] border transition-all ${closeBehavior === 'minimize'
                                     ? 'bg-blue-500/20 border-blue-500/50 text-blue-400'
                                     : 'bg-black/20 border-white/5 text-gray-500 hover:text-gray-300'
                                     }`}
@@ -2166,7 +2169,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
 
                             <button
                                 onClick={() => setCloseBehavior('quit')}
-                                className={`flex flex-col items-center justify-center gap-3 py-4 rounded-xl border transition-all ${closeBehavior === 'quit'
+                                className={`flex flex-col items-center justify-center gap-3 py-4 rounded-[4px] border transition-all ${closeBehavior === 'quit'
                                     ? 'bg-red-500/20 border-red-500/50 text-red-400'
                                     : 'bg-black/20 border-white/5 text-gray-500 hover:text-gray-300'
                                     }`}
@@ -2188,7 +2191,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                             <button
                                 type="button"
                                 onClick={handleExportSettings}
-                                className="flex items-center justify-center gap-2 rounded-xl border border-blue-500/30 bg-blue-500/10 px-4 py-3 text-sm font-medium text-blue-200 hover:bg-blue-500/20 transition-colors"
+                                className="flex items-center justify-center gap-2 rounded-[4px] border border-blue-500/30 bg-blue-500/10 px-4 py-3 text-sm font-medium text-blue-200 hover:bg-blue-500/20 transition-colors"
                             >
                                 <Download className="w-4 h-4" />
                                 Export Settings
@@ -2196,7 +2199,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                             <button
                                 type="button"
                                 onClick={handleImportSettings}
-                                className="flex items-center justify-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm font-medium text-emerald-200 hover:bg-emerald-500/20 transition-colors"
+                                className="flex items-center justify-center gap-2 rounded-[4px] border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm font-medium text-emerald-200 hover:bg-emerald-500/20 transition-colors"
                             >
                                 <Upload className="w-4 h-4" />
                                 Import Settings
@@ -2209,7 +2212,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                         )}
                     </SettingsSection>
 
-                    <div id="legal" data-settings-section="true" data-settings-label="Legal" className="rounded-2xl border border-white/10 bg-white/5 p-4 text-xs text-gray-400">
+                    <div id="legal" data-settings-section="true" data-settings-label="Legal" className="rounded-[4px] p-4 text-xs text-gray-400" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)' }}>
                         <div className="flex items-center justify-between mb-2">
                             <div className="text-sm font-semibold text-gray-200">Legal Notice</div>
                             <div className="flex items-center gap-2">
@@ -2281,10 +2284,10 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
             </div >
 
             <div className="fixed bottom-4 left-4 right-4 z-40 lg:hidden">
-                <div className="flex items-center justify-between gap-2 rounded-2xl border border-white/25 bg-white/5 backdrop-blur-2xl px-3 py-1.5 shadow-[0_24px_65px_rgba(0,0,0,0.55)]">
+                <div className="flex items-center justify-between gap-2 rounded-[4px] px-3 py-1.5" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-card)' }}>
                     <button
                         onClick={() => setSettingsNavOpen((open) => !open)}
-                        className="flex items-center gap-2 px-4 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[10px] uppercase tracking-widest text-gray-200 flex-1 justify-between"
+                        className="flex items-center gap-2 px-4 py-1.5 rounded-[4px] bg-white/5 border border-white/10 text-[10px] uppercase tracking-widest text-gray-200 flex-1 justify-between"
                     >
                         <span ref={mobileNavLabelRef} className="truncate max-w-[160px]">
                             {SETTINGS_SECTIONS[0].label}
@@ -2293,7 +2296,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                     </button>
                     <button
                         onClick={() => stepSettingsSection(1)}
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[10px] uppercase tracking-widest text-gray-200"
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-[4px] bg-white/5 border border-white/10 text-[10px] uppercase tracking-widest text-gray-200"
                     >
                         Next
                         <ChevronDown className="w-4 h-4 -rotate-90 text-[color:var(--accent)]" />
@@ -2310,12 +2313,12 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                             }
                         }}
                     >
-                        <div className="app-modal-card w-full max-w-sm max-h-[85vh] rounded-2xl p-4 border border-white/20 bg-white/5 shadow-[0_22px_60px_rgba(0,0,0,0.55)] backdrop-blur-2xl flex flex-col">
+                        <div className="app-modal-card w-full max-w-sm max-h-[85vh] rounded-[4px] p-4 flex flex-col" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-card)' }}>
                             <div className="flex items-center justify-between mb-3">
                                 <div className="text-[11px] uppercase tracking-[0.3em] text-gray-400">Jump to</div>
                                 <button
                                     onClick={() => setSettingsNavOpen(false)}
-                                    className="p-1.5 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white transition-colors"
+                                    className="p-1.5 rounded-[4px] hover:bg-white/10 text-gray-300 hover:text-white transition-colors"
                                     aria-label="Close navigation"
                                 >
                                     <CloseIcon className="w-4 h-4" />
@@ -2349,13 +2352,13 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
             <AnimatePresence>
                 {importModalOpen && (
                     <motion.div
-                        className="app-modal-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-lg"
+                        className="app-modal-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/60"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                     >
                         <motion.div
-                            className="app-modal-card w-full max-w-3xl bg-[#161c24]/95 border border-white/10 rounded-2xl shadow-2xl"
+                            className="app-modal-card w-full max-w-3xl rounded-[4px]" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-card)' }}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 20 }}
@@ -2376,7 +2379,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                     return sections.map((section) => (
                                         <div key={section} className="pt-2">
                                             <div className="text-[11px] uppercase tracking-widest text-gray-500 mb-2">{section}</div>
-                                            <div className="divide-y divide-white/5 rounded-xl border border-white/5 bg-white/5 px-3">
+                                            <div className="divide-y divide-white/5 rounded-[4px] border border-white/5 bg-white/5 px-3">
                                                 {items
                                                     .filter((item) => item.section === section)
                                                     .map((item) => (
@@ -2403,14 +2406,14 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                         setImportModalOpen(false);
                                         setImportPreviewSettings(null);
                                     }}
-                                    className="px-4 py-2 rounded-lg border border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-white/30 transition-colors"
+                                    className="px-4 py-2 rounded-[4px] border border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-white/30 transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="button"
                                     onClick={confirmImportSettings}
-                                    className="px-4 py-2 rounded-lg border border-emerald-500/40 bg-emerald-500/20 text-emerald-100 hover:bg-emerald-500/30 transition-colors"
+                                    className="px-4 py-2 rounded-[4px] border border-emerald-500/40 bg-emerald-500/20 text-emerald-100 hover:bg-emerald-500/30 transition-colors"
                                 >
                                     Import
                                 </button>
@@ -2423,13 +2426,13 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
             <AnimatePresence>
                 {devSettingsOpen && (
                     <motion.div
-                        className="app-modal-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-lg"
+                        className="app-modal-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/60"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                     >
                         <motion.div
-                            className="app-modal-card w-full max-w-xl bg-[#161c24]/95 border border-white/10 rounded-2xl shadow-2xl"
+                            className="app-modal-card w-full max-w-xl rounded-[4px]" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-card)' }}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 20 }}
@@ -2442,7 +2445,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                 <button
                                     type="button"
                                     onClick={() => setDevSettingsOpen(false)}
-                                    className="p-2 rounded-lg border border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-white/30 transition-colors"
+                                    className="p-2 rounded-[4px] border border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-white/30 transition-colors"
                                     aria-label="Close Developer Settings"
                                 >
                                     <CloseIcon className="w-4 h-4" />
@@ -2455,7 +2458,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                 <button
                                     type="button"
                                     onClick={handleEnsureGithubTemplate}
-                                    className="w-full flex items-center justify-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm font-medium text-amber-200 hover:bg-amber-500/20 transition-colors"
+                                    className="w-full flex items-center justify-center gap-2 rounded-[4px] border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm font-medium text-amber-200 hover:bg-amber-500/20 transition-colors"
                                 >
                                     <RefreshCw className="w-4 h-4" />
                                     Ensure GitHub Template
@@ -2463,14 +2466,14 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                 <button
                                     type="button"
                                     onClick={handleClearDpsCache}
-                                    className="w-full flex items-center justify-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm font-medium text-rose-200 hover:bg-rose-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="w-full flex items-center justify-center gap-2 rounded-[4px] border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm font-medium text-rose-200 hover:bg-rose-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                     disabled={dpsCacheBusy}
                                 >
                                     <Trash2 className="w-4 h-4" />
                                     {dpsCacheBusy ? 'Clearing dps.report cache…' : 'Clear dps.report cache'}
                                 </button>
                                 {(dpsCacheBusy || dpsCacheStatus) && (
-                                    <div className="rounded-xl border border-white/10 bg-black/20 px-3 py-2">
+                                    <div className="rounded-[4px] border border-white/10 bg-black/20 px-3 py-2">
                                         {dpsCacheBusy && (
                                             <>
                                                 <div className="text-xs text-gray-300 mb-1">{dpsCacheProgressLabel || 'Clearing cache…'}</div>
@@ -2506,7 +2509,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                 <button
                                     type="button"
                                     onClick={() => setDevSettingsOpen(false)}
-                                    className="px-4 py-2 rounded-lg border border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-white/30 transition-colors"
+                                    className="px-4 py-2 rounded-[4px] border border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-white/30 transition-colors"
                                 >
                                     Close
                                 </button>
@@ -2519,13 +2522,13 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
             <AnimatePresence>
                 {githubManageOpen && (
                     <motion.div
-                        className="app-modal-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-lg"
+                        className="app-modal-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/60"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                     >
                         <motion.div
-                            className="app-modal-card web-reports-modal w-full max-w-3xl bg-[#161c24]/95 border border-white/10 rounded-2xl shadow-2xl p-6"
+                            className="app-modal-card web-reports-modal w-full max-w-3xl rounded-[4px] p-6" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-card)' }}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 20 }}
@@ -2580,7 +2583,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                     githubReports.map((report) => (
                                         <div
                                             key={report.id}
-                                            className={`web-report-item flex items-center gap-3 rounded-xl border px-4 py-3 ${githubReportsSelected.has(report.id)
+                                            className={`web-report-item flex items-center gap-3 rounded-[4px] border px-4 py-3 ${githubReportsSelected.has(report.id)
                                                 ? 'bg-cyan-500/10 border-cyan-400/40'
                                                 : 'bg-white/5 border-white/10'
                                                 }`}
@@ -2601,14 +2604,14 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                             </div>
                                             <button
                                                 onClick={() => window.electronAPI?.openExternal?.(report.url)}
-                                                className="p-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:text-white"
+                                                className="p-2 rounded-[4px] bg-white/5 border border-white/10 text-gray-300 hover:text-white"
                                                 title="Open report"
                                             >
                                                 <ExternalLink className="w-4 h-4" />
                                             </button>
                                             <button
                                                 onClick={() => toggleReportSelection(report.id)}
-                                                className="p-2 rounded-lg bg-red-500/10 border border-red-500/30 text-red-300 hover:text-red-200"
+                                                className="p-2 rounded-[4px] bg-red-500/10 border border-red-500/30 text-red-300 hover:text-red-200"
                                                 title="Select for deletion"
                                             >
                                                 <Trash2 className="w-4 h-4" />
@@ -2742,7 +2745,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                             </button>
                         ),
                         table: ({ children }) => (
-                            <div className="overflow-x-auto rounded-xl border border-white/10 bg-black/30">
+                            <div className="overflow-x-auto rounded-[4px] border border-white/10 bg-black/30">
                                 <table className="w-full border-collapse text-left text-sm">
                                     {children}
                                 </table>
@@ -2759,7 +2762,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                             </td>
                         ),
                         pre: ({ children }) => (
-                            <pre className="overflow-x-auto rounded-xl bg-black/40 p-4 text-xs text-blue-100">
+                            <pre className="overflow-x-auto rounded-[4px] bg-black/40 p-4 text-xs text-blue-100">
                                 {children}
                             </pre>
                         ),
