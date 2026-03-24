@@ -1083,10 +1083,15 @@ body.web-report #top-players .mvp-gold-icon-badge {
 }
 
 /* Show real sections but styled as skeleton placeholders */
-.stats-section-wrap--unloaded > :first-child {
+.stats-section-wrap--unloaded > * {
   pointer-events: none;
   filter: saturate(0) brightness(0.7);
   opacity: 0.5;
+}
+
+.stats-section-wrap--unloaded > .stats-dissolve-particle {
+  filter: none;
+  opacity: 1;
 }
 
 /* Shimmer overlay on unloaded sections */
@@ -1109,7 +1114,7 @@ body.web-report #top-players .mvp-gold-icon-badge {
   z-index: 1;
 }
 
-.stats-section-wrap--materializing > :first-child {
+.stats-section-wrap--materializing > * {
   pointer-events: none;
   filter: saturate(0.5) brightness(0.85);
   opacity: 0.7;
@@ -1124,7 +1129,7 @@ body.web-report #top-players .mvp-gold-icon-badge {
   transition: opacity 300ms ease;
 }
 
-.stats-section-wrap--loaded > :first-child {
+.stats-section-wrap--loaded > *:not(.stats-dissolve-particle) {
   animation: section-arrive 400ms ease-out both;
 }
 
@@ -1136,9 +1141,9 @@ body.web-report #top-players .mvp-gold-icon-badge {
   z-index: 2;
 }
 
-.stats-dissolve-particle:nth-of-type(1) { top: 20%; left: 25%; width: 3px; height: 3px; background: color-mix(in srgb, var(--brand-primary) 40%, transparent); animation: particle-float 3.2s ease-in-out infinite; }
-.stats-dissolve-particle:nth-of-type(2) { top: 55%; left: 70%; width: 2px; height: 2px; background: color-mix(in srgb, var(--brand-secondary) 35%, transparent); animation: particle-float 2.8s ease-in-out infinite 0.6s; }
-.stats-dissolve-particle:nth-of-type(3) { top: 40%; left: 50%; width: 3px; height: 3px; background: color-mix(in srgb, var(--brand-primary) 30%, transparent); animation: particle-float 3.6s ease-in-out infinite 1.2s; }
+.stats-dissolve-particle:nth-of-type(1) { top: 20%; left: 25%; width: 6px; height: 6px; background: color-mix(in srgb, var(--brand-primary) 45%, transparent); animation: particle-float 3.2s ease-in-out infinite; }
+.stats-dissolve-particle:nth-of-type(2) { top: 55%; left: 70%; width: 5px; height: 5px; background: color-mix(in srgb, var(--brand-secondary) 40%, transparent); animation: particle-float 2.8s ease-in-out infinite 0.6s; }
+.stats-dissolve-particle:nth-of-type(3) { top: 40%; left: 50%; width: 6px; height: 6px; background: color-mix(in srgb, var(--brand-primary) 35%, transparent); animation: particle-float 3.6s ease-in-out infinite 1.2s; }
 
 /* Materializing: particles fade out */
 .stats-section-wrap--materializing .stats-dissolve-particle {
