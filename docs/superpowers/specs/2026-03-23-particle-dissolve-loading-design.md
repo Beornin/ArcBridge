@@ -25,9 +25,11 @@ Replaces the `stats-settling-banner` entirely.
 
 **Location:** Inside the stats header area, below the title row.
 
+**Color approach:** Use `color-mix(in srgb, var(--brand-primary) N%, transparent)` throughout for alpha-blended brand colors. This works with any `--brand-primary` value (hex, named, etc.) without requiring companion `-rgb` variables.
+
 **Structure:**
 - Thin bar (3px height, full width of header)
-- Track: `rgba(--brand-primary, 0.08)` background
+- Track: `color-mix(in srgb, var(--brand-primary) 8%, transparent)` background
 - Fill: `linear-gradient(90deg, var(--brand-primary), var(--brand-secondary))`, width driven by `progressPercent`
 - Leading edge: 4–6 small particle `<span>` elements positioned at the fill boundary, each with a unique scatter `@keyframes` animation (varying direction, speed, and fade)
 - Soft radial glow at the dissolve frontier
@@ -46,24 +48,26 @@ Replaces the blur overlay and `stats-dashboard-loading-overlay`.
 
 Each stats section card transitions through three visual states:
 
-**Unloaded:**
-- Card background at reduced opacity: `rgba(--bg-card, 0.4)`
-- Faint border: `rgba(255, 255, 255, 0.02)`
-- Section title visible but muted: `rgba(--text-secondary, 0.3)`
-- 4–8 floating particles inside the card area
-  - Particles: small `<span>` elements (2–4px), `border-radius: 50%`
-  - Colors: `--brand-primary` and `--brand-secondary` at 20–50% opacity
-  - Animation: gentle vertical drift with scale variation, 2.5–4s duration, staggered delays
-  - Positioned randomly within the card bounds via percentage-based `top`/`left`
+**Section wrapping strategy:** Each `<SomeSection />` call in `StatsView.tsx` is wrapped in a thin `<div className={dissolveActive ? 'stats-section--unloaded' : 'stats-section--loaded'}>`. During the dissolve state, 6 particle `<span>` elements are rendered inside this wrapper (conditionally: only when `dissolveActive` is true, removed from DOM when false). This keeps changes localized to `StatsView.tsx` — no modifications to individual section components.
 
-**Materializing** (brief transition, ~300ms):
-- Particles accelerate inward toward center
-- Ghost content shapes become visible at 15–25% opacity underneath (suggesting rows/charts forming)
+**Unloaded:**
+- Card background at reduced opacity: `color-mix(in srgb, var(--bg-card) 40%, transparent)`
+- Faint border: `rgba(255, 255, 255, 0.02)`
+- Section title visible but muted: `color-mix(in srgb, var(--text-secondary) 30%, transparent)`
+- 6 floating particles inside the wrapper (deterministic positions, not random)
+  - Particles: small `<span>` elements (2–4px), `border-radius: 50%`
+  - Colors: `var(--brand-primary)` and `var(--brand-secondary)` via `color-mix()` at 20–50% opacity
+  - Animation: gentle vertical drift with scale variation, 2.5–4s duration, staggered delays
+  - Positioned via fixed percentage `top`/`left` values, varied per `nth-child` (e.g., 1st: `top:18%;left:22%`, 2nd: `top:52%;left:68%`, etc.) — deterministic, no JS randomization needed
+
+**Materializing** (brief transition, ~300ms, triggered by `stats-section--materializing` class):
+- Particles transition `top`/`left` to `50%` with `transition: top 300ms ease-in, left 300ms ease-in, opacity 200ms` — converging to center
+- Ghost content (the real section content) becomes visible at 15–25% opacity underneath
 - Card background opacity increases to ~0.65
 
 **Loaded:**
-- Particles fade out (`opacity → 0` over 200ms)
-- Real content fades in: `opacity: 0 → 1` + `translateY(6px) → translateY(0)` over 400ms, `ease-out`
+- Particle `<span>` elements removed from DOM (conditional render)
+- Real content fades in: `opacity: 0 → 1` + `translateY(6px) → translateY(0)` over 400ms, `ease-out` (via `section-arrive` animation on `.stats-section--loaded`)
 - Card border transitions to `var(--accent-border)`
 - Section title reaches full color
 
@@ -71,7 +75,7 @@ Each stats section card transitions through three visual states:
 
 Replaces the joke line inside the settling banner.
 
-**Location:** Fixed to the bottom of the stats scroll container (above any system chrome).
+**Location:** Last child of the stats scroll container, visible only during dissolve state. Not `position: fixed` — simply appended at the bottom of the content area. Since scroll is locked during loading, it appears at the bottom of the visible area. Removed from DOM when `dissolveActive` is false.
 
 **Styling:**
 - `font-size: 10px`, `font-style: italic`, `color: var(--text-muted)` at 60% opacity
@@ -153,7 +157,7 @@ All animations use `transform` and `opacity` only (GPU-composited). No `filter`,
 
 ## Data Flow
 
-No changes to state management or hooks.
+No changes to state management or hooks, except one new piece of state for the completion delay.
 
 - `statsSettling` memo (StatsView.tsx lines 200–260): drives `progressPercent`, `phaseLabel`, `progressText` — consumed by dissolving bar
 - `showStatsSettlingBanner` boolean: renamed/repurposed to `showDissolveLoading` (controls whether dissolve state is active)
@@ -161,6 +165,37 @@ No changes to state management or hooks.
 - `statsActionsDisabled`: unchanged, still gates header actions
 - Section loaded/unloaded state: keyed off `sectionContentReady` (existing boolean) for the global transition from unloaded → loaded. Individual section data presence is not tracked (all sections transition together when aggregation completes).
 - Joke rotation: same `useEffect` with shuffled deck and timer — only the display changes
+
+### Completion delay
+
+When `progressPercent` reaches 100, `dissolveActive` must remain `true` for 500ms to allow the completion animations (bar fade-out burst, section `materializing → loaded` transitions) to play. Implementation:
+
+```tsx
+const [dissolveCompleting, setDissolveCompleting] = useState(false);
+useEffect(() => {
+    if (statsSettling.progressPercent >= 100 && statsSettling.active) {
+        setDissolveCompleting(true);
+        const timer = setTimeout(() => setDissolveCompleting(false), 500);
+        return () => clearTimeout(timer);
+    }
+}, [statsSettling.progressPercent, statsSettling.active]);
+
+const dissolveActive = (showDissolveLoading && statsSettling.progressPercent < 100) || dissolveCompleting;
+```
+
+During the 500ms `dissolveCompleting` window, sections get the `stats-section--materializing` class (particles converge), then transition to `stats-section--loaded` when `dissolveActive` becomes false.
+
+### Details-unavailable edge case
+
+When `detailsUnavailable >= detailsTotal`, the existing code sets `progressPercent: 100` and `active: true`. In this state, the dissolve bar shows at 100% (full), the completion delay fires immediately, and sections transition to loaded. The phase label "Fight details unavailable" is displayed in the header text. No special handling needed — the existing degraded-state messaging flows through the same dissolve bar text.
+
+### Fast loads (< 8 logs)
+
+When fewer than 8 logs are present, aggregation runs synchronously on the main thread. `aggregationProgress` stays `{ active: false, phase: 'idle' }`, so `showDissolveLoading` is never true. No dissolve state is shown — stats render immediately. This is intentional.
+
+### Embedded context
+
+When `embedded` is true (web report viewer), the dissolve loading state is skipped entirely. The `dissolveActive` computation includes a `!embedded` guard, matching the existing pattern where the blur/loading-shell logic already checks `embedded` (line 312).
 
 ## JSX Changes
 
@@ -172,9 +207,10 @@ No changes to state management or hooks.
 - `body.classList.toggle('stats-dashboard-loading', ...)` effect
 
 **Add:**
-- Dissolving progress bar component inline in the header area (between `DevMockBanner` and the main content div)
-- Section wrapper that applies `.stats-section--unloaded` / `.stats-section--loaded` class based on `dissolveActive`
-- Joke footer div at the bottom of the scroll container (visible only when `dissolveActive`)
+- Dissolving progress bar markup inline in the header area (between `DevMockBanner` and the main content div)
+- A thin wrapper `<div>` around each `<SomeSection />` call that applies `.stats-section--unloaded` / `.stats-section--materializing` / `.stats-section--loaded` class based on `dissolveActive` and `dissolveCompleting`. When `dissolveActive`, the wrapper also renders 6 particle `<span>` children.
+- `dissolveCompleting` state variable + `useEffect` for the 500ms completion delay
+- Joke footer div as last child of the scroll container (conditionally rendered when `dissolveActive`)
 
 **Modify:**
 - Main content div: remove `stats-dashboard-loading-shell` class toggle, keep `stats-dashboard-scroll-lock` toggle
@@ -183,9 +219,9 @@ No changes to state management or hooks.
 ## Performance Considerations
 
 - Particle elements are lightweight empty `<span>`s — no text content, no children
-- Per-section particle count (4–8) × ~30 sections = 120–240 particle spans during loading. These are removed from DOM when sections transition to loaded state.
+- Per-section particle count: 6 × ~27 visible sections (varies by `sectionVisibility`) = ~160 particle spans during loading. These are conditionally rendered and removed from DOM when `dissolveActive` becomes false.
 - All animations are compositor-friendly (transform + opacity). No layout recalculations.
-- Particles inside off-screen sections benefit from existing `content-visibility: auto` on section cards.
+- Off-screen particle spans benefit from the browser's native rendering skip for elements outside the viewport (no explicit `content-visibility` on section cards).
 - The dissolving bar has a fixed 4–6 particles — negligible overhead.
 
 ## Testing
