@@ -1,4 +1,4 @@
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReportIndexEntry, ReportPayload } from '../shared/reportTypes';
@@ -140,6 +140,18 @@ export function FightReportHistoryView() {
     const [selectedForDelete, setSelectedForDelete] = useState<Set<string>>(new Set());
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [commanderFilter, setCommanderFilter] = useState<string>('');
+    const [commanderDropdownOpen, setCommanderDropdownOpen] = useState(false);
+    const commanderDropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!commanderDropdownOpen) return;
+        const handleClick = (e: MouseEvent) => {
+            if (commanderDropdownRef.current && !commanderDropdownRef.current.contains(e.target as Node)) setCommanderDropdownOpen(false);
+        };
+        document.addEventListener('mousedown', handleClick);
+        return () => document.removeEventListener('mousedown', handleClick);
+    }, [commanderDropdownOpen]);
 
     useEffect(() => {
         let mounted = true;
@@ -182,16 +194,30 @@ export function FightReportHistoryView() {
     const defaultRepo = repoOptions[0] ? parseRepoFullName(repoOptions[0].key) : null;
     const isOverride = !!(selectedRepo && defaultRepo && selectedOption?.key !== repoOptions[0]?.key);
 
+    const allCommanders = useMemo(() => {
+        const set = new Set<string>();
+        for (const entry of indexEntries) {
+            for (const c of entry.commanders || []) {
+                if (c) set.add(c);
+            }
+        }
+        return Array.from(set).sort((a, b) => a.localeCompare(b));
+    }, [indexEntries]);
+
     const filteredEntries = useMemo(() => {
+        let entries = indexEntries;
+        if (commanderFilter) {
+            entries = entries.filter((entry) => (entry.commanders || []).includes(commanderFilter));
+        }
         const q = searchQuery.trim().toLowerCase();
-        if (!q) return indexEntries;
-        return indexEntries.filter((entry) => {
+        if (!q) return entries;
+        return entries.filter((entry) => {
             const title = (entry.title || '').toLowerCase();
             const dateLabel = (entry.dateLabel || '').toLowerCase();
             const commanders = (entry.commanders || []).join(' ').toLowerCase();
             return title.includes(q) || dateLabel.includes(q) || commanders.includes(q);
         });
-    }, [indexEntries, searchQuery]);
+    }, [indexEntries, searchQuery, commanderFilter]);
 
     const fetchIndex = useCallback(async () => {
         if (!selectedRepo) return;
@@ -220,6 +246,7 @@ export function FightReportHistoryView() {
         setDeleteMode(false);
         setSelectedForDelete(new Set());
         setSearchQuery('');
+        setCommanderFilter('');
         fetchIndex();
     }, [selectedRepoKey, fetchIndex]);
 
@@ -396,26 +423,76 @@ export function FightReportHistoryView() {
                         </div>
                     </motion.div>
 
-                    {/* Search */}
+                    {/* Search + Commander filter */}
                     {!indexLoading && indexEntries.length > 0 && (
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.25, delay: 0.1 }}
-                            className="mb-3"
+                            className="mb-3 flex gap-2"
                         >
-                            <input
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search by title, commander, or date..."
-                                className="w-full rounded-[4px] px-3 py-2 text-sm outline-none"
-                                style={{
-                                    background: 'var(--bg-input)',
-                                    border: '1px solid var(--border-default)',
-                                    color: 'var(--text-primary)',
-                                }}
-                            />
+                            <div className="relative flex-1">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: 'var(--text-secondary)' }} />
+                                <input
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    placeholder="Search by title, commander, or date..."
+                                    className="w-full rounded-[4px] pl-8 pr-3 py-2 text-sm outline-none"
+                                    style={{
+                                        background: 'var(--bg-input)',
+                                        border: '1px solid var(--border-default)',
+                                        color: 'var(--text-primary)',
+                                    }}
+                                />
+                            </div>
+                            {allCommanders.length > 1 && (
+                                <div className="relative shrink-0" ref={commanderDropdownRef}>
+                                    <button
+                                        type="button"
+                                        onClick={() => setCommanderDropdownOpen((v) => !v)}
+                                        className="flex items-center gap-1.5 rounded-[4px] px-3 py-2 text-sm whitespace-nowrap"
+                                        style={{
+                                            background: commanderFilter ? 'color-mix(in srgb, var(--brand-primary) 15%, var(--bg-input))' : 'var(--bg-input)',
+                                            border: `1px solid ${commanderFilter ? 'var(--brand-primary)' : 'var(--border-default)'}`,
+                                            color: commanderFilter ? 'var(--brand-primary)' : 'var(--text-secondary)',
+                                        }}
+                                    >
+                                        <span className="truncate max-w-[140px]">{commanderFilter || 'Commander'}</span>
+                                        <ChevronDown className={`w-3.5 h-3.5 shrink-0 transition-transform ${commanderDropdownOpen ? 'rotate-180' : ''}`} />
+                                    </button>
+                                    {commanderDropdownOpen && (
+                                        <div
+                                            className="absolute z-50 mt-1 right-0 w-56 rounded-[4px] py-1 overflow-auto max-h-60"
+                                            style={{ background: 'var(--bg-card)', border: '1px solid var(--border-hover)', boxShadow: 'var(--shadow-dropdown)' }}
+                                        >
+                                            <button
+                                                type="button"
+                                                onClick={() => { setCommanderFilter(''); setCommanderDropdownOpen(false); }}
+                                                className="w-full text-left px-3 py-2 text-sm"
+                                                style={{ color: !commanderFilter ? 'var(--brand-primary)' : 'var(--text-primary)' }}
+                                                onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-hover)')}
+                                                onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                                            >
+                                                All Commanders
+                                            </button>
+                                            {allCommanders.map((cmdr) => (
+                                                <button
+                                                    key={cmdr}
+                                                    type="button"
+                                                    onClick={() => { setCommanderFilter(cmdr); setCommanderDropdownOpen(false); }}
+                                                    className={`w-full text-left px-3 py-2 text-sm ${commanderFilter === cmdr ? 'font-medium' : ''}`}
+                                                    style={{ color: commanderFilter === cmdr ? 'var(--brand-primary)' : 'var(--text-primary)' }}
+                                                    onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-hover)')}
+                                                    onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                                                >
+                                                    {cmdr}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </motion.div>
                     )}
 
