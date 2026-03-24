@@ -341,7 +341,7 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
         ? (dissolveCompleting ? 'stats-section-wrap stats-section-wrap--materializing' : 'stats-section-wrap stats-section-wrap--unloaded')
         : 'stats-section-wrap';
 
-    const dissolveParticlesRef = useRef<Array<{ top: string; left: string; size: number; dur: string; delay: string; color: string; dx: string; dy: string }>>([]);
+    const dissolveParticlesRef = useRef<Array<{ top: string; left: string; size: number; dur: string; delay: string; color: string; dx: string; dy: string; ex: string; ey: string }>>([]);
     if (dissolveParticlesRef.current.length === 0) {
         const colors = ['var(--brand-primary)', 'var(--brand-secondary)'];
         for (let i = 0; i < 8; i++) {
@@ -352,8 +352,10 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
                 dur: `${2.6 + Math.random() * 2.4}s`,
                 delay: `${Math.random() * 2.5}s`,
                 color: colors[i % 2],
-                dx: `${-60 + Math.floor(Math.random() * 120)}px`,
-                dy: `${-60 + Math.floor(Math.random() * 120)}px`,
+                dx: `${-80 + Math.floor(Math.random() * 160)}px`,
+                dy: `${-80 + Math.floor(Math.random() * 160)}px`,
+                ex: `${-80 + Math.floor(Math.random() * 160)}px`,
+                ey: `${-80 + Math.floor(Math.random() * 160)}px`,
             });
         }
     }
@@ -375,6 +377,8 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
                         ['--p-delay' as any]: p.delay,
                         ['--p-dx' as any]: p.dx,
                         ['--p-dy' as any]: p.dy,
+                        ['--p-ex' as any]: p.ex,
+                        ['--p-ey' as any]: p.ey,
                     }}
                 />
             ))}
