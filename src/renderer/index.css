@@ -92,19 +92,22 @@ body.palette-emerald-mint {
 
 /* Glass surface mode */
 body.glass-surfaces .stats-view,
-body.glass-surfaces .app-shell {
+body.glass-surfaces .app-shell,
+body.glass-surfaces.web-report {
   --bg-card: rgba(255, 255, 255, 0.035);
 }
 
 body.glass-surfaces .stats-view,
-body.glass-surfaces .app-shell {
+body.glass-surfaces .app-shell,
+body.glass-surfaces.web-report {
   --bg-card-inner: rgba(255, 255, 255, 0.05);
   --bg-input: rgba(255, 255, 255, 0.04);
   --bg-hover: rgba(255, 255, 255, 0.07);
 }
 
 body.glass-surfaces .stats-view [data-surface="card"],
-body.glass-surfaces .app-shell [data-surface="card"] {
+body.glass-surfaces .app-shell [data-surface="card"],
+body.glass-surfaces.web-report [data-surface="card"] {
   backdrop-filter: blur(12px);
 }
 
@@ -126,6 +129,23 @@ body.glass-surfaces .settings-view aside > div {
 /* Stats section cards/tables in glass mode */
 body.glass-surfaces .stats-view .stats-section-wrap > div {
   backdrop-filter: blur(10px);
+}
+
+/* Web report glass mode */
+body.glass-surfaces.web-report .glass-card {
+  backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.035) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.glass-surfaces.web-report .report-nav-sidebar {
+  background: rgba(15, 18, 25, 0.85) !important;
+  backdrop-filter: blur(20px);
+}
+
+body.glass-surfaces.web-report #report-list-container {
+  background: rgba(255, 255, 255, 0.02) !important;
+  backdrop-filter: blur(12px);
 }
 
 /* Disable glass effects during bulk upload for performance */
