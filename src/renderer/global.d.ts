@@ -1,3 +1,5 @@
+import type { ColorPalette } from '../shared/webThemes';
+
 export interface IWebhook {
     id: string;
     name: string;
@@ -115,7 +117,7 @@ export interface IDevDatasetSnapshot {
         mvpWeights?: Partial<IMvpWeights>;
         statsViewSettings?: Partial<IStatsViewSettings>;
         disruptionMethod?: DisruptionMethod;
-        uiTheme?: UiTheme;
+        colorPalette?: ColorPalette;
         selectedWebhookId?: string | null;
         bulkUploadMode?: boolean;
         datasetLogOrder?: string[];
@@ -149,11 +151,6 @@ export interface IUploadRetryQueueState {
     pausedAt: string | null;
     entries: IUploadRetryQueueEntry[];
 }
-
-export type UiTheme = 'classic' | 'modern' | 'crt' | 'matte' | 'kinetic' | 'dark-glass';
-export type KineticFontStyle = 'default' | 'original';
-export type KineticThemeVariant = 'light' | 'midnight' | 'slate';
-export type DashboardLayout = 'top' | 'side';
 
 export type DisruptionMethod = 'count' | 'duration' | 'tiered';
 
@@ -256,10 +253,7 @@ export const DEFAULT_DISCORD_ENEMY_SPLIT_SETTINGS: IDiscordEnemySplitSettings = 
     tiled: false
 };
 
-export const DEFAULT_UI_THEME: UiTheme = 'classic';
-export const DEFAULT_KINETIC_FONT_STYLE: KineticFontStyle = 'default';
-export const DEFAULT_KINETIC_THEME_VARIANT: KineticThemeVariant = 'light';
-export const DEFAULT_DASHBOARD_LAYOUT: DashboardLayout = 'side';
+export const DEFAULT_GLASS_SURFACES = false;
 
 export interface IElectronAPI {
     selectDirectory: () => Promise<string | null>;
@@ -284,10 +278,8 @@ export interface IElectronAPI {
         mvpWeights: IMvpWeights;
         statsViewSettings: IStatsViewSettings;
         disruptionMethod: DisruptionMethod;
-        uiTheme?: UiTheme;
-        kineticFontStyle?: KineticFontStyle;
-        kineticThemeVariant?: KineticThemeVariant;
-        dashboardLayout?: DashboardLayout;
+        colorPalette?: ColorPalette;
+        glassSurfaces?: boolean;
         autoUpdateSupported?: boolean;
         autoUpdateDisabledReason?: string | null;
         githubRepoOwner?: string | null;
@@ -295,7 +287,6 @@ export interface IElectronAPI {
         githubBranch?: string | null;
         githubPagesBaseUrl?: string | null;
         githubToken?: string | null;
-        githubWebTheme?: string | null;
         githubLogoPath?: string | null;
         githubFavoriteRepos?: string[] | null;
         walkthroughSeen?: boolean;
@@ -322,16 +313,13 @@ export interface IElectronAPI {
         mvpWeights?: IMvpWeights;
         statsViewSettings?: IStatsViewSettings;
         disruptionMethod?: DisruptionMethod;
-        uiTheme?: UiTheme;
-        kineticFontStyle?: KineticFontStyle;
-        kineticThemeVariant?: KineticThemeVariant;
-        dashboardLayout?: DashboardLayout;
+        colorPalette?: ColorPalette;
+        glassSurfaces?: boolean;
         githubRepoOwner?: string | null;
         githubRepoName?: string | null;
         githubBranch?: string | null;
         githubPagesBaseUrl?: string | null;
         githubToken?: string | null;
-        githubWebTheme?: string | null;
         githubLogoPath?: string | null;
         githubFavoriteRepos?: string[] | null;
         walkthroughSeen?: boolean;
