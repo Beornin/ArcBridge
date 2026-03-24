@@ -1078,54 +1078,57 @@ body.web-report #top-players .mvp-gold-icon-badge {
 
 /* ── Section dissolve states ── */
 
-/* Hide real content when dissolving */
-.stats-section-wrap--unloaded > :first-child,
+.stats-section-wrap {
+  position: relative;
+}
+
+/* Show real sections but styled as skeleton placeholders */
+.stats-section-wrap--unloaded > :first-child {
+  pointer-events: none;
+  filter: saturate(0) brightness(0.7);
+  opacity: 0.5;
+}
+
+/* Shimmer overlay on unloaded sections */
+.stats-section-wrap--unloaded::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--brand-primary) 6%, transparent) 40%,
+    color-mix(in srgb, var(--brand-secondary) 8%, transparent) 50%,
+    color-mix(in srgb, var(--brand-primary) 6%, transparent) 60%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: dissolve-shimmer 2.8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
 .stats-section-wrap--materializing > :first-child {
-  display: none;
+  pointer-events: none;
+  filter: saturate(0.5) brightness(0.85);
+  opacity: 0.7;
+  transition: opacity 300ms ease, filter 300ms ease;
+}
+
+.stats-section-wrap--materializing::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 300ms ease;
 }
 
 .stats-section-wrap--loaded > :first-child {
   animation: section-arrive 400ms ease-out both;
 }
 
-/* ── Skeleton card placeholder ── */
-
-.stats-dissolve-skeleton {
-  position: relative;
-  overflow: hidden;
-  border-radius: 0.75rem;
-  border: 1px solid var(--border-default);
-  background: var(--bg-card);
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  min-height: 100px;
-}
-
-.stats-dissolve-skeleton__row {
-  height: 12px;
-  border-radius: 6px;
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--brand-primary) 5%, transparent),
-    color-mix(in srgb, var(--brand-secondary) 10%, transparent),
-    color-mix(in srgb, var(--brand-primary) 5%, transparent)
-  );
-  background-size: 200% 100%;
-  animation: dissolve-shimmer 2.8s ease-in-out infinite;
-}
-
-.stats-dissolve-skeleton__row--wide { width: 85%; }
-.stats-dissolve-skeleton__row--medium { width: 55%; }
-.stats-dissolve-skeleton__row--narrow { width: 30%; }
-
-.stats-dissolve-skeleton__row:nth-child(2) { animation-delay: 0.15s; }
-.stats-dissolve-skeleton__row:nth-child(3) { animation-delay: 0.3s; }
-.stats-dissolve-skeleton__row:nth-child(4) { animation-delay: 0.45s; }
-.stats-dissolve-skeleton__row:nth-child(5) { animation-delay: 0.6s; }
-
-/* Floating particles inside skeleton cards */
+/* Floating particles over sections */
 .stats-dissolve-particle {
   position: absolute;
   border-radius: 50%;
@@ -1137,8 +1140,8 @@ body.web-report #top-players .mvp-gold-icon-badge {
 .stats-dissolve-particle:nth-of-type(2) { top: 55%; left: 70%; width: 2px; height: 2px; background: color-mix(in srgb, var(--brand-secondary) 35%, transparent); animation: particle-float 2.8s ease-in-out infinite 0.6s; }
 .stats-dissolve-particle:nth-of-type(3) { top: 40%; left: 50%; width: 3px; height: 3px; background: color-mix(in srgb, var(--brand-primary) 30%, transparent); animation: particle-float 3.6s ease-in-out infinite 1.2s; }
 
-/* Materializing: skeleton + particles fade out */
-.stats-section-wrap--materializing .stats-dissolve-skeleton {
+/* Materializing: particles fade out */
+.stats-section-wrap--materializing .stats-dissolve-particle {
   transition: opacity 300ms ease;
   opacity: 0;
 }
@@ -1159,7 +1162,7 @@ body.web-report #top-players .mvp-gold-icon-badge {
   .stats-dissolve-bar__glow,
   .stats-dissolve-heartbeat,
   .stats-dissolve-particle,
-  .stats-dissolve-skeleton__row {
+  .stats-section-wrap--unloaded::after {
     animation: none !important;
   }
 
@@ -1173,7 +1176,7 @@ body.bulk-uploading .stats-dissolve-bar__particle,
 body.bulk-uploading .stats-dissolve-bar__glow,
 body.bulk-uploading .stats-dissolve-heartbeat,
 body.bulk-uploading .stats-dissolve-particle,
-body.bulk-uploading .stats-dissolve-skeleton__row {
+body.bulk-uploading .stats-section-wrap--unloaded::after {
   animation: none !important;
 }
 
