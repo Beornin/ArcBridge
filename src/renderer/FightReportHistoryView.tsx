@@ -1,4 +1,5 @@
 import { ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ReportIndexEntry, ReportPayload } from '../shared/reportTypes';
 import { normalizeReportPayload } from '../shared/reportNormalization';
@@ -345,11 +346,24 @@ export function FightReportHistoryView() {
             </div>
 
             {/* Content area */}
+            <AnimatePresence mode="wait">
             {activeTab === 'list' ? (
-                <div className="flex-1 min-h-0 overflow-y-auto px-8 pb-4">
+                <motion.div
+                    key="list"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
+                    className="flex-1 min-h-0 overflow-y-auto px-8 pb-4"
+                >
                     {/* Repo bar */}
-                    <div className="rounded-[4px] px-4 py-3 mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
-                         style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)' }}>
+                    <motion.div
+                        initial={{ opacity: 0, y: -12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, ease: 'easeOut' }}
+                        className="rounded-[4px] px-4 py-3 mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
+                        style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)' }}
+                    >
                         <div className="min-w-0">
                             <div className="text-[10px] uppercase tracking-[0.22em]" style={{ color: 'var(--text-secondary)' }}>History Source</div>
                             <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>Browse your published fight reports.</div>
@@ -367,38 +381,63 @@ export function FightReportHistoryView() {
                                 {deleteMode ? 'Cancel' : 'Manage'}
                             </button>
                         </div>
-                    </div>
+                    </motion.div>
 
                     {detailError && (
-                        <div className="rounded-[4px] px-4 py-3 mb-4 text-sm text-red-300"
-                             style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)' }}>
+                        <motion.div
+                            initial={{ opacity: 0, y: -8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="rounded-[4px] px-4 py-3 mb-4 text-sm text-red-300"
+                            style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)' }}
+                        >
                             {detailError}
-                        </div>
+                        </motion.div>
                     )}
 
                     {indexLoading && (
-                        <div className="flex items-center justify-center py-12 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.3, delay: 0.1 }}
+                            className="flex items-center justify-center py-12 text-sm"
+                            style={{ color: 'var(--text-secondary)' }}
+                        >
                             Loading reports...
-                        </div>
+                        </motion.div>
                     )}
 
                     {!indexLoading && !error && indexEntries.length === 0 && (
-                        <div className="flex items-center justify-center py-12 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.3 }}
+                            className="flex items-center justify-center py-12 text-sm"
+                            style={{ color: 'var(--text-secondary)' }}
+                        >
                             No reports found.
-                        </div>
+                        </motion.div>
                     )}
 
                     {!indexLoading && indexEntries.length > 0 && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            {indexEntries.map((entry) => (
-                                <button key={entry.id} type="button"
+                            {indexEntries.map((entry, i) => (
+                                <motion.button
+                                    key={entry.id}
+                                    type="button"
+                                    initial={{ opacity: 0, y: 16 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.3, delay: Math.min(i * 0.05, 0.4), ease: 'easeOut' }}
                                     onClick={() => handleCardClick(entry)}
                                     className="text-left rounded-[6px] p-4 transition-colors"
                                     style={{
                                         background: 'var(--bg-card)',
                                         border: `1px solid ${selectedForDelete.has(entry.id) ? 'var(--brand-primary)' : 'var(--border-default)'}`,
                                         opacity: detailLoading === entry.id ? 0.6 : 1
-                                    }}>
+                                    }}
+                                    whileHover={{ scale: 1.01, borderColor: 'rgba(255,255,255,0.15)' }}
+                                    whileTap={{ scale: 0.99 }}
+                                >
                                     {deleteMode && (
                                         <div className="mb-2">
                                             <input type="checkbox" checked={selectedForDelete.has(entry.id)} readOnly className="accent-blue-500" />
@@ -431,19 +470,26 @@ export function FightReportHistoryView() {
                                     )}
                                     {entry.summary?.mapSlices && entry.summary.mapSlices.length > 0 && (
                                         <div className="flex h-1 rounded-full overflow-hidden mt-2">
-                                            {entry.summary.mapSlices.map((slice, i) => (
-                                                <div key={i} style={{ width: `${slice.value}%`, background: slice.color }} />
+                                            {entry.summary.mapSlices.map((slice, si) => (
+                                                <div key={si} style={{ width: `${slice.value}%`, background: slice.color }} />
                                             ))}
                                         </div>
                                     )}
-                                </button>
+                                </motion.button>
                             ))}
                         </div>
                     )}
 
+                    <AnimatePresence>
                     {deleteMode && selectedForDelete.size > 0 && (
-                        <div className="sticky bottom-0 py-3"
-                             style={{ background: 'var(--bg-surface)', borderTop: '1px solid var(--border-default)' }}>
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 20 }}
+                            transition={{ duration: 0.2, ease: 'easeOut' }}
+                            className="sticky bottom-0 py-3"
+                            style={{ background: 'var(--bg-surface)', borderTop: '1px solid var(--border-default)' }}
+                        >
                             <div className="flex items-center justify-between">
                                 <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                                     {selectedForDelete.size} report{selectedForDelete.size === 1 ? '' : 's'} selected
@@ -453,13 +499,21 @@ export function FightReportHistoryView() {
                                     {deleteLoading ? 'Deleting...' : 'Delete Selected'}
                                 </button>
                             </div>
-                        </div>
+                        </motion.div>
                     )}
-                </div>
+                    </AnimatePresence>
+                </motion.div>
             ) : (() => {
                 const activeReport = tabs.find((t) => t.id === activeTab);
                 return activeReport ? (
-                    <div className="flex-1 min-h-0 flex flex-col px-4 pt-2 pb-2">
+                    <motion.div
+                        key={`detail-${activeTab}`}
+                        initial={{ opacity: 0, x: 30 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -30 }}
+                        transition={{ duration: 0.25, ease: 'easeOut' }}
+                        className="flex-1 min-h-0 flex flex-col px-4 pt-2 pb-2"
+                    >
                         <StatsView
                             logs={[]}
                             onBack={() => setActiveTab('list')}
@@ -467,14 +521,21 @@ export function FightReportHistoryView() {
                             statsViewSettings={activeReport.report.stats?.statsViewSettings}
                             dashboardTitle={activeReport.title}
                         />
-                    </div>
+                    </motion.div>
                 ) : (
-                    <div className="flex-1 min-h-0 flex items-center justify-center text-sm"
-                         style={{ color: 'var(--text-secondary)' }}>
+                    <motion.div
+                        key="not-found"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="flex-1 min-h-0 flex items-center justify-center text-sm"
+                        style={{ color: 'var(--text-secondary)' }}
+                    >
                         Report not found. It may have been closed.
-                    </div>
+                    </motion.div>
                 );
             })()}
+            </AnimatePresence>
         </div>
     );
 }
