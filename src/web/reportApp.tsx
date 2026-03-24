@@ -1492,9 +1492,9 @@ export function ReportApp() {
                         <div className="px-5 pb-4">
                             <a
                                 href={themedIndexHref}
-                                className="report-back-link w-full inline-flex items-center gap-3 px-4 py-2.5 rounded-xl bg-[color:var(--accent-glow)] text-[10px] uppercase tracking-[0.35em] text-gray-100 transition-colors hover:bg-[color:var(--accent-border)]"
+                                className="report-back-link w-full inline-flex items-center gap-3 px-4 py-2.5 rounded-xl bg-[color:var(--accent-bg)] text-[10px] uppercase tracking-[0.35em] text-gray-100 transition-colors hover:bg-[color:var(--accent-border)]"
                             >
-                                <span className="h-8 w-8 rounded-full border border-[color:var(--accent-border)] inline-flex items-center justify-center text-[color:var(--accent-strong)]">
+                                <span className="h-8 w-8 rounded-full border border-[color:var(--accent-border)] inline-flex items-center justify-center text-[color:var(--brand-primary)]">
                                     <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                         <path d="M19 12H6.5" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" />
                                         <path d="M12 6L6 12L12 18" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
@@ -1524,7 +1524,7 @@ export function ReportApp() {
                                                 : 'text-gray-300 border-transparent hover:border-white/10 hover:bg-white/10'
                                                 }`}
                                         >
-                                            <GroupIcon className="report-nav-group-icon w-5 h-5 shrink-0 text-[color:var(--accent)]" />
+                                            <GroupIcon className="report-nav-group-icon w-5 h-5 shrink-0 text-[color:var(--brand-primary)]" />
                                             <span className="report-nav-group-label text-[11px] uppercase tracking-[0.22em] whitespace-nowrap min-w-0 truncate">{group.label}</span>
                                             <motion.span
                                                 className="report-nav-chevron ml-auto inline-flex shrink-0"
@@ -1565,7 +1565,7 @@ export function ReportApp() {
                                                             }}
                                                             className={`report-nav-item-btn w-full text-left flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] border transition-colors transform-gpu ${activeSectionId === item.id ? 'text-white border-white/20 bg-white/10' : 'text-gray-200 border-transparent hover:border-white/10 hover:bg-white/10'}`}
                                                         >
-                                                            <ItemIcon className="w-4 h-4 shrink-0 text-[color:var(--accent)]" />
+                                                            <ItemIcon className="w-4 h-4 shrink-0 text-[color:var(--brand-primary)]" />
                                                             {item.label}
                                                         </motion.button>
                                                     );
@@ -1599,7 +1599,7 @@ export function ReportApp() {
                                     aria-label="ArcBridge logo"
                                 />
                                 <div>
-                                    <div className="text-[11px] uppercase tracking-[0.4em] text-gray-400">ArcBridge Reports</div>
+                                    <div className="text-[11px] tracking-[0.06em]" style={{ fontFamily: '"Cinzel", serif' }}><span className="text-white">Arc</span><span style={{ color: 'var(--brand-primary)' }}>Bridge</span> <span className="text-gray-400 uppercase tracking-[0.3em] text-[10px]">Reports</span></div>
                                     <div className="text-sm font-semibold text-white">Navigation</div>
                                 </div>
                             </div>
@@ -1625,7 +1625,7 @@ export function ReportApp() {
                                                 : 'text-gray-300 border-transparent hover:border-white/10 hover:bg-white/10'
                                                 }`}
                                         >
-                                            <GroupIcon className="report-nav-group-icon w-5 h-5 shrink-0 text-[color:var(--accent)]" />
+                                            <GroupIcon className="report-nav-group-icon w-5 h-5 shrink-0 text-[color:var(--brand-primary)]" />
                                             <span className="report-nav-group-label text-[11px] uppercase tracking-[0.22em] whitespace-nowrap min-w-0 truncate">{group.label}</span>
                                             <motion.span
                                                 className="report-nav-chevron ml-auto inline-flex shrink-0"
@@ -1663,7 +1663,7 @@ export function ReportApp() {
                                                             onClick={() => handleSubNavClick(group.id, item.id)}
                                                             className={`report-nav-item-btn w-full text-left flex items-center gap-2 px-2 py-1.5 rounded-lg text-[12px] border transition-colors transform-gpu ${activeSectionId === item.id ? 'text-white border-white/20 bg-white/10' : 'text-gray-200 border-transparent hover:border-white/10 hover:bg-white/10'}`}
                                                         >
-                                                            <ItemIcon className="w-4 h-4 shrink-0 text-[color:var(--accent)]" />
+                                                            <ItemIcon className="w-4 h-4 shrink-0 text-[color:var(--brand-primary)]" />
                                                             {item.label}
                                                         </motion.button>
                                                     );
@@ -1677,9 +1677,9 @@ export function ReportApp() {
                         <div className="border-t border-white/10">
                             <a
                                 href={themedIndexHref}
-                                className="report-back-link w-full inline-flex items-center gap-3 px-6 py-4 bg-[color:var(--accent-glow)] text-[10px] uppercase tracking-[0.35em] text-gray-100 transition-colors hover:bg-[color:var(--accent-border)]"
+                                className="report-back-link w-full inline-flex items-center gap-3 px-6 py-4 bg-[color:var(--accent-bg)] text-[10px] uppercase tracking-[0.35em] text-gray-100 transition-colors hover:bg-[color:var(--accent-border)]"
                             >
-                                <span className="h-9 w-9 rounded-full border border-[color:var(--accent-border)] inline-flex items-center justify-center text-[color:var(--accent-strong)]">
+                                <span className="h-9 w-9 rounded-full border border-[color:var(--accent-border)] inline-flex items-center justify-center text-[color:var(--brand-primary)]">
                                     <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                         <path d="M19 12H6.5" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" />
                                         <path d="M12 6L6 12L12 18" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
@@ -1721,7 +1721,7 @@ export function ReportApp() {
                                     )
                                 )}
                                 <div className="min-w-0">
-                                    <div className="report-brand-label text-xs uppercase tracking-[0.3em] text-[color:var(--accent-soft)]">ArcBridge Log Report</div>
+                                    <div className="report-brand-label text-xs tracking-[0.06em]" style={{ fontFamily: '"Cinzel", serif' }}><span className="text-white">Arc</span><span style={{ color: 'var(--brand-primary)' }}>Bridge</span> <span className="text-gray-400 uppercase tracking-[0.3em] text-[10px]">Log Report</span></div>
                                     <h1 className="text-2xl sm:text-3xl font-bold mt-1">{report.meta.title}</h1>
                                     <div className="text-xs sm:text-sm text-gray-400 mt-2">{report.meta.dateLabel || formatLocalRange(report.meta.dateStart, report.meta.dateEnd)}</div>
                                 </div>
@@ -1735,17 +1735,17 @@ export function ReportApp() {
                             </button>
                             <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:overflow-visible pr-1 sm:pr-2">
                                 <div className="col-span-2 sm:col-span-1 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-white/5 border border-white/10 text-[10px] sm:text-xs uppercase tracking-widest text-gray-300 inline-flex items-center gap-2 min-w-0 justify-start">
-                                    <CalendarDays className="w-4 h-4 shrink-0 text-[color:var(--accent)]" />
+                                    <CalendarDays className="w-4 h-4 shrink-0 text-[color:var(--brand-primary)]" />
                                     {report.meta.dateLabel || 'Log Range'}
                                 </div>
                                 <div className="col-span-2 sm:col-span-1 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-white/5 border border-white/10 text-[10px] sm:text-xs uppercase tracking-widest text-gray-300 flex items-center gap-2 min-w-0">
-                                    <CommanderTagIcon className="w-4 h-4 shrink-0 text-[color:var(--accent)]" />
+                                    <CommanderTagIcon className="w-4 h-4 shrink-0 text-[color:var(--brand-primary)]" />
                                     <span className="truncate">
                                         {report.meta.commanders.length ? report.meta.commanders.join(', ') : 'No Commanders'}
                                     </span>
                                 </div>
                                 <div className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-white/5 border border-white/10 text-[10px] sm:text-xs uppercase tracking-widest text-gray-300 flex items-center gap-2 min-w-0">
-                                    <ShieldCheck className="w-4 h-4 shrink-0 text-[color:var(--accent)]" />
+                                    <ShieldCheck className="w-4 h-4 shrink-0 text-[color:var(--brand-primary)]" />
                                     Report {report.meta.appVersion ? `v${report.meta.appVersion}` : 'build'}
                                 </div>
                             </div>
@@ -1760,10 +1760,10 @@ export function ReportApp() {
                                     <button
                                         key={`chip-${item.id}`}
                                         onClick={() => handleSubNavClick(activeGroupDef?.id || 'overview', item.id)}
-                                        className={`group flex items-center gap-2 px-3 py-2 rounded-full text-[10px] uppercase tracking-widest whitespace-nowrap border bg-gradient-to-br shadow-[0_10px_25px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-200 active:translate-y-0 active:scale-[0.98] snap-start ${activeSectionId === item.id ? 'text-white border-[color:var(--accent-border)] from-[color:var(--accent-glow)] via-white/10 to-transparent' : 'text-gray-200 border-white/15 from-white/10 via-white/5 to-transparent hover:-translate-y-0.5 hover:border-[color:var(--accent-border)] hover:shadow-[0_18px_35px_rgba(0,0,0,0.45)]'}`}
+                                        className={`group flex items-center gap-2 px-3 py-2 rounded-full text-[10px] uppercase tracking-widest whitespace-nowrap border bg-gradient-to-br shadow-[0_10px_25px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-200 active:translate-y-0 active:scale-[0.98] snap-start ${activeSectionId === item.id ? 'text-white border-[color:var(--accent-border)] from-[color:var(--accent-bg)] via-white/10 to-transparent' : 'text-gray-200 border-white/15 from-white/10 via-white/5 to-transparent hover:-translate-y-0.5 hover:border-[color:var(--accent-border)] hover:shadow-[0_18px_35px_rgba(0,0,0,0.45)]'}`}
                                     >
-                                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white/10 border border-white/10 group-hover:border-[color:var(--accent-border)] group-hover:bg-[color:var(--accent-glow)] transition-colors">
-                                            <Icon className="w-4 h-4 shrink-0 text-[color:var(--accent)]" />
+                                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white/10 border border-white/10 group-hover:border-[color:var(--accent-border)] group-hover:bg-[color:var(--accent-bg)] transition-colors">
+                                            <Icon className="w-4 h-4 shrink-0 text-[color:var(--brand-primary)]" />
                                         </span>
                                         {item.label}
                                     </button>
@@ -1795,21 +1795,21 @@ export function ReportApp() {
                             href={themedIndexHref}
                             className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-[10px] uppercase tracking-widest text-gray-200"
                         >
-                            <ArrowLeft className="w-4 h-4 shrink-0 text-[color:var(--accent)]" />
+                            <ArrowLeft className="w-4 h-4 shrink-0 text-[color:var(--brand-primary)]" />
                             Back
                         </a>
                         <button
                             onClick={() => setTocOpen(true)}
                             className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-[10px] uppercase tracking-widest text-gray-200"
                         >
-                            <PanelLeft className="w-4 h-4 shrink-0 text-[color:var(--accent)]" />
+                            <PanelLeft className="w-4 h-4 shrink-0 text-[color:var(--brand-primary)]" />
                             Contents
                         </button>
                         <button
                             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                             className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-[10px] uppercase tracking-widest text-gray-200"
                         >
-                            <ArrowUp className="w-4 h-4 shrink-0 text-[color:var(--accent)]" />
+                            <ArrowUp className="w-4 h-4 shrink-0 text-[color:var(--brand-primary)]" />
                             Top
                         </button>
                     </div>
@@ -1872,21 +1872,21 @@ export function ReportApp() {
                                     )
                                 )}
                                 <div>
-                                    <div className="text-xs uppercase tracking-[0.3em] text-[color:var(--accent-soft)]">ArcBridge</div>
+                                    <div className="text-sm tracking-[0.06em]" style={{ fontFamily: '"Cinzel", serif' }}><span className="text-white">Arc</span><span style={{ color: 'var(--brand-primary)' }}>Bridge</span></div>
                                     <h1 className="text-2xl sm:text-3xl font-bold mt-2">All Reports</h1>
                                     <p className="text-xs sm:text-sm text-gray-400 mt-1">Combined commander and player stats across every hosted report.</p>
                                 </div>
                             </div>
                             <div className="flex flex-col sm:flex-row gap-2 sm:items-end">
                                 <div className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-white/5 border border-white/10 text-[10px] sm:text-xs uppercase tracking-widest text-gray-300 inline-flex items-center gap-2">
-                                    <BarChart3 className="w-4 h-4 shrink-0 text-[color:var(--accent)]" />
+                                    <BarChart3 className="w-4 h-4 shrink-0 text-[color:var(--brand-primary)]" />
                                     {rollupData?.uniqueRaids || 0} Raids
                                 </div>
                                 <a
                                     href={themedIndexHref}
                                     className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-white/5 border border-white/10 text-[10px] sm:text-xs uppercase tracking-widest text-gray-300 inline-flex items-center justify-center gap-2 hover:border-[color:var(--accent-border)] transition-colors"
                                 >
-                                    <ArrowLeft className="w-4 h-4 shrink-0 text-[color:var(--accent)]" />
+                                    <ArrowLeft className="w-4 h-4 shrink-0 text-[color:var(--brand-primary)]" />
                                     Back To Reports
                                 </a>
                             </div>
@@ -1946,7 +1946,7 @@ export function ReportApp() {
                                         <div className={`${glassCard} p-4 sm:p-5`} style={glassCardStyle}>
                                             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-4">
                                                 <div>
-                                                    <div className="text-[11px] uppercase tracking-widest text-[color:var(--accent-soft)]">Commanders</div>
+                                                    <div className="text-[11px] uppercase tracking-widest text-[color:var(--accent-border)]">Commanders</div>
                                                     <h2 className="text-lg sm:text-xl font-semibold mt-1">All Commander Runs</h2>
                                                 </div>
                                                 <div className="text-[11px] uppercase tracking-widest text-gray-400">Runs are counted per unique raid</div>
@@ -1962,12 +1962,12 @@ export function ReportApp() {
                                                                 value={commanderSearchTerm}
                                                                 onChange={(event) => setCommanderSearchTerm(event.target.value)}
                                                                 placeholder="Search commanders, character names, or class..."
-                                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+                                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[color:var(--accent-border)]"
                                                             />
                                                             <select
                                                                 value={commanderProfessionFilter}
                                                                 onChange={(event) => setCommanderProfessionFilter(event.target.value)}
-                                                                className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+                                                                className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[color:var(--accent-border)]"
                                                             >
                                                                 {commanderProfessionOptions.map((option) => (
                                                                     <option key={option} value={option} className="bg-slate-900 text-white">
@@ -1978,7 +1978,7 @@ export function ReportApp() {
                                                             <select
                                                                 value={commanderMinRunsFilter}
                                                                 onChange={(event) => setCommanderMinRunsFilter(event.target.value)}
-                                                                className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+                                                                className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[color:var(--accent-border)]"
                                                             >
                                                                 <option value="1" className="bg-slate-900 text-white">Any Raids</option>
                                                                 <option value="2" className="bg-slate-900 text-white">2+ Raids</option>
@@ -2047,7 +2047,7 @@ export function ReportApp() {
                                         <div className={`${glassCard} p-4 sm:p-5`} style={glassCardStyle}>
                                             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-4">
                                                 <div>
-                                                    <div className="text-[11px] uppercase tracking-widest text-[color:var(--accent-soft)]">Players</div>
+                                                    <div className="text-[11px] uppercase tracking-widest text-[color:var(--accent-border)]">Players</div>
                                                     <h2 className="text-lg sm:text-xl font-semibold mt-1">Everyone Who Joined</h2>
                                                 </div>
                                                 <div className="text-[11px] uppercase tracking-widest text-gray-400">Last seen is based on the report end time</div>
@@ -2063,12 +2063,12 @@ export function ReportApp() {
                                                                 value={playerSearchTerm}
                                                                 onChange={(event) => setPlayerSearchTerm(event.target.value)}
                                                                 placeholder="Search players, character names, or class..."
-                                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+                                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[color:var(--accent-border)]"
                                                             />
                                                             <select
                                                                 value={playerProfessionFilter}
                                                                 onChange={(event) => setPlayerProfessionFilter(event.target.value)}
-                                                                className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+                                                                className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[color:var(--accent-border)]"
                                                             >
                                                                 {playerProfessionOptions.map((option) => (
                                                                     <option key={option} value={option} className="bg-slate-900 text-white">
@@ -2079,7 +2079,7 @@ export function ReportApp() {
                                                             <select
                                                                 value={playerMinRunsFilter}
                                                                 onChange={(event) => setPlayerMinRunsFilter(event.target.value)}
-                                                                className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+                                                                className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[color:var(--accent-border)]"
                                                             >
                                                                 <option value="1" className="bg-slate-900 text-white">Any Raids</option>
                                                                 <option value="2" className="bg-slate-900 text-white">2+ Raids</option>
@@ -2172,11 +2172,11 @@ export function ReportApp() {
             <div className="max-w-[2150px] mx-auto px-4 pt-4 pb-8 sm:px-6 sm:pt-5 sm:pb-10">
                 <div id="report-list-container" className="rounded-2xl border border-white/5 bg-black/20 p-4 sm:p-6">
                     <div id="report-top" className={`${glassCard} p-5 sm:p-6 mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between`} style={glassCardStyle}>
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 min-h-[56px] text-center sm:text-left">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 min-h-[56px] text-center sm:text-left">
                             {logoUrl && (
                                 logoIsDefault ? (
                                     <div
-                                        className="w-16 h-16 sm:w-24 sm:h-24 mx-auto sm:mx-0"
+                                        className="w-20 h-20 sm:w-28 sm:h-28 mx-auto sm:mx-0 shrink-0"
                                         style={{
                                             backgroundColor: defaultLogoColor,
                                             maskImage: `url("${logoUrl}")`,
@@ -2195,13 +2195,13 @@ export function ReportApp() {
                                     <img
                                         src={logoUrl}
                                         alt="Squad logo"
-                                        className="w-16 h-16 sm:w-24 sm:h-24 rounded-lg object-cover mx-auto sm:mx-0"
+                                        className="w-20 h-20 sm:w-28 sm:h-28 rounded-lg object-cover mx-auto sm:mx-0 shrink-0"
                                     />
                                 )
                             )}
                             <div>
-                                <div className="text-xs uppercase tracking-[0.3em] text-[color:var(--accent-soft)]">ArcBridge</div>
-                                <h1 className="text-2xl sm:text-3xl font-bold mt-2">Command Reports</h1>
+                                <div className="text-lg sm:text-xl tracking-[0.06em] font-medium" style={{ fontFamily: '"Cinzel", serif' }}><span className="text-white">Arc</span><span style={{ color: 'var(--brand-primary)' }}>Bridge</span></div>
+                                <h1 className="text-2xl sm:text-3xl font-bold mt-1">Command Reports</h1>
                                 <p className="text-xs sm:text-sm text-gray-400 mt-1">Select a report to view the full stats dashboard.</p>
                             </div>
                         </div>
@@ -2218,11 +2218,11 @@ export function ReportApp() {
                             value={searchTerm}
                             onChange={(event) => setSearchTerm(event.target.value)}
                             placeholder="Search reports, commanders, or date..."
-                            className="w-full md:flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+                            className="w-full md:flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[color:var(--accent-border)]"
                         />
                         <div className="text-[11px] sm:text-xs text-gray-400">
-                            Showing <span className="text-[color:var(--accent)]">{filteredIndex.length}</span> of{' '}
-                            <span className="text-[color:var(--accent)]">{sortedIndex.length}</span>
+                            Showing <span className="text-[color:var(--brand-primary)]">{filteredIndex.length}</span> of{' '}
+                            <span className="text-[color:var(--brand-primary)]">{sortedIndex.length}</span>
                         </div>
                     </div>
 
@@ -2261,7 +2261,7 @@ export function ReportApp() {
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
                                 <div className="min-w-0 block text-left pl-1 sm:pl-2">
                                     <div className="flex flex-wrap items-center gap-2">
-                                        <span className="inline-flex items-center gap-1 rounded-full border border-[color:var(--accent-border)] bg-[color:var(--accent-glow)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white">
+                                        <span className="inline-flex items-center gap-1 rounded-full border border-[color:var(--accent-border)] bg-[color:var(--accent-bg)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white">
                                             <BarChart3 className="w-4 h-4" />
                                             All Reports
                                         </span>
@@ -2269,7 +2269,7 @@ export function ReportApp() {
                                     </div>
                                     <div className="text-base sm:text-lg font-semibold mt-2 text-white">Combined Stats Across Every Included Report</div>
                                     <div className="text-xs text-gray-300 mt-1 flex items-center gap-2">
-                                        <Users className="w-4 h-4 shrink-0 text-[color:var(--accent)]" />
+                                        <Users className="w-4 h-4 shrink-0 text-[color:var(--brand-primary)]" />
                                         <span>Cross-report commander totals, roster attendance, and recent participation in one place.</span>
                                     </div>
                                 </div>
@@ -2277,10 +2277,10 @@ export function ReportApp() {
                                     <div className="flex flex-col items-end gap-1">
                                         <div className="text-[10px] uppercase tracking-widest text-white/60">Source Reports</div>
                                         <div className="text-lg text-white font-semibold">{sortedIndex.length}</div>
-                                        <div className="text-[10px] uppercase tracking-widest text-[color:var(--accent-soft)]">Open Summary</div>
+                                        <div className="text-[10px] uppercase tracking-widest text-[color:var(--accent-border)]">Open Summary</div>
                                     </div>
-                                    <div className="h-10 w-10 rounded-full border border-[color:var(--accent-border)] bg-[color:var(--accent-glow)] inline-flex items-center justify-center">
-                                        <ExternalLink className="w-5 h-5 text-[color:var(--accent)] opacity-90" />
+                                    <div className="h-10 w-10 rounded-full border border-[color:var(--accent-border)] bg-[color:var(--accent-bg)] inline-flex items-center justify-center">
+                                        <ExternalLink className="w-5 h-5 text-[color:var(--brand-primary)] opacity-90" />
                                     </div>
                                 </div>
                             </div>
@@ -2305,7 +2305,7 @@ export function ReportApp() {
                                                 {formatReportTitle(entry.dateStart)}
                                             </div>
                                             <div className="text-xs text-gray-400 mt-1 flex items-center gap-2">
-                                                <Users className="w-4 h-4 shrink-0 text-[color:var(--accent)]" />
+                                                <Users className="w-4 h-4 shrink-0 text-[color:var(--brand-primary)]" />
                                                 <span className="truncate">
                                                     {entry.commanders.length ? entry.commanders.join(', ') : 'No Commanders'}
                                                 </span>
@@ -2331,7 +2331,7 @@ export function ReportApp() {
                                                     {entry.summary?.avgSquadSize ?? '--'} / {entry.summary?.avgEnemySize ?? '--'}
                                                 </div>
                                             </div>
-                                            <ExternalLink className="w-5 h-5 text-[color:var(--accent)] opacity-60 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity" />
+                                            <ExternalLink className="w-5 h-5 text-[color:var(--brand-primary)] opacity-60 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity" />
                                         </div>
                                     </div>
                                 </a>

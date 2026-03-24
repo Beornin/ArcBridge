@@ -327,9 +327,21 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
 
     const dissolveActive = (showDissolveLoading && statsSettling.progressPercent < 100) || dissolveCompleting;
 
+    // Track if dissolve was ever active so we only play section-arrive once
+    const [dissolveWasActive, setDissolveWasActive] = useState(false);
+    useEffect(() => {
+        if (dissolveActive) setDissolveWasActive(true);
+    }, [dissolveActive]);
+    useEffect(() => {
+        if (dissolveWasActive && !dissolveActive) {
+            const timer = setTimeout(() => setDissolveWasActive(false), 500);
+            return () => clearTimeout(timer);
+        }
+    }, [dissolveWasActive, dissolveActive]);
+
     const sectionWrapClass = dissolveActive
         ? (dissolveCompleting ? 'stats-section-wrap stats-section-wrap--materializing' : 'stats-section-wrap stats-section-wrap--unloaded')
-        : 'stats-section-wrap stats-section-wrap--loaded';
+        : (dissolveWasActive ? 'stats-section-wrap stats-section-wrap--loaded' : 'stats-section-wrap');
 
     const dissolveParticlesRef = useRef<Array<{ top: string; left: string; size: number; dur: string; delay: string; color: string; dx: string; dy: string }>>([]);
     if (dissolveParticlesRef.current.length === 0) {
