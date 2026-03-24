@@ -1004,11 +1004,12 @@ body.web-report #top-players .mvp-gold-icon-badge {
 
 .stats-dissolve-bar {
   position: relative;
-  height: 6px;
-  border-radius: 3px;
-  background: color-mix(in srgb, var(--brand-primary) 10%, transparent);
+  height: 10px;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--brand-primary) 12%, transparent);
   overflow: visible;
-  margin-top: 8px;
+  margin-top: 10px;
+  margin-bottom: 4px;
 }
 
 .stats-dissolve-bar__fill {
@@ -1016,16 +1017,16 @@ body.web-report #top-players .mvp-gold-icon-badge {
   left: 0;
   top: 0;
   height: 100%;
-  border-radius: 2px;
+  border-radius: 5px;
   background: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary));
   transition: width 0.6s ease;
 }
 
 .stats-dissolve-bar__glow {
   position: absolute;
-  top: -6px;
-  width: 16px;
-  height: 18px;
+  top: -8px;
+  width: 24px;
+  height: 26px;
   border-radius: 50%;
   background: radial-gradient(circle, color-mix(in srgb, var(--brand-secondary) 50%, transparent), transparent);
   animation: dissolve-glow 1.5s ease-in-out infinite;
@@ -1077,29 +1078,54 @@ body.web-report #top-players .mvp-gold-icon-badge {
 
 /* ── Section dissolve states ── */
 
-.stats-section-wrap {
-  position: relative;
-  overflow: hidden;
-}
-
-.stats-section-wrap--unloaded > :first-child {
-  opacity: 0.45;
-  pointer-events: none;
-  filter: saturate(0.4);
-}
-
+/* Hide real content when dissolving */
+.stats-section-wrap--unloaded > :first-child,
 .stats-section-wrap--materializing > :first-child {
-  opacity: 0.7;
-  pointer-events: none;
-  filter: saturate(0.7);
-  transition: opacity 300ms ease, filter 300ms ease;
+  display: none;
 }
 
 .stats-section-wrap--loaded > :first-child {
   animation: section-arrive 400ms ease-out both;
 }
 
-/* Floating particles inside unloaded sections — use nth-of-type (spans) to skip skeleton div */
+/* ── Skeleton card placeholder ── */
+
+.stats-dissolve-skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border-default);
+  background: var(--bg-card);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 100px;
+}
+
+.stats-dissolve-skeleton__row {
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--brand-primary) 5%, transparent),
+    color-mix(in srgb, var(--brand-secondary) 10%, transparent),
+    color-mix(in srgb, var(--brand-primary) 5%, transparent)
+  );
+  background-size: 200% 100%;
+  animation: dissolve-shimmer 2.8s ease-in-out infinite;
+}
+
+.stats-dissolve-skeleton__row--wide { width: 85%; }
+.stats-dissolve-skeleton__row--medium { width: 55%; }
+.stats-dissolve-skeleton__row--narrow { width: 30%; }
+
+.stats-dissolve-skeleton__row:nth-child(2) { animation-delay: 0.15s; }
+.stats-dissolve-skeleton__row:nth-child(3) { animation-delay: 0.3s; }
+.stats-dissolve-skeleton__row:nth-child(4) { animation-delay: 0.45s; }
+.stats-dissolve-skeleton__row:nth-child(5) { animation-delay: 0.6s; }
+
+/* Floating particles inside skeleton cards */
 .stats-dissolve-particle {
   position: absolute;
   border-radius: 50%;
@@ -1111,52 +1137,7 @@ body.web-report #top-players .mvp-gold-icon-badge {
 .stats-dissolve-particle:nth-of-type(2) { top: 55%; left: 70%; width: 2px; height: 2px; background: color-mix(in srgb, var(--brand-secondary) 35%, transparent); animation: particle-float 2.8s ease-in-out infinite 0.6s; }
 .stats-dissolve-particle:nth-of-type(3) { top: 40%; left: 50%; width: 3px; height: 3px; background: color-mix(in srgb, var(--brand-primary) 30%, transparent); animation: particle-float 3.6s ease-in-out infinite 1.2s; }
 
-/* Materializing: particles converge to center */
-.stats-section-wrap--materializing .stats-dissolve-particle {
-  transition: top 300ms ease-in, left 300ms ease-in, opacity 200ms;
-  top: 50% !important;
-  left: 50% !important;
-  opacity: 0;
-}
-
-/* ── Skeleton rows inside unloaded sections ── */
-
-.stats-dissolve-skeleton {
-  position: absolute;
-  top: 40px;
-  left: 12px;
-  right: 12px;
-  bottom: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.stats-dissolve-skeleton__row {
-  height: 14px;
-  border-radius: 6px;
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--brand-primary) 6%, transparent),
-    color-mix(in srgb, var(--brand-secondary) 9%, transparent),
-    color-mix(in srgb, var(--brand-primary) 6%, transparent)
-  );
-  background-size: 200% 100%;
-  animation: dissolve-shimmer 2.8s ease-in-out infinite;
-}
-
-.stats-dissolve-skeleton__row--wide { width: 80%; }
-.stats-dissolve-skeleton__row--medium { width: 55%; }
-.stats-dissolve-skeleton__row--narrow { width: 35%; }
-
-.stats-dissolve-skeleton__row:nth-child(2) { animation-delay: 0.15s; }
-.stats-dissolve-skeleton__row:nth-child(3) { animation-delay: 0.3s; }
-.stats-dissolve-skeleton__row:nth-child(4) { animation-delay: 0.45s; }
-.stats-dissolve-skeleton__row:nth-child(5) { animation-delay: 0.6s; }
-
-/* Materializing: skeletons fade out */
+/* Materializing: skeleton + particles fade out */
 .stats-section-wrap--materializing .stats-dissolve-skeleton {
   transition: opacity 300ms ease;
   opacity: 0;
