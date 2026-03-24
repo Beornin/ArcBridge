@@ -137,8 +137,9 @@ export function FightReportHistoryView() {
     const [deleteMode, setDeleteMode] = useState(false);
     const [selectedForDelete, setSelectedForDelete] = useState<Set<string>>(new Set());
     const [deleteLoading, setDeleteLoading] = useState(false);
-    // setDeleteLoading used in Task 10 delete handler
+    // setDeleteLoading / deleteLoading used in Task 10 delete handler and toolbar
     void setDeleteLoading;
+    void deleteLoading;
 
     useEffect(() => {
         let mounted = true;
@@ -316,21 +317,100 @@ export function FightReportHistoryView() {
 
             {/* Content area */}
             {activeTab === 'list' ? (
-                <div className="flex-1 min-h-0 flex items-center justify-center text-sm"
-                     style={{ color: 'var(--text-secondary)' }}>
-                    {indexLoading
-                        ? 'Loading reports...'
-                        : indexEntries.length === 0
-                            ? 'No reports found.'
-                            : `${indexEntries.length} report(s) — list panel coming in Task 8`}
-                    {detailError && <span className="ml-2 text-red-300">{detailError}</span>}
-                    {detailLoading && <span className="ml-2 opacity-0">{detailLoading}</span>}
-                    {deleteMode && <span className="ml-2">({selectedForDelete.size} selected)</span>}
-                    {deleteLoading && <span className="ml-2">Deleting...</span>}
-                    <RepoDropdown options={repoOptions} selected={selectedOption} onSelect={setSelectedRepoKey} />
-                    {indexEntries.map((e) => (
-                        <button key={e.id} type="button" onClick={() => handleCardClick(e)} className="hidden">{e.title}</button>
-                    ))}
+                <div className="flex-1 min-h-0 overflow-y-auto px-8 pb-4">
+                    {/* Repo bar */}
+                    <div className="rounded-[4px] px-4 py-3 mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
+                         style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)' }}>
+                        <div className="min-w-0">
+                            <div className="text-[10px] uppercase tracking-[0.22em]" style={{ color: 'var(--text-secondary)' }}>History Source</div>
+                            <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>Browse your published fight reports.</div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <RepoDropdown options={repoOptions} selected={selectedOption} onSelect={setSelectedRepoKey} />
+                            <button type="button"
+                                onClick={() => { setDeleteMode((v) => !v); setSelectedForDelete(new Set()); }}
+                                className="px-3 py-2 rounded-[4px] text-xs"
+                                style={{
+                                    background: deleteMode ? 'var(--brand-primary)' : 'var(--bg-input)',
+                                    color: deleteMode ? '#fff' : 'var(--text-secondary)',
+                                    border: '1px solid var(--border-default)'
+                                }}>
+                                {deleteMode ? 'Cancel' : 'Manage'}
+                            </button>
+                        </div>
+                    </div>
+
+                    {detailError && (
+                        <div className="rounded-[4px] px-4 py-3 mb-4 text-sm text-red-300"
+                             style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)' }}>
+                            {detailError}
+                        </div>
+                    )}
+
+                    {indexLoading && (
+                        <div className="flex items-center justify-center py-12 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                            Loading reports...
+                        </div>
+                    )}
+
+                    {!indexLoading && !error && indexEntries.length === 0 && (
+                        <div className="flex items-center justify-center py-12 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                            No reports found.
+                        </div>
+                    )}
+
+                    {!indexLoading && indexEntries.length > 0 && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {indexEntries.map((entry) => (
+                                <button key={entry.id} type="button"
+                                    onClick={() => handleCardClick(entry)}
+                                    className="text-left rounded-[6px] p-4 transition-colors"
+                                    style={{
+                                        background: 'var(--bg-card)',
+                                        border: `1px solid ${selectedForDelete.has(entry.id) ? 'var(--brand-primary)' : 'var(--border-default)'}`,
+                                        opacity: detailLoading === entry.id ? 0.6 : 1
+                                    }}>
+                                    {deleteMode && (
+                                        <div className="mb-2">
+                                            <input type="checkbox" checked={selectedForDelete.has(entry.id)} readOnly className="accent-blue-500" />
+                                        </div>
+                                    )}
+                                    <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{entry.title}</div>
+                                    <div className="text-[11px] mt-1" style={{ color: 'var(--text-secondary)' }}>
+                                        {entry.dateLabel || `${entry.dateStart} — ${entry.dateEnd}`}
+                                    </div>
+                                    {entry.commanders?.length > 0 && (
+                                        <div className="text-[11px] mt-1" style={{ color: 'var(--brand-primary)' }}>
+                                            {entry.commanders.join(', ')}
+                                        </div>
+                                    )}
+                                    {entry.summary && (
+                                        <div className="flex gap-4 mt-2 pt-2" style={{ borderTop: '1px solid var(--border-default)' }}>
+                                            {entry.summary.avgSquadSize != null && (
+                                                <div>
+                                                    <div className="text-[9px] uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Squad</div>
+                                                    <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>~{Math.round(entry.summary.avgSquadSize)}</div>
+                                                </div>
+                                            )}
+                                            {entry.summary.avgEnemySize != null && (
+                                                <div>
+                                                    <div className="text-[9px] uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Enemy</div>
+                                                    <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>~{Math.round(entry.summary.avgEnemySize)}</div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                    {entry.summary?.mapSlices && entry.summary.mapSlices.length > 0 && (
+                                        <div className="flex h-1 rounded-full overflow-hidden mt-2">
+                                            {entry.summary.mapSlices.map((slice, i) => (
+                                                <div key={i} style={{ width: `${slice.value}%`, background: slice.color }} />
+                                            ))}
+                                        </div>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
             ) : (
                 <div className="flex-1 min-h-0 flex items-center justify-center text-sm"
