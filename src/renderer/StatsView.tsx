@@ -197,22 +197,66 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
     const aggregationResult = externalAggregationResult || internalAggregationResult;
     const aggregationProgress = externalAggregationResult?.aggregationProgress || internalAggregationProgress;
     const { stats, skillUsageData: computedSkillUsageData } = aggregationResult;
-    const statsSettling = useMemo(() => {
+    const aggregationSettling = useMemo(() => {
+        // "Syncing" state: statsDataProgress reports logs but logs prop hasn't updated yet
+        // Skip syncing state if all fights are unavailable — let detailsProgress show that instead
+        const detailsTotal = Math.max(0, Number(statsDataProgress?.total || logs.length || 0));
+        const detailsUnavailableForSync = Math.max(0, Number(statsDataProgress?.unavailable || 0));
+        const allUnavailable = detailsTotal > 0 && detailsUnavailableForSync >= detailsTotal;
+        if (detailsTotal > 0 && logs.length === 0 && !allUnavailable) {
+            return {
+                active: true,
+                phaseLabel: 'Preparing fights for stats',
+                progressText: 'Syncing uploaded fights into the stats dashboard',
+                progressPercent: 5
+            };
+        }
+        const total = Math.max(0, Number(aggregationProgress?.total || logs.length || 0));
+        const phase = aggregationProgress?.phase;
+        const active = Boolean(aggregationProgress?.active)
+            && (phase === 'streaming' || phase === 'computing')
+            && total > 0;
+        if (!active) {
+            return {
+                active: false,
+                phaseLabel: '',
+                progressText: '',
+                progressPercent: 0
+            };
+        }
+        const streamed = Math.min(Math.max(Number(aggregationProgress?.streamed || 0), 0), total);
+        const phaseLabel = phase === 'streaming'
+            ? 'Loading fight data'
+            : 'Finalizing squad stats';
+        const progressText = phase === 'streaming'
+            ? `${streamed} of ${total} fights loaded`
+            : 'All fights loaded • calculating final totals';
+        const progressPercent = phase === 'streaming'
+            ? Math.max(1, Math.min(99, Math.round((streamed / total) * 100)))
+            : 99;
+        return {
+            active: true,
+            phaseLabel,
+            progressText,
+            progressPercent
+        };
+    }, [aggregationProgress, statsDataProgress, logs.length]);
+
+    const detailsProgress = useMemo(() => {
         const detailsTotal = Math.max(0, Number(statsDataProgress?.total || logs.length || 0));
         const detailsPending = Math.min(detailsTotal, Math.max(0, Number(statsDataProgress?.pending || 0)));
         const detailsProcessed = Math.min(detailsTotal, Math.max(0, Number(statsDataProgress?.processed || (detailsTotal - detailsPending))));
         const detailsUnavailable = Math.max(0, Number(statsDataProgress?.unavailable || 0));
         const detailsActive = Boolean(statsDataProgress?.active) && detailsTotal > 0 && detailsPending > 0;
         if (detailsActive) {
-            const progressPercent = detailsTotal > 0
-                ? Math.max(1, Math.min(99, Math.round((detailsProcessed / detailsTotal) * 100)))
-                : 0;
             const unavailableText = detailsUnavailable > 0 ? ` • ${detailsUnavailable} unavailable` : '';
             return {
                 active: true,
                 phaseLabel: 'Loading fight details',
                 progressText: `${detailsProcessed} of ${detailsTotal} fights prepared${unavailableText}`,
-                progressPercent
+                progressPercent: detailsTotal > 0
+                    ? Math.max(1, Math.min(99, Math.round((detailsProcessed / detailsTotal) * 100)))
+                    : 0
             };
         }
         if (detailsTotal > 0 && detailsUnavailable >= detailsTotal) {
@@ -223,47 +267,14 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
                 progressPercent: 100
             };
         }
-        if (detailsTotal > 0 && logs.length === 0) {
-            return {
-                active: true,
-                phaseLabel: 'Preparing fights for stats',
-                progressText: 'Syncing uploaded fights into the stats dashboard',
-                progressPercent: 5
-            };
-        }
-        const total = Math.max(0, Number(aggregationProgress?.total || logs.length || 0));
-        const active = Boolean(aggregationProgress?.active) && aggregationProgress?.phase !== 'idle' && aggregationProgress?.phase !== 'settled' && total > 0;
-        if (!active) {
-            return {
-                active: false,
-                phaseLabel: '',
-                progressText: '',
-                progressPercent: 0
-            };
-        }
-        const streamed = Math.min(Math.max(Number(aggregationProgress?.streamed || 0), 0), total);
-        const phaseLabel = aggregationProgress?.phase === 'streaming'
-            ? 'Loading fight data'
-            : 'Finalizing squad stats';
-        const progressText = aggregationProgress?.phase === 'streaming'
-            ? `${streamed} of ${total} fights loaded`
-            : 'All fights loaded • calculating final totals';
-        const progressPercent = aggregationProgress?.phase === 'streaming'
-            ? Math.max(1, Math.min(99, Math.round((streamed / total) * 100)))
-            : 99;
-        return {
-            active: true,
-            phaseLabel,
-            progressText,
-            progressPercent
-        };
-    }, [statsDataProgress, aggregationProgress, logs.length]);
-    const showDissolveLoading = statsSettling.active && !embedded;
-    const dissolveBarTitle = statsSettling.phaseLabel;
-    const dissolveBarMeta = statsSettling.progressText;
+        return { active: false, phaseLabel: '', progressText: '', progressPercent: 0 };
+    }, [statsDataProgress, logs.length]);
+    const showDissolveLoading = aggregationSettling.active && !embedded;
+    const dissolveBarTitle = aggregationSettling.phaseLabel;
+    const dissolveBarMeta = aggregationSettling.progressText;
 
     const [dissolveCompleting, setDissolveCompleting] = useState(false);
-    const statsActionsDisabled = showDissolveLoading || !sectionContentReady;
+    // statsActionsDisabled is computed after dissolveActive is defined (below)
     useEffect(() => {
         if (statsLoadingJokeTimerRef.current !== null) {
             window.clearTimeout(statsLoadingJokeTimerRef.current);
@@ -311,54 +322,65 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
     }, [showDissolveLoading]);
     // Trigger 500ms completion animation when progress reaches 100%
     useEffect(() => {
-        if (statsSettling.progressPercent >= 100 && statsSettling.active && !embedded) {
+        if (aggregationSettling.progressPercent >= 100 && aggregationSettling.active && !embedded) {
             setDissolveCompleting(true);
             const timer = setTimeout(() => setDissolveCompleting(false), 500);
             return () => clearTimeout(timer);
         }
-    }, [statsSettling.progressPercent, statsSettling.active, embedded]);
+    }, [aggregationSettling.progressPercent, aggregationSettling.active, embedded]);
 
     // Only clear dissolveCompleting early if settling never reached 100% or embedded flips
     useEffect(() => {
-        if ((!statsSettling.active && statsSettling.progressPercent < 100) || embedded) {
+        if ((!aggregationSettling.active && aggregationSettling.progressPercent < 100) || embedded) {
             setDissolveCompleting(false);
         }
-    }, [statsSettling.active, statsSettling.progressPercent, embedded]);
+    }, [aggregationSettling.active, aggregationSettling.progressPercent, embedded]);
 
     // Once dissolve has completed once, never show it again (prevents re-trigger on tab switch).
     // If stats are already settled on mount (e.g. navigating back), skip dissolve immediately.
-    const alreadySettledOnMount = useRef(!statsSettling.active && stats != null);
+    const alreadySettledOnMount = useRef(!aggregationSettling.active && stats != null);
     const [dissolveCompletedOnce, setDissolveCompletedOnce] = useState(() => alreadySettledOnMount.current);
-    const rawDissolveActive = (showDissolveLoading && statsSettling.progressPercent < 100) || dissolveCompleting;
+    const rawDissolveActive = (showDissolveLoading && aggregationSettling.progressPercent < 100) || dissolveCompleting;
     useEffect(() => {
         if (dissolveCompletedOnce) return;
         // Mark completed after the dissolve completion animation finishes
-        if (!rawDissolveActive && !dissolveCompleting && !statsSettling.active && stats != null) {
+        if (!rawDissolveActive && !dissolveCompleting && !aggregationSettling.active && stats != null) {
             setDissolveCompletedOnce(true);
         }
-    }, [rawDissolveActive, dissolveCompleting, statsSettling.active, dissolveCompletedOnce, stats]);
+    }, [rawDissolveActive, dissolveCompleting, aggregationSettling.active, dissolveCompletedOnce, stats]);
     const dissolveActive = rawDissolveActive && !dissolveCompletedOnce;
+    const statsActionsDisabled = dissolveActive || !sectionContentReady;
 
     const sectionWrapClass = dissolveActive
         ? (dissolveCompleting ? 'stats-section-wrap stats-section-wrap--materializing' : 'stats-section-wrap stats-section-wrap--unloaded')
         : 'stats-section-wrap';
 
-    const dissolveParticlesRef = useRef<Array<{ top: string; left: string; size: number; dur: string; delay: string; color: string; dx: string; dy: string; ex: string; ey: string }>>([]);
+    type DissolveParticle = { top: string; left: string; size: number; dur: string; delay: string; color: string; dx: string; dy: string; ex: string; ey: string };
+    const dissolveParticlesRef = useRef<DissolveParticle[]>([]);
+    const ambientParticlesRef = useRef<DissolveParticle[]>([]);
+
+    const makeParticle = (topRange: [number, number], leftRange: [number, number], colors: string[]): DissolveParticle => {
+        const drift = () => `${-160 + Math.floor(Math.random() * 320)}px`;
+        return {
+            top: `${topRange[0] + Math.random() * (topRange[1] - topRange[0])}%`,
+            left: `${leftRange[0] + Math.random() * (leftRange[1] - leftRange[0])}%`,
+            size: 4 + Math.floor(Math.random() * 10),
+            dur: `${2 + Math.random() * 2.5}s`,
+            delay: `${Math.random() * 3}s`,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            dx: drift(), dy: drift(), ex: drift(), ey: drift(),
+        };
+    };
     if (dissolveParticlesRef.current.length === 0) {
         const colors = ['var(--brand-primary)', 'var(--brand-secondary)'];
-        for (let i = 0; i < 8; i++) {
-            dissolveParticlesRef.current.push({
-                top: `${10 + Math.random() * 75}%`,
-                left: `${5 + Math.random() * 88}%`,
-                size: 7 + Math.floor(Math.random() * 7),
-                dur: `${2.6 + Math.random() * 2.4}s`,
-                delay: `${Math.random() * 2.5}s`,
-                color: colors[i % 2],
-                dx: `${-80 + Math.floor(Math.random() * 160)}px`,
-                dy: `${-80 + Math.floor(Math.random() * 160)}px`,
-                ex: `${-80 + Math.floor(Math.random() * 160)}px`,
-                ey: `${-80 + Math.floor(Math.random() * 160)}px`,
-            });
+        for (let i = 0; i < 14; i++) {
+            dissolveParticlesRef.current.push(makeParticle([5, 90], [3, 95], colors));
+        }
+    }
+    if (ambientParticlesRef.current.length === 0) {
+        const colors = ['var(--brand-primary)', 'var(--brand-secondary)'];
+        for (let i = 0; i < 28; i++) {
+            ambientParticlesRef.current.push(makeParticle([2, 98], [1, 99], colors));
         }
     }
 
@@ -3756,7 +3778,8 @@ type SpikeFight = {
                 devMockAvailable={devMockAvailable}
                 devMockUploadState={devMockUploadState}
             />
-            {statsSettling.active && !dissolveCompletedOnce && (
+            {/* Dissolve bar: aggregation settling */}
+            {(aggregationSettling.active && !dissolveCompletedOnce) && (
                 <div className="mb-3 text-xs">
                     <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-2 text-[11px]" style={{ color: 'var(--text-secondary)' }}>
@@ -3765,13 +3788,13 @@ type SpikeFight = {
                             <span style={{ opacity: 0.7 }}>{dissolveBarMeta}</span>
                         </div>
                     </div>
-                    {!embedded && statsSettling.active && (
+                    {!embedded && aggregationSettling.active && (
                         <div className="stats-dissolve-bar">
                             <div
                                 className="stats-dissolve-bar__fill"
-                                style={{ width: `${statsSettling.progressPercent}%` }}
+                                style={{ width: `${aggregationSettling.progressPercent}%` }}
                             />
-                            <div style={{ position: 'absolute', left: `${statsSettling.progressPercent}%`, top: '50%', transform: 'translateY(-50%)', transition: 'left 0.6s ease' }}>
+                            <div style={{ position: 'absolute', left: `${aggregationSettling.progressPercent}%`, top: '50%', transform: 'translateY(-50%)', transition: 'left 0.6s ease' }}>
                                 <span className="stats-dissolve-bar__particle" />
                                 <span className="stats-dissolve-bar__particle" />
                                 <span className="stats-dissolve-bar__particle" />
@@ -3785,6 +3808,24 @@ type SpikeFight = {
                     )}
                 </div>
             )}
+            {/* Details progress: non-blocking indicator shown after dissolve completes */}
+            {!aggregationSettling.active && detailsProgress.active && (
+                <div className="mb-3 text-xs">
+                    <div className="flex items-center gap-2 text-[11px]" style={{ color: 'var(--text-secondary)' }}>
+                        {!embedded && <span className="stats-dissolve-heartbeat" />}
+                        <span className="font-medium">{detailsProgress.phaseLabel}</span>
+                        <span style={{ opacity: 0.7 }}>{detailsProgress.progressText}</span>
+                    </div>
+                    {!embedded && (
+                        <div className="stats-dissolve-bar">
+                            <div
+                                className="stats-dissolve-bar__fill"
+                                style={{ width: `${detailsProgress.progressPercent}%` }}
+                            />
+                        </div>
+                    )}
+                </div>
+            )}
 
             <div className={`${embedded ? '' : 'flex-1 min-h-0 flex'} relative`}>
                 <div
@@ -3793,6 +3834,30 @@ type SpikeFight = {
                     className={`${scrollContainerClass} ${embedded ? '' : 'flex-1'} ${dissolveActive ? 'stats-dashboard-scroll-lock' : ''}`}
                     style={resolvedScrollContainerStyle}
                 >
+                {/* Ambient dissolve particles that float across the entire dashboard (fills gaps between sections) */}
+                {dissolveActive && !dissolveCompleting && (
+                    <div className="stats-dissolve-ambient" aria-hidden>
+                        {ambientParticlesRef.current.map((p, i) => (
+                            <span
+                                key={i}
+                                className="stats-dissolve-particle"
+                                style={{
+                                    top: p.top,
+                                    left: p.left,
+                                    width: p.size,
+                                    height: p.size,
+                                    background: `color-mix(in srgb, ${p.color} 40%, transparent)`,
+                                    ['--p-dur' as any]: p.dur,
+                                    ['--p-delay' as any]: p.delay,
+                                    ['--p-dx' as any]: p.dx,
+                                    ['--p-dy' as any]: p.dy,
+                                    ['--p-ex' as any]: p.ex,
+                                    ['--p-ey' as any]: p.ey,
+                                }}
+                            />
+                        ))}
+                    </div>
+                )}
                 <StatsSharedContext.Provider value={sharedCtxValue}>
                 {useModernLayout ? (
                     <div className="stats-layout stats-layout-modern grid gap-4 grid-cols-1">
