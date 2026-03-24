@@ -810,6 +810,42 @@ export function registerGithubHandlers(opts: GithubHandlerOptions) {
         }
     });
 
+    ipcMain.handle('get-github-report-detail', async (_event, payload: {
+        reportId: string;
+        owner?: string;
+        repo?: string;
+        branch?: string;
+    }) => {
+        try {
+            const token = store.get('githubToken') as string | undefined;
+            const reportId = payload?.reportId;
+            if (!token) {
+                return { success: false, error: 'GitHub not connected.' };
+            }
+            if (!reportId) {
+                return { success: false, error: 'No report ID provided.' };
+            }
+            const isOverride = !!(payload?.owner && payload?.repo);
+            const owner = isOverride ? payload.owner! : (store.get('githubRepoOwner') as string | undefined);
+            const repo = isOverride ? payload.repo! : (store.get('githubRepoName') as string | undefined);
+            const branch = payload?.branch || (store.get('githubBranch') as string | undefined) || 'main';
+            if (!owner || !repo) {
+                return { success: false, error: 'Repository not configured.' };
+            }
+            const pagesPath = await resolveEffectivePagesPath(owner, repo, branch, token, isOverride);
+            const filePath = withPagesPath(pagesPath, `reports/${reportId}/report.json`);
+            const file = await getGithubFile(owner, repo, filePath, branch, token);
+            if (!file?.content) {
+                return { success: false, error: 'Report not found.' };
+            }
+            const decoded = Buffer.from(file.content, 'base64').toString('utf8');
+            const report = JSON.parse(decoded);
+            return { success: true, report };
+        } catch (err: any) {
+            return { success: false, error: err?.message || 'Failed to load report.' };
+        }
+    });
+
     ipcMain.handle('delete-github-reports', async (_event, payload: { ids: string[]; owner?: string; repo?: string; branch?: string }) => {
         try {
             const token = store.get('githubToken') as string | undefined;
