@@ -1599,7 +1599,7 @@ export function ReportApp() {
                                     aria-label="ArcBridge logo"
                                 />
                                 <div>
-                                    <div className="text-[11px] tracking-[0.06em]" style={{ fontFamily: '"Cinzel", serif' }}><span className="text-white">Arc</span><span style={{ color: 'var(--brand-primary)' }}>Bridge</span> <span className="text-gray-400 uppercase tracking-[0.3em] text-[10px]">Reports</span></div>
+                                    <div><div className="text-[11px] tracking-[0.06em]" style={{ fontFamily: '"Cinzel", serif' }}><span className="text-white">Arc</span><span style={{ color: 'var(--brand-primary)' }}>Bridge</span></div><div className="text-[10px] uppercase tracking-[0.3em] text-gray-400">Reports</div></div>
                                     <div className="text-sm font-semibold text-white">Navigation</div>
                                 </div>
                             </div>
@@ -1721,7 +1721,7 @@ export function ReportApp() {
                                     )
                                 )}
                                 <div className="min-w-0">
-                                    <div className="report-brand-label text-xs tracking-[0.06em]" style={{ fontFamily: '"Cinzel", serif' }}><span className="text-white">Arc</span><span style={{ color: 'var(--brand-primary)' }}>Bridge</span> <span className="text-gray-400 uppercase tracking-[0.3em] text-[10px]">Log Report</span></div>
+                                    <div className="report-brand-label"><div className="text-xs tracking-[0.06em]" style={{ fontFamily: '"Cinzel", serif' }}><span className="text-white">Arc</span><span style={{ color: 'var(--brand-primary)' }}>Bridge</span></div><div className="text-[10px] uppercase tracking-[0.3em] text-gray-400">Log Report</div></div>
                                     <h1 className="text-2xl sm:text-3xl font-bold mt-1">{report.meta.title}</h1>
                                     <div className="text-xs sm:text-sm text-gray-400 mt-2">{report.meta.dateLabel || formatLocalRange(report.meta.dateStart, report.meta.dateEnd)}</div>
                                 </div>
@@ -2180,21 +2180,10 @@ export function ReportApp() {
                                     className="w-20 h-20 sm:w-28 sm:h-28 rounded-lg object-cover mx-auto sm:mx-0 shrink-0"
                                 />
                             ) : (
-                                <div
-                                    className="w-20 h-20 sm:w-28 sm:h-28 mx-auto sm:mx-0 shrink-0"
-                                    style={{
-                                        backgroundColor: defaultLogoColor,
-                                        maskImage: `url("${logoUrl || joinAssetPath(assetBasePath, 'svg/AxiBridge.svg')}")`,
-                                        WebkitMaskImage: `url("${logoUrl || joinAssetPath(assetBasePath, 'svg/AxiBridge.svg')}")`,
-                                        maskRepeat: 'no-repeat',
-                                        WebkitMaskRepeat: 'no-repeat',
-                                        maskPosition: 'center',
-                                        WebkitMaskPosition: 'center',
-                                        maskSize: 'contain',
-                                        WebkitMaskSize: 'contain',
-                                        maskMode: 'alpha'
-                                    }}
-                                    aria-label="ArcBridge logo"
+                                <img
+                                    src={joinAssetPath(assetBasePath, 'img/AxiBridge-white.png')}
+                                    alt="ArcBridge logo"
+                                    className="w-20 h-20 sm:w-28 sm:h-28 mx-auto sm:mx-0 shrink-0 object-contain"
                                 />
                             )}
                             <div>
