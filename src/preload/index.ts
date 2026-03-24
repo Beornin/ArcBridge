@@ -116,17 +116,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ensureGithubTemplate: () => ipcRenderer.invoke('ensure-github-template'),
     selectGithubLogo: () => ipcRenderer.invoke('select-github-logo'),
     applyGithubLogo: (payload?: { logoPath?: string }) => ipcRenderer.invoke('apply-github-logo', payload),
-    applyGithubTheme: (payload?: { themeId?: string }) => ipcRenderer.invoke('apply-github-theme', payload),
     uploadWebReport: (payload: { meta: any; stats: any; repoFullName?: string; repoOwner?: string; repoName?: string }) => ipcRenderer.invoke('upload-web-report', payload),
     mockWebReport: (payload: { meta: any; stats: any }) => ipcRenderer.invoke('mock-web-report', payload),
     getGithubPagesBuildStatus: (payload?: { repoFullName?: string; repoOwner?: string; repoName?: string }) => ipcRenderer.invoke('get-github-pages-build-status', payload),
     onWebUploadStatus: (callback: (data: any) => void) => {
         ipcRenderer.on('web-upload-status', (_event, value) => callback(value));
         return () => ipcRenderer.removeAllListeners('web-upload-status');
-    },
-    onGithubThemeStatus: (callback: (data: { stage?: string; message?: string; progress?: number }) => void) => {
-        ipcRenderer.on('github-theme-status', (_event, value) => callback(value));
-        return () => ipcRenderer.removeAllListeners('github-theme-status');
     },
     exportSettings: () => ipcRenderer.invoke('export-settings'),
     importSettings: () => ipcRenderer.invoke('import-settings'),

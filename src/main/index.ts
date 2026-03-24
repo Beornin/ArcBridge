@@ -5,7 +5,7 @@ import https from 'node:https'
 import { createHash } from 'node:crypto'
 
 import { spawn } from 'node:child_process'
-import { BASE_WEB_THEMES, CRT_WEB_THEME, CRT_WEB_THEME_ID, DEFAULT_WEB_THEME_ID, KINETIC_DARK_WEB_THEME, KINETIC_DARK_WEB_THEME_ID, KINETIC_SLATE_WEB_THEME, KINETIC_SLATE_WEB_THEME_ID, KINETIC_WEB_THEME, KINETIC_WEB_THEME_ID, MATTE_WEB_THEME, MATTE_WEB_THEME_ID, type WebTheme } from '../shared/webThemes';
+import { LEGACY_THEME_TO_PALETTE } from '../shared/webThemes';
 import { DEFAULT_DISRUPTION_METHOD, DisruptionMethod } from '../shared/metricsSettings';
 import { LogWatcher } from './watcher'
 import { Uploader, UploadResult } from './uploader'
@@ -103,7 +103,6 @@ import {
     DEFAULT_EMBED_STATS,
     DEFAULT_DISCORD_ENEMY_SPLIT_SETTINGS,
     normalizeMvpWeights,
-    normalizeKineticThemeVariant,
 } from './handlers/settingsHandlers';
 import { registerDatasetHandlers } from './handlers/datasetHandlers';
 import { registerUploadHandlers } from './handlers/uploadHandlers';
@@ -146,6 +145,20 @@ const { setForwarding: setConsoleLogForwarding, getHistory: getConsoleLogHistory
 const Store = require('electron-store');
 const store = new Store();
 
+// ─── Settings migration: legacy UiTheme → colorPalette + glassSurfaces ────────
+{
+    const legacyUiTheme = store.get('uiTheme') as string | undefined;
+    if (legacyUiTheme) {
+        const mapping = LEGACY_THEME_TO_PALETTE[legacyUiTheme] ?? { palette: 'electric-blue', glass: false };
+        store.set('colorPalette', mapping.palette);
+        store.set('glassSurfaces', mapping.glass);
+        store.delete('uiTheme');
+        store.delete('githubWebTheme');
+        store.delete('kineticFontStyle');
+        store.delete('kineticThemeVariant');
+        store.delete('dashboardLayout');
+    }
+}
 
 // Local wrappers bind the store-injected functions from uploadRetryQueue.ts to
 // the module-level electron-store instance, preserving all existing call sites.
@@ -1016,7 +1029,7 @@ if (!gotTheLock) {
 
         // Removed get-logs and save-logs handlers
 
-        const applySettings = (settings: { logDirectory?: string | null, discordWebhookUrl?: string | null, discordNotificationType?: 'image' | 'image-beta' | 'embed', discordEnemySplitSettings?: { image?: boolean; embed?: boolean; tiled?: boolean }, discordSplitEnemiesByTeam?: boolean, webhooks?: any[], selectedWebhookId?: string | null, dpsReportToken?: string | null, closeBehavior?: 'minimize' | 'quit', embedStatSettings?: any, mvpWeights?: any, statsViewSettings?: any, disruptionMethod?: DisruptionMethod, uiTheme?: 'classic' | 'modern' | 'crt' | 'matte' | 'kinetic', kineticFontStyle?: 'default' | 'original', kineticThemeVariant?: 'light' | 'midnight' | 'slate', dashboardLayout?: 'top' | 'side', githubRepoOwner?: string | null, githubRepoName?: string | null, githubBranch?: string | null, githubPagesBaseUrl?: string | null, githubToken?: string | null, githubWebTheme?: string | null, githubLogoPath?: string | null, githubFavoriteRepos?: string[], walkthroughSeen?: boolean }) => {
+        const applySettings = (settings: { logDirectory?: string | null, discordWebhookUrl?: string | null, discordNotificationType?: 'image' | 'image-beta' | 'embed', discordEnemySplitSettings?: { image?: boolean; embed?: boolean; tiled?: boolean }, discordSplitEnemiesByTeam?: boolean, webhooks?: any[], selectedWebhookId?: string | null, dpsReportToken?: string | null, closeBehavior?: 'minimize' | 'quit', embedStatSettings?: any, mvpWeights?: any, statsViewSettings?: any, disruptionMethod?: DisruptionMethod, colorPalette?: string, glassSurfaces?: boolean, githubRepoOwner?: string | null, githubRepoName?: string | null, githubBranch?: string | null, githubPagesBaseUrl?: string | null, githubToken?: string | null, githubLogoPath?: string | null, githubFavoriteRepos?: string[], walkthroughSeen?: boolean }) => {
             if (settings.logDirectory !== undefined) {
                 store.set('logDirectory', settings.logDirectory);
                 if (settings.logDirectory) watcher?.start(settings.logDirectory);
@@ -1083,17 +1096,11 @@ if (!gotTheLock) {
                 store.set('disruptionMethod', settings.disruptionMethod);
                 discord?.setDisruptionMethod(settings.disruptionMethod);
             }
-            if (settings.uiTheme !== undefined) {
-                store.set('uiTheme', settings.uiTheme);
+            if (settings.colorPalette !== undefined) {
+                store.set('colorPalette', settings.colorPalette);
             }
-            if (settings.kineticFontStyle !== undefined) {
-                store.set('kineticFontStyle', settings.kineticFontStyle);
-            }
-            if (settings.kineticThemeVariant !== undefined) {
-                store.set('kineticThemeVariant', normalizeKineticThemeVariant(settings.kineticThemeVariant));
-            }
-            if (settings.dashboardLayout !== undefined) {
-                store.set('dashboardLayout', settings.dashboardLayout);
+            if (settings.glassSurfaces !== undefined) {
+                store.set('glassSurfaces', settings.glassSurfaces);
             }
             if (settings.githubRepoOwner !== undefined) {
                 store.set('githubRepoOwner', settings.githubRepoOwner);
@@ -1109,9 +1116,6 @@ if (!gotTheLock) {
             }
             if (settings.githubToken !== undefined) {
                 store.set('githubToken', settings.githubToken);
-            }
-            if (settings.githubWebTheme !== undefined) {
-                store.set('githubWebTheme', settings.githubWebTheme);
             }
             if (settings.githubLogoPath !== undefined) {
                 store.set('githubLogoPath', settings.githubLogoPath);

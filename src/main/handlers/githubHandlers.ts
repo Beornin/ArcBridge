@@ -4,20 +4,26 @@ import path from 'node:path';
 import https from 'node:https';
 import { createHash } from 'node:crypto';
 import { spawn } from 'node:child_process';
-import {
-    BASE_WEB_THEMES, CRT_WEB_THEME, CRT_WEB_THEME_ID,
-    DARK_GLASS_WEB_THEME_ID,
-    DEFAULT_WEB_THEME_ID,
-    KINETIC_DARK_WEB_THEME, KINETIC_DARK_WEB_THEME_ID,
-    KINETIC_SLATE_WEB_THEME, KINETIC_SLATE_WEB_THEME_ID,
-    KINETIC_WEB_THEME, KINETIC_WEB_THEME_ID,
-    MATTE_WEB_THEME, MATTE_WEB_THEME_ID,
-    type WebTheme,
-} from '../../shared/webThemes';
-import {
-    normalizeKineticThemeVariant,
-    inferKineticThemeVariantFromThemeId,
-} from './settingsHandlers';
+// TODO(Task 8): Remove these legacy constants once buildWebReportPayload is rewritten
+const DEFAULT_WEB_THEME_ID = 'Arcane';
+const KINETIC_DARK_WEB_THEME_ID = 'KineticPaperDark';
+const KINETIC_SLATE_WEB_THEME_ID = 'KineticPaperSlate';
+const normalizeKineticThemeVariant = (value: unknown): 'light' | 'midnight' | 'slate' => {
+    if (value === 'midnight' || value === 'slate') return value;
+    return 'light';
+};
+const inferKineticThemeVariantFromThemeId = (themeId: unknown): 'light' | 'midnight' | 'slate' => {
+    if (themeId === KINETIC_DARK_WEB_THEME_ID) return 'midnight';
+    if (themeId === KINETIC_SLATE_WEB_THEME_ID) return 'slate';
+    return 'light';
+};
+// TODO(Task 8): Remove this stub once buildWebReportPayload is rewritten
+type UiThemeValue = 'classic' | 'modern' | 'crt' | 'matte' | 'kinetic' | 'dark-glass';
+const UI_THEME_VALUES = new Set<string>(['classic', 'modern', 'crt', 'matte', 'kinetic', 'dark-glass']);
+const resolveWebPublishTheme = (uiTheme: string, requestedThemeId: string): { selectedTheme: { id: string } | null; uiThemeValue: UiThemeValue } => {
+    const uiThemeValue: UiThemeValue = UI_THEME_VALUES.has(uiTheme) ? (uiTheme as UiThemeValue) : 'classic';
+    return { selectedTheme: { id: requestedThemeId || DEFAULT_WEB_THEME_ID }, uiThemeValue };
+};
 import { MAX_GITHUB_BLOB_BYTES, MAX_GITHUB_REPORT_JSON_BYTES } from '../devDatasets';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -397,36 +403,6 @@ const withPagesPath = (pagesPath: string, repoPath: string) => {
     return `${pagesPath}/${repoPath}`.replace(/\/{2,}/g, '/');
 };
 
-// ─── Theme helpers ─────────────────────────────────────────────────────────────
-
-const normalizeUiThemeChoice = (value: unknown): 'classic' | 'modern' | 'crt' | 'matte' | 'kinetic' | 'dark-glass' => {
-    if (value === 'modern' || value === 'crt' || value === 'matte' || value === 'kinetic' || value === 'dark-glass') return value;
-    return 'classic';
-};
-
-const resolveWebUiThemeChoice = (appUiTheme: unknown, selectedThemeId: unknown): 'classic' | 'modern' | 'crt' | 'matte' | 'kinetic' | 'dark-glass' => {
-    if (selectedThemeId === MATTE_WEB_THEME_ID) return 'matte';
-    if (selectedThemeId === KINETIC_WEB_THEME_ID || selectedThemeId === KINETIC_DARK_WEB_THEME_ID || selectedThemeId === KINETIC_SLATE_WEB_THEME_ID) return 'kinetic';
-    if (selectedThemeId === CRT_WEB_THEME_ID) return 'crt';
-    return normalizeUiThemeChoice(appUiTheme);
-};
-
-const resolveWebPublishTheme = (uiTheme: string, requestedThemeId: string): { selectedTheme: WebTheme; uiThemeValue: 'classic' | 'modern' | 'crt' | 'matte' | 'kinetic' | 'dark-glass' } => {
-    const availableThemes = uiTheme === 'crt'
-        ? [CRT_WEB_THEME]
-        : [...BASE_WEB_THEMES, MATTE_WEB_THEME, KINETIC_WEB_THEME, KINETIC_DARK_WEB_THEME, KINETIC_SLATE_WEB_THEME];
-    const themeId = uiTheme === 'crt'
-        ? CRT_WEB_THEME_ID
-        : uiTheme === 'matte'
-            ? MATTE_WEB_THEME_ID
-            : uiTheme === 'dark-glass'
-                ? (requestedThemeId === DEFAULT_WEB_THEME_ID ? DARK_GLASS_WEB_THEME_ID : requestedThemeId)
-                : requestedThemeId;
-    const selectedTheme = availableThemes.find((theme) => theme.id === themeId) || availableThemes[0];
-    const uiThemeValue = resolveWebUiThemeChoice(uiTheme, selectedTheme?.id);
-    return { selectedTheme, uiThemeValue };
-};
-
 // ─── Report payload builder ────────────────────────────────────────────────────
 
 const formatBytes = (value: number) => {
@@ -769,13 +745,6 @@ export function registerGithubHandlers(opts: GithubHandlerOptions) {
         const win = getWindow();
         if (win && !win.isDestroyed()) {
             win.webContents.send('web-upload-status', { stage, message, progress });
-        }
-    };
-
-    const sendGithubThemeStatus = (stage: string, message?: string, progress?: number) => {
-        const win = getWindow();
-        if (win && !win.isDestroyed()) {
-            win.webContents.send('github-theme-status', { stage, message, progress });
         }
     };
 
@@ -1206,107 +1175,6 @@ export function registerGithubHandlers(opts: GithubHandlerOptions) {
             return { success: true, updated: true };
         } catch (err: any) {
             return { success: false, error: err?.message || 'Failed to update logo.' };
-        }
-    });
-
-    ipcMain.handle('apply-github-theme', async (_event, _payload?: { themeId?: string }) => {
-        try {
-            sendGithubThemeStatus('Preparing', 'Updating site theme. This can take a minute...', 5);
-            const token = store.get('githubToken') as string | undefined;
-            const owner = store.get('githubRepoOwner') as string | undefined;
-            const repo = store.get('githubRepoName') as string | undefined;
-            const branch = (store.get('githubBranch') as string | undefined) || 'main';
-            if (!token) {
-                return { success: false, error: 'Missing GitHub token. Connect GitHub first.' };
-            }
-            if (!owner || !repo) {
-                return { success: false, error: 'Select or create a repository in Settings first.' };
-            }
-            let pagesPath = getStoredPagesPath();
-            try {
-                const resolved = await resolvePagesSource(owner, repo, branch, token);
-                pagesPath = resolved.pagesPath;
-            } catch {
-                pagesPath = getStoredPagesPath();
-            }
-
-            sendGithubThemeStatus('Preparing', 'Removing legacy site theme files...', 25);
-            const headRef = await getGithubRef(owner, repo, branch, token);
-            const headSha = headRef?.object?.sha;
-            if (!headSha) {
-                throw new Error('Unable to resolve repository branch head.');
-            }
-            const headCommit = await getGithubCommit(owner, repo, headSha, token);
-            const baseTreeSha = headCommit?.tree?.sha;
-            if (!baseTreeSha) {
-                throw new Error('Unable to resolve repository tree.');
-            }
-            const treeData = await getGithubTree(owner, repo, baseTreeSha, token);
-            const treeEntries = Array.isArray(treeData?.tree) ? treeData.tree : [];
-            const treeMap = new Map<string, string>();
-            treeEntries.forEach((entry: any) => {
-                if (entry?.path && entry?.sha && entry?.type === 'blob') {
-                    treeMap.set(entry.path, entry.sha);
-                }
-            });
-
-            const deleteEntries: Array<{ path: string; sha: null }> = [];
-            ['theme.json', 'ui-theme.json'].forEach((legacyFile) => {
-                const repoPath = withPagesPath(pagesPath, legacyFile);
-                if (treeMap.has(repoPath)) {
-                    deleteEntries.push({ path: repoPath, sha: null });
-                }
-            });
-
-            // Push the stable per-theme CSS files so all reports (including old ones)
-            // get the latest styling without requiring a new report to be published.
-            const THEME_CSS_FILES = ['classic.css', 'modern.css', 'crt.css', 'matte.css', 'kinetic.css'];
-            const themeDir = path.join(getWebRoot(), 'dist-web', 'web-report-themes');
-            const cssUploadEntries: Array<{ path: string; contentBase64: string }> = [];
-            if (fs.existsSync(themeDir)) {
-                for (const cssFile of THEME_CSS_FILES) {
-                    const absPath = path.join(themeDir, cssFile);
-                    if (!fs.existsSync(absPath)) continue;
-                    const content = fs.readFileSync(absPath);
-                    const blobSha = computeGitBlobSha(content);
-                    const repoPath = withPagesPath(pagesPath, `web-report-themes/${cssFile}`);
-                    if (treeMap.get(repoPath) !== blobSha) {
-                        cssUploadEntries.push({ path: repoPath, contentBase64: content.toString('base64') });
-                    }
-                }
-            }
-
-            if (deleteEntries.length === 0 && cssUploadEntries.length === 0) {
-                sendGithubThemeStatus('Complete', 'Site is up to date. Legacy files removed, theme stylesheets are current.', 100);
-                return { success: true };
-            }
-
-            sendGithubThemeStatus('Uploading', `Updating ${cssUploadEntries.length > 0 ? 'theme stylesheets' : 'legacy file cleanup'}...`, 55);
-            const cssBlobEntries: Array<{ path: string; sha: string }> = [];
-            for (const entry of cssUploadEntries) {
-                const blob = await createGithubBlob(owner, repo, token, entry.contentBase64, entry.path);
-                cssBlobEntries.push({ path: entry.path, sha: blob.sha });
-            }
-
-            const allTreeEntries: Array<{ path: string; sha: string | null }> = [
-                ...deleteEntries,
-                ...cssBlobEntries
-            ];
-            const commitParts: string[] = [];
-            if (deleteEntries.length > 0) commitParts.push('remove legacy web theme defaults');
-            if (cssBlobEntries.length > 0) commitParts.push('update web report theme stylesheets');
-            const commitMessage = commitParts.join(', ');
-
-            sendGithubThemeStatus('Finalizing', 'Publishing theme commit...', 90);
-            const newTree = await createGithubTree(owner, repo, token, baseTreeSha, allTreeEntries);
-            const newCommit = await createGithubCommit(owner, repo, token, commitMessage, newTree.sha, headSha);
-            await updateGithubRef(owner, repo, branch, token, newCommit.sha);
-
-            sendGithubThemeStatus('Committed', 'Theme update committed. Waiting for Pages build...', 100);
-            return { success: true };
-        } catch (err: any) {
-            sendGithubThemeStatus('Error', err?.message || 'Theme update failed.', 100);
-            return { success: false, error: err?.message || 'Theme update failed.' };
         }
     });
 
