@@ -168,6 +168,7 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
     const statsLoadingJokeCursorRef = useRef(0);
     const statsLoadingJokeTimerRef = useRef<number | null>(null);
     const statsLoadingJokeLastChangeRef = useRef(0);
+    const progressHighWaterRef = useRef(0);
     const isSectionVisibleFast = useCallback(
         (id: string) => (sectionVisibility ? sectionVisibility(id) : true),
         [sectionVisibility]
@@ -275,6 +276,17 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
         [logs]
     );
 
+    // High-water mark: never let the progress bar go backwards while loading is active.
+    // Reset when settling becomes inactive (new cycle).
+    if (!aggregationSettling.active) {
+        progressHighWaterRef.current = 0;
+    } else {
+        progressHighWaterRef.current = Math.max(progressHighWaterRef.current, aggregationSettling.progressPercent);
+    }
+    const settlingProgressPercent = aggregationSettling.active
+        ? progressHighWaterRef.current
+        : aggregationSettling.progressPercent;
+
     const showDissolveLoading = aggregationSettling.active && !embedded;
     const dissolveBarTitle = aggregationSettling.phaseLabel;
     const dissolveBarMeta = aggregationSettling.progressText;
@@ -328,22 +340,22 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
     }, [showDissolveLoading]);
     // Trigger 500ms completion animation when progress reaches 100%
     useEffect(() => {
-        if (aggregationSettling.progressPercent >= 100 && aggregationSettling.active && !embedded) {
+        if (settlingProgressPercent >= 100 && aggregationSettling.active && !embedded) {
             setDissolveCompleting(true);
             const timer = setTimeout(() => setDissolveCompleting(false), 500);
             return () => clearTimeout(timer);
         }
-    }, [aggregationSettling.progressPercent, aggregationSettling.active, embedded]);
+    }, [settlingProgressPercent, aggregationSettling.active, embedded]);
 
     // Only clear dissolveCompleting early if settling never reached 100% or embedded flips
     useEffect(() => {
-        if ((!aggregationSettling.active && aggregationSettling.progressPercent < 100) || embedded) {
+        if ((!aggregationSettling.active && settlingProgressPercent < 100) || embedded) {
             setDissolveCompleting(false);
         }
-    }, [aggregationSettling.active, aggregationSettling.progressPercent, embedded]);
+    }, [aggregationSettling.active, settlingProgressPercent, embedded]);
 
     const [dissolveCompletedForLogKey, setDissolveCompletedForLogKey] = useState<string | null>(null);
-    const rawDissolveActive = (showDissolveLoading && aggregationSettling.progressPercent < 100) || dissolveCompleting;
+    const rawDissolveActive = (showDissolveLoading && settlingProgressPercent < 100) || dissolveCompleting;
     useEffect(() => {
         if (dissolveCompletedForLogKey === logIdentityKey) return;
         // Don't mark completed when there are no logs — nothing to "complete" showing.
@@ -3802,9 +3814,9 @@ type SpikeFight = {
                         <div className="stats-dissolve-bar">
                             <div
                                 className="stats-dissolve-bar__fill"
-                                style={{ width: `${aggregationSettling.progressPercent}%` }}
+                                style={{ width: `${settlingProgressPercent}%` }}
                             />
-                            <div style={{ position: 'absolute', left: `${aggregationSettling.progressPercent}%`, top: '50%', transform: 'translateY(-50%)', transition: 'left 0.6s ease' }}>
+                            <div style={{ position: 'absolute', left: `${settlingProgressPercent}%`, top: '50%', transform: 'translateY(-50%)', transition: 'left 0.6s ease' }}>
                                 <span className="stats-dissolve-bar__particle" />
                                 <span className="stats-dissolve-bar__particle" />
                                 <span className="stats-dissolve-bar__particle" />
