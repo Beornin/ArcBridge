@@ -1036,7 +1036,7 @@ body.web-report #top-players .mvp-gold-icon-badge {
 .stats-dissolve-bar {
   position: relative;
   height: 4px;
-  border-radius: 1px;
+  border-radius: 0;
   background: color-mix(in srgb, var(--brand-primary) 12%, transparent);
   overflow: visible;
   margin-top: 8px;
@@ -1048,7 +1048,7 @@ body.web-report #top-players .mvp-gold-icon-badge {
   left: 0;
   top: 0;
   height: 100%;
-  border-radius: 1px;
+  border-radius: 0;
   background: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary));
   transition: width 0.6s ease;
 }
@@ -1066,7 +1066,7 @@ body.web-report #top-players .mvp-gold-icon-badge {
 
 .stats-dissolve-bar__particle {
   position: absolute;
-  border-radius: 50%;
+  border-radius: 0;
   pointer-events: none;
 }
 
