@@ -356,23 +356,27 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
 
     const [dissolveCompletedForLogKey, setDissolveCompletedForLogKey] = useState<string | null>(null);
     const rawDissolveActive = (showDissolveLoading && settlingProgressPercent < 100) || dissolveCompleting;
+    // hasMeaningfulStats: true when the aggregation produced actual fight data (not empty)
+    const hasMeaningfulStats = stats != null && Number((stats as any)?.total || 0) > 0;
+    // noDataExpected: true when the app genuinely has no logs (empty state, not bulk deferral)
+    const noDataExpected = logs.length === 0 && (statsDataProgress?.total ?? 0) === 0 && !statsDataProgress?.active;
+
     useEffect(() => {
         if (dissolveCompletedForLogKey === logIdentityKey) return;
-        // Don't mark completed when there are no logs — nothing to "complete" showing.
-        // This prevents the dissolve from being suppressed during bulk upload when
-        // logsForStats is empty but statsDataProgress reports pending uploads.
-        if (!rawDissolveActive && !dissolveCompleting && !aggregationSettling.active && stats != null && logs.length > 0) {
+        // Only mark completed when there's actual data to show, or when there's
+        // genuinely nothing expected (empty app). This keeps the dissolve active
+        // through: bulk upload deferral, worker running on detailless logs, and
+        // details hydration — until real fight stats are computed.
+        if (!rawDissolveActive && !dissolveCompleting && !aggregationSettling.active && (hasMeaningfulStats || noDataExpected)) {
             setDissolveCompletedForLogKey(logIdentityKey);
         }
-    }, [rawDissolveActive, dissolveCompleting, aggregationSettling.active, dissolveCompletedForLogKey, logIdentityKey, stats, logs.length]);
+    }, [rawDissolveActive, dissolveCompleting, aggregationSettling.active, dissolveCompletedForLogKey, logIdentityKey, hasMeaningfulStats, noDataExpected]);
     // dissolveActive gates section rendering (unloaded/materializing visual state).
-    // It's true when: (1) the normal dissolve is playing (rawDissolveActive), OR
-    // (2) data hasn't reached the stats view yet — either because details are still
-    // pending (statsDataProgress.active) or because the main logs array has data
-    // that logsForStats hasn't received yet (bulk upload deferral gap).
-    const dataExpectedButMissing = logs.length === 0 && (statsDataProgress?.total ?? 0) > 0;
-    const awaitingData = dissolveCompletedForLogKey !== logIdentityKey && !embedded
-        && (Boolean(statsDataProgress?.active) || dataExpectedButMissing);
+    // It stays true until there's meaningful stats data to show. This covers:
+    // - bulk upload deferral (logsForStats empty, main logs uploading)
+    // - worker ran on detailless logs (stats empty, details hydrating)
+    // - any gap between aggregation phases
+    const awaitingData = dissolveCompletedForLogKey !== logIdentityKey && !embedded && !hasMeaningfulStats && !noDataExpected;
     const dissolveActive = (rawDissolveActive && dissolveCompletedForLogKey !== logIdentityKey) || awaitingData;
     const statsActionsDisabled = dissolveActive || !sectionContentReady;
 
