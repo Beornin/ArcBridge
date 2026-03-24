@@ -113,6 +113,11 @@ body.glass-surfaces .stats-dashboard-nav-panel {
   backdrop-filter: blur(16px);
 }
 
+body.glass-surfaces .app-modal-card {
+  background: rgba(15, 18, 25, 0.92) !important;
+  backdrop-filter: blur(20px);
+}
+
 /* Settings sidebar in glass mode */
 body.glass-surfaces .settings-view aside > div {
   backdrop-filter: blur(12px);
@@ -133,7 +138,8 @@ body.bulk-uploading.glass-surfaces .app-shell {
 }
 body.bulk-uploading.glass-surfaces [data-surface="card"],
 body.bulk-uploading.glass-surfaces .stats-section-wrap > div,
-body.bulk-uploading.glass-surfaces .settings-view aside > div {
+body.bulk-uploading.glass-surfaces .settings-view aside > div,
+body.bulk-uploading.glass-surfaces .app-modal-card {
   backdrop-filter: none;
 }
 
