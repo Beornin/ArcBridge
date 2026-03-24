@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReportIndexEntry, ReportPayload } from '../shared/reportTypes';
 import { normalizeReportPayload } from '../shared/reportNormalization';
 import { StatsView } from './StatsView';
+import { StatsNavSidebar } from './stats/StatsNavSidebar';
 
 type HistoryRepoOption = {
     key: string;
@@ -141,6 +142,7 @@ export function FightReportHistoryView() {
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [commanderFilter, setCommanderFilter] = useState<string>('');
+    const [sectionVisibility, setSectionVisibility] = useState<((id: string) => boolean) | null>(null);
     const [commanderDropdownOpen, setCommanderDropdownOpen] = useState(false);
     const commanderDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -625,15 +627,19 @@ export function FightReportHistoryView() {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -30 }}
                         transition={{ duration: 0.25, ease: 'easeOut' }}
-                        className="flex-1 min-h-0 flex flex-col px-4 pt-2 pb-2"
+                        className="flex-1 min-h-0 flex gap-3 px-4 pt-2 pb-2"
                     >
-                        <StatsView
-                            logs={[]}
-                            onBack={() => setActiveTab('list')}
-                            precomputedStats={activeReport.report.stats}
-                            statsViewSettings={activeReport.report.stats?.statsViewSettings}
-                            dashboardTitle={activeReport.title}
-                        />
+                        <StatsNavSidebar onSectionVisibilityChange={setSectionVisibility} />
+                        <div className="flex-1 min-h-0 flex flex-col">
+                            <StatsView
+                                logs={[]}
+                                onBack={() => setActiveTab('list')}
+                                precomputedStats={activeReport.report.stats}
+                                statsViewSettings={activeReport.report.stats?.statsViewSettings}
+                                dashboardTitle={activeReport.title}
+                                sectionVisibility={sectionVisibility || undefined}
+                            />
+                        </div>
                     </motion.div>
                 ) : (
                     <motion.div
