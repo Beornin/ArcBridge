@@ -1,6 +1,6 @@
 import { ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReportIndexEntry, ReportPayload } from '../shared/reportTypes';
 import { normalizeReportPayload } from '../shared/reportNormalization';
 import { StatsView } from './StatsView';
@@ -139,6 +139,7 @@ export function FightReportHistoryView() {
     const [deleteMode, setDeleteMode] = useState(false);
     const [selectedForDelete, setSelectedForDelete] = useState<Set<string>>(new Set());
     const [deleteLoading, setDeleteLoading] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         let mounted = true;
@@ -181,6 +182,17 @@ export function FightReportHistoryView() {
     const defaultRepo = repoOptions[0] ? parseRepoFullName(repoOptions[0].key) : null;
     const isOverride = !!(selectedRepo && defaultRepo && selectedOption?.key !== repoOptions[0]?.key);
 
+    const filteredEntries = useMemo(() => {
+        const q = searchQuery.trim().toLowerCase();
+        if (!q) return indexEntries;
+        return indexEntries.filter((entry) => {
+            const title = (entry.title || '').toLowerCase();
+            const dateLabel = (entry.dateLabel || '').toLowerCase();
+            const commanders = (entry.commanders || []).join(' ').toLowerCase();
+            return title.includes(q) || dateLabel.includes(q) || commanders.includes(q);
+        });
+    }, [indexEntries, searchQuery]);
+
     const fetchIndex = useCallback(async () => {
         if (!selectedRepo) return;
         setIndexLoading(true);
@@ -207,6 +219,7 @@ export function FightReportHistoryView() {
         setActiveTab('list');
         setDeleteMode(false);
         setSelectedForDelete(new Set());
+        setSearchQuery('');
         fetchIndex();
     }, [selectedRepoKey, fetchIndex]);
 
@@ -383,6 +396,29 @@ export function FightReportHistoryView() {
                         </div>
                     </motion.div>
 
+                    {/* Search */}
+                    {!indexLoading && indexEntries.length > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.25, delay: 0.1 }}
+                            className="mb-3"
+                        >
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search by title, commander, or date..."
+                                className="w-full rounded-[4px] px-3 py-2 text-sm outline-none"
+                                style={{
+                                    background: 'var(--bg-input)',
+                                    border: '1px solid var(--border-default)',
+                                    color: 'var(--text-primary)',
+                                }}
+                            />
+                        </motion.div>
+                    )}
+
                     {detailError && (
                         <motion.div
                             initial={{ opacity: 0, y: -8 }}
@@ -407,7 +443,7 @@ export function FightReportHistoryView() {
                         </motion.div>
                     )}
 
-                    {!indexLoading && !error && indexEntries.length === 0 && (
+                    {!indexLoading && !error && filteredEntries.length === 0 && (
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -415,13 +451,13 @@ export function FightReportHistoryView() {
                             className="flex items-center justify-center py-12 text-sm"
                             style={{ color: 'var(--text-secondary)' }}
                         >
-                            No reports found.
+                            {searchQuery.trim() ? 'No reports match your search.' : 'No reports found.'}
                         </motion.div>
                     )}
 
-                    {!indexLoading && indexEntries.length > 0 && (
+                    {!indexLoading && filteredEntries.length > 0 && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            {indexEntries.map((entry, i) => (
+                            {filteredEntries.map((entry, i) => (
                                 <motion.button
                                     key={entry.id}
                                     type="button"
