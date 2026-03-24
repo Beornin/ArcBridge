@@ -129,14 +129,14 @@
                 "AppImage"
             ],
             "category": "Utility",
-            "icon": "public/img/AxiBridgeAppIcon.png"
+            "icon": "public/img/AxiBridge-white.png"
         },
         "win": {
             "artifactName": "ArcBridge-${version}-Setup.${ext}",
             "target": [
                 "nsis"
             ],
-            "icon": "public/img/AxiBridgeAppIcon.png"
+            "icon": "public/img/AxiBridge-white.png"
         },
         "nsis": {
             "oneClick": true,
