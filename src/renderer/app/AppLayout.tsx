@@ -41,7 +41,6 @@ export function AppLayout({ ctx }: { ctx: any }) {
         devDatasetsEnabled,
         setDevDatasetsOpen,
         webUploadState,
-        isModernTheme,
         setWebUploadState,
         statsViewMounted,
         logsForStats,
@@ -55,18 +54,15 @@ export function AppLayout({ ctx }: { ctx: any }) {
         aggregationDiagnostics,
         statsDataProgress,
         setStatsViewSettings,
-        uiTheme,
-        dashboardLayout,
+        colorPalette,
+        setColorPalette,
+        glassSurfaces,
+        setGlassSurfaces,
         handleWebUpload,
         selectedWebhookId,
         setEmbedStatSettings,
         setMvpWeights,
         setDisruptionMethod,
-        setUiTheme,
-        setKineticFontStyle,
-        setKineticThemeVariant,
-        setDashboardLayout,
-        setGithubWebTheme,
         developerSettingsTrigger,
         helpUpdatesFocusTrigger,
         handleHelpUpdatesFocusConsumed,
@@ -243,54 +239,15 @@ export function AppLayout({ ctx }: { ctx: any }) {
         () => STATS_TOC_GROUPS.find((group) => group.id === statsActiveGroup) || STATS_TOC_GROUPS[0],
         [statsActiveGroup]
     );
-    const statsSidebarSurfaceClass = uiTheme === 'matte'
-        ? 'border border-[color:var(--border-default)] bg-[color:var(--bg-card)]'
-        : uiTheme === 'kinetic'
-            ? 'border border-stone-500/20 bg-[color:var(--bg-card)]'
-        : uiTheme === 'crt'
-            ? 'border border-[#3a6b52]/60 bg-[#09140e]/90'
-            : uiTheme === 'modern'
-                ? 'border border-cyan-300/20 bg-[linear-gradient(180deg,rgba(16,24,34,0.96),rgba(12,18,28,0.94))]'
-                : uiTheme === 'dark-glass'
-                    ? 'border border-white/[0.07] bg-[rgba(13,15,20,0.92)]'
-                    : 'border border-white/10 bg-slate-950/85';
-    const statsSidebarShadowClass = uiTheme === 'matte'
-        ? 'shadow-[-6px_-6px_12px_rgba(255,255,255,0.04),6px_6px_14px_rgba(0,0,0,0.45)]'
-        : uiTheme === 'kinetic'
-            ? 'shadow-[0_10px_24px_rgba(62,52,39,0.08)]'
-        : uiTheme === 'modern'
-            ? 'shadow-[0_16px_46px_rgba(0,0,0,0.5),0_0_0_1px_rgba(122,215,240,0.08)]'
-            : uiTheme === 'dark-glass'
-                ? 'shadow-[0_20px_60px_rgba(0,0,0,0.6),0_0_0_1px_rgba(26,115,232,0.05)]'
-                : 'shadow-[0_20px_60px_rgba(0,0,0,0.45)]';
-    const statsSidebarBlurClass = uiTheme === 'matte' || uiTheme === 'kinetic' ? '' : uiTheme === 'modern' ? 'backdrop-blur-lg' : 'backdrop-blur-md';
-    const dashboardLayoutMode = dashboardLayout === 'top' || dashboardLayout === 'side'
-        ? dashboardLayout
-        : (isModernTheme ? 'top' : 'side');
-    const statsSubnavItemsClass = uiTheme === 'matte'
-        ? 'rounded-lg border border-[color:var(--border-default)] bg-[color:var(--bg-input)] shadow-[inset_-4px_-4px_10px_rgba(255,255,255,0.03),inset_5px_5px_12px_rgba(0,0,0,0.4)]'
-        : uiTheme === 'kinetic'
-            ? 'rounded-lg border border-stone-500/20 bg-[color:var(--bg-input)]'
-        : uiTheme === 'modern'
-            ? 'rounded-lg border border-cyan-300/15 bg-slate-900/65 backdrop-blur-sm'
-        : uiTheme === 'dark-glass'
-            ? 'rounded-lg border border-white/[0.05] bg-black/25'
-        : '';
-    const statsNavGroupShellClass = uiTheme === 'kinetic'
-        ? 'rounded-lg border border-[color:var(--border-default)] bg-[color:var(--bg-input)]'
-        : 'rounded-lg border border-white/10 bg-white/[0.04]';
-    const statsNavGroupButtonStateClass = uiTheme === 'kinetic'
-        ? 'text-[color:var(--text-secondary)] hover:bg-[color:var(--bg-hover)]'
-        : 'text-gray-200 hover:bg-white/[0.08]';
-    const statsNavGroupButtonActiveClass = uiTheme === 'kinetic'
-        ? 'bg-[color:var(--bg-hover)] text-[color:var(--text-primary)]'
-        : 'bg-white/10 text-white';
-    const statsNavEntryStateClass = uiTheme === 'kinetic'
-        ? 'text-[color:var(--text-secondary)] hover:bg-[color:var(--bg-hover)]'
-        : 'text-gray-200 hover:bg-white/[0.08]';
-    const statsNavEntryActiveClass = uiTheme === 'kinetic'
-        ? 'bg-[color:var(--bg-hover)] text-[color:var(--text-primary)]'
-        : 'bg-white/10 text-white';
+    const statsSidebarSurfaceClass = 'border border-white/[0.07] bg-[rgba(13,15,20,0.92)]';
+    const statsSidebarShadowClass = 'shadow-[0_20px_60px_rgba(0,0,0,0.45)]';
+    const statsSidebarBlurClass = 'backdrop-blur-md';
+    const statsSubnavItemsClass = 'rounded-lg border border-white/[0.05] bg-black/25';
+    const statsNavGroupShellClass = 'rounded-lg border border-white/10 bg-white/[0.04]';
+    const statsNavGroupButtonStateClass = 'text-gray-200 hover:bg-white/[0.08]';
+    const statsNavGroupButtonActiveClass = 'bg-white/10 text-white';
+    const statsNavEntryStateClass = 'text-gray-200 hover:bg-white/[0.08]';
+    const statsNavEntryActiveClass = 'bg-white/10 text-white';
     const statsSectionVisibility = useCallback((id: string) => {
         const sectionIds = Array.isArray((activeStatsGroupDef as any)?.sectionIds)
             ? (activeStatsGroupDef as any).sectionIds
@@ -376,7 +333,7 @@ export function AppLayout({ ctx }: { ctx: any }) {
             <div className="legacy-orb absolute top-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-purple-600/20 blur-[100px] pointer-events-none" />
             <div className="legacy-orb absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-blue-600/20 blur-[100px] pointer-events-none" />
 
-            <div className={`app-content relative z-10 max-w-none flex-1 w-full min-w-0 flex flex-col min-h-0 ${(view === 'stats' || view === 'history') ? 'pt-8 px-8 pb-2 overflow-hidden' : (isModernTheme ? 'p-8 overflow-visible' : 'p-8 overflow-hidden')}`}>
+            <div className={`app-content relative z-10 max-w-none flex-1 w-full min-w-0 flex flex-col min-h-0 ${(view === 'stats' || view === 'history') ? 'pt-8 px-8 pb-2 overflow-hidden' : 'p-8 overflow-hidden'}`}>
                 <header className="app-header flex flex-wrap justify-between items-center gap-3 mb-10 shrink-0">
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
@@ -528,7 +485,7 @@ export function AppLayout({ ctx }: { ctx: any }) {
                 <WebUploadOverlay
                     webUploadState={webUploadState}
                     isDev={isDev}
-                    isModernTheme={isModernTheme}
+                    isModernTheme={false}
                     setWebUploadState={setWebUploadState}
                 />
 
@@ -624,7 +581,6 @@ export function AppLayout({ ctx }: { ctx: any }) {
                                         setStatsViewSettings(next);
                                         window.electronAPI?.saveSettings?.({ statsViewSettings: next });
                                     }}
-                                    uiTheme={uiTheme}
                                     webUploadState={webUploadState}
                                     onWebUpload={handleWebUpload}
                                     canShareDiscord={!!selectedWebhookId}
@@ -652,12 +608,8 @@ export function AppLayout({ ctx }: { ctx: any }) {
                         onMvpWeightsSaved={setMvpWeights}
                         onStatsViewSettingsSaved={setStatsViewSettings}
                         onDisruptionMethodSaved={setDisruptionMethod}
-                        onUiThemeSaved={setUiTheme}
-                        onKineticFontStyleSaved={setKineticFontStyle}
-                        onKineticThemeVariantSaved={setKineticThemeVariant}
-                        onDashboardLayoutSaved={setDashboardLayout}
-                        dashboardLayout={dashboardLayout}
-                        onGithubWebThemeSaved={setGithubWebTheme}
+                        onColorPaletteSaved={setColorPalette}
+                        onGlassSurfacesSaved={setGlassSurfaces}
                         developerSettingsTrigger={developerSettingsTrigger}
                         helpUpdatesFocusTrigger={helpUpdatesFocusTrigger}
                         onHelpUpdatesFocusConsumed={handleHelpUpdatesFocusConsumed}
@@ -668,31 +620,19 @@ export function AppLayout({ ctx }: { ctx: any }) {
                 ) : view === 'history' ? (
                     <FightReportHistoryView />
                 ) : view === 'stats' ? null : (
-                    dashboardLayoutMode === 'top' ? (
-                        <div className="dashboard-view dashboard-modern flex flex-col gap-4 flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 matte-dashboard-shell">
-                            <div className="matte-panel-shell">
-                                {statsTilesPanel}
-                            </div>
-                            <div className="grid grid-cols-1 gap-4 flex-1 min-h-0 content-start">
-                                <div className="order-2 min-h-0 matte-activity-shell">
-                                    {activityPanel}
-                                </div>
-                                <div className="dashboard-rail order-1 flex flex-col gap-4 overflow-y-auto pr-0 matte-panel-shell matte-rail-shell">
-                                    {configurationPanel}
-                                </div>
-                            </div>
+                    <div className="dashboard-view dashboard-modern flex flex-col gap-4 flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 matte-dashboard-shell">
+                        <div className="matte-panel-shell">
+                            {statsTilesPanel}
                         </div>
-                    ) : (
-                        <div className="dashboard-view grid grid-cols-1 lg:grid-cols-3 gap-8 flex-1 min-h-0 overflow-y-auto pr-1 matte-dashboard-shell">
-                            <div className="space-y-6 overflow-y-auto pr-2 matte-panel-shell matte-rail-shell">
-                                {configurationPanel}
-                                {statsTilesPanel}
-                            </div>
-                            <div className="lg:col-span-2 flex flex-col min-h-0 matte-activity-shell">
+                        <div className="grid grid-cols-1 gap-4 flex-1 min-h-0 content-start">
+                            <div className="order-2 min-h-0 matte-activity-shell">
                                 {activityPanel}
                             </div>
+                            <div className="dashboard-rail order-1 flex flex-col gap-4 overflow-y-auto pr-0 matte-panel-shell matte-rail-shell">
+                                {configurationPanel}
+                            </div>
                         </div>
-                    )
+                    </div>
                 )}
             </div>
 
@@ -711,10 +651,7 @@ export function AppLayout({ ctx }: { ctx: any }) {
             {webhookDropdownOpen && webhookDropdownStyle && createPortal(
                 <div
                     ref={webhookDropdownPortalRef}
-                    className={`rounded-xl overflow-hidden ${uiTheme === 'matte'
-                        ? 'bg-[#222629] shadow-[-5px_-5px_10px_#2b3034,5px_5px_10px_#191c1e]'
-                        : 'glass-dropdown border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.6)]'
-                        }`}
+                    className="rounded-xl overflow-hidden glass-dropdown border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.6)]"
                     style={webhookDropdownStyle}
                     role="listbox"
                 >
@@ -726,7 +663,7 @@ export function AppLayout({ ctx }: { ctx: any }) {
                                 handleUpdateSettings({ selectedWebhookId: null });
                                 setWebhookDropdownOpen(false);
                             }}
-                            className={`w-full px-3 py-2 text-left ${uiTheme === 'modern' ? 'text-xs' : 'text-sm'} transition-colors ${!selectedWebhookId
+                            className={`w-full px-3 py-2 text-left text-sm transition-colors ${!selectedWebhookId
                                 ? 'bg-purple-500/20 text-purple-100'
                                 : 'text-gray-300 hover:bg-white/10'
                                 }`}
@@ -744,7 +681,7 @@ export function AppLayout({ ctx }: { ctx: any }) {
                                     handleUpdateSettings({ selectedWebhookId: hook.id });
                                     setWebhookDropdownOpen(false);
                                 }}
-                                className={`w-full px-3 py-2 text-left ${uiTheme === 'modern' ? 'text-xs' : 'text-sm'} transition-colors ${selectedWebhookId === hook.id
+                                className={`w-full px-3 py-2 text-left text-sm transition-colors ${selectedWebhookId === hook.id
                                     ? 'bg-purple-500/20 text-purple-100'
                                     : 'text-gray-300 hover:bg-white/10'
                                     }`}

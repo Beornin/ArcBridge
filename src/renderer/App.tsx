@@ -59,11 +59,8 @@ function App() {
         mvpWeights, setMvpWeights,
         statsViewSettings, setStatsViewSettings,
         disruptionMethod, setDisruptionMethod,
-        uiTheme, setUiTheme,
-        setKineticFontStyle,
-        setKineticThemeVariant,
-        dashboardLayout, setDashboardLayout,
-        setGithubWebTheme,
+        colorPalette, setColorPalette,
+        glassSurfaces, setGlassSurfaces,
         webhooks, setWebhooks,
         selectedWebhookId, setSelectedWebhookId,
         handleUpdateSettings,
@@ -141,7 +138,7 @@ function App() {
         setMvpWeights,
         setStatsViewSettings,
         setDisruptionMethod,
-        setUiTheme,
+        setColorPalette,
         setSelectedWebhookId,
         setBulkUploadMode
     });
@@ -572,18 +569,12 @@ function App() {
         return cleanup;
     }, []);
 
-    const isModernTheme = uiTheme === 'modern' || uiTheme === 'kinetic';
-    const isDarkGlassTheme = uiTheme === 'dark-glass';
-    const isTopDashboardLayout = dashboardLayout === 'top';
-    const isCrtTheme = uiTheme === 'crt';
     const appIconPath = `${import.meta.env.BASE_URL || './'}svg/ArcBridge.svg`;
     const arcbridgeLogoStyle = { WebkitMaskImage: `url(${appIconPath})`, maskImage: `url(${appIconPath})` } as const;
     const isDev = import.meta.env.DEV;
-    const shellClassName = isModernTheme || isCrtTheme || isDarkGlassTheme
-        ? 'app-shell h-screen w-screen text-white overflow-hidden flex flex-col'
-        : 'app-shell h-screen w-screen bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-900 via-gray-900 to-black text-white font-sans overflow-hidden flex flex-col';
+    const shellClassName = 'app-shell h-screen w-screen text-white overflow-hidden flex flex-col';
 
-    const notificationTypeButtons = isTopDashboardLayout ? (
+    const notificationTypeButtons = (
         <div className="grid grid-cols-3 gap-1.5">
             <button
                 onClick={() => {
@@ -616,46 +607,11 @@ function App() {
                 <span className="font-medium">Tiled</span>
             </button>
         </div>
-    ) : (
-        <div className="flex flex-col gap-2">
-            <div className="flex gap-2">
-                <button
-                    onClick={() => {
-                        setNotificationType('image');
-                        handleUpdateSettings({ discordNotificationType: 'image' });
-                    }}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl border transition-all ${notificationType === 'image' ? 'bg-blue-500/20 border-blue-500/50 text-blue-400' : 'bg-black/20 border-white/5 text-gray-500 hover:text-gray-300'}`}
-                >
-                    <ImageIcon className="w-4 h-4" />
-                    <span className="text-sm font-medium">Image</span>
-                </button>
-                <button
-                    onClick={() => {
-                        setNotificationType('embed');
-                        handleUpdateSettings({ discordNotificationType: 'embed' });
-                    }}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl border transition-all ${notificationType === 'embed' ? 'bg-purple-500/20 border-purple-500/50 text-purple-400' : 'bg-black/20 border-white/5 text-gray-500 hover:text-gray-300'}`}
-                >
-                    <Layout className="w-4 h-4" />
-                    <span className="text-sm font-medium">Embed</span>
-                </button>
-            </div>
-            <button
-                onClick={() => {
-                    setNotificationType('image-beta');
-                    handleUpdateSettings({ discordNotificationType: 'image-beta' });
-                }}
-                className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl border transition-all ${notificationType === 'image-beta' ? 'bg-blue-500/20 border-blue-500/50 text-blue-400' : 'bg-black/20 border-white/5 text-gray-500 hover:text-gray-300'}`}
-            >
-                <Grid3X3 className="w-4 h-4" />
-                <span className="text-sm font-medium">Tiled</span>
-            </button>
-        </div>
     );
 
     const notificationTypePanel = (
-        <div className={isTopDashboardLayout ? 'space-y-1 min-w-0' : ''}>
-            <label className={`text-xs uppercase tracking-wider text-gray-500 font-semibold ${isTopDashboardLayout ? 'mb-1 block' : 'mb-2 block'}`}>Notification Type</label>
+        <div className="space-y-1 min-w-0">
+            <label className="text-xs uppercase tracking-wider text-gray-500 font-semibold mb-1 block">Notification Type</label>
             {notificationTypeButtons}
         </div>
     );
@@ -667,92 +623,20 @@ function App() {
             transition={{ delay: 0.1 }}
             className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl hover:border-white/20 transition-colors matte-config-panel"
         >
-            {isTopDashboardLayout ? (
-                <div className="grid grid-cols-1 2xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.95fr)] gap-4 items-start p-2">
-                    <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-1 gap-3 min-w-0">
-                        <div className="space-y-1 min-w-0">
-                            <label className="text-xs uppercase tracking-wider text-gray-500 font-semibold h-4 flex items-center">Log Directory</label>
-                            <div className="flex gap-1 w-full max-w-full">
-                                <div className="flex-1 min-w-0 bg-black/40 border border-white/5 rounded-xl px-1.5 h-8 flex items-center gap-2 hover:border-blue-500/50 transition-colors">
-                                    <div className="pl-1 shrink-0">
-                                        <FolderOpen className="w-4 h-4 text-blue-400" />
-                                    </div>
-                                    <input
-                                        type="text"
-                                        value={logDirectory || ''}
-                                        placeholder="C:\...\arcdps.cbtlogs"
-                                        className="flex-1 bg-transparent border-none text-[11px] text-gray-300 placeholder-gray-600 focus:ring-0 px-2 min-w-0 w-full h-full"
-                                        onChange={(e) => setLogDirectory(e.target.value)}
-                                        onBlur={(e) => {
-                                            if (e.target.value) {
-                                                window.electronAPI.startWatching(e.target.value);
-                                            }
-                                        }}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter' && logDirectory) {
-                                                window.electronAPI.startWatching(logDirectory);
-                                            }
-                                        }}
-                                    />
-                                </div>
-                                <button
-                                    onClick={handleSelectDirectory}
-                                    className="shrink-0 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-xl w-8 h-8 flex items-center justify-center transition-colors"
-                                    title="Browse..."
-                                >
-                                    <FolderOpen className="w-3.5 h-3.5" />
-                                </button>
-                            </div>
-                        </div>
-
-                        <div className="space-y-1 min-w-0">
-                            <label className="text-xs uppercase tracking-wider text-gray-500 font-semibold h-4 flex items-center">Discord Webhook</label>
-                            <div className="flex gap-1 w-full">
-                                <div ref={webhookDropdownRef} className="relative flex-1 min-w-0">
-                                    <button
-                                        type="button"
-                                        onClick={() => setWebhookDropdownOpen((prev) => !prev)}
-                                        ref={webhookDropdownButtonRef}
-                                        className="w-full bg-black/40 border border-white/5 rounded-xl px-2.5 h-8 flex items-center justify-between gap-2 text-[11px] text-gray-300 hover:border-purple-500/50 hover:bg-black/50 transition-colors"
-                                        aria-haspopup="listbox"
-                                        aria-expanded={webhookDropdownOpen}
-                                    >
-                                        <span className="truncate">
-                                            {selectedWebhook?.name || 'Disabled'}
-                                        </span>
-                                        <ChevronDown className={`w-4 h-4 text-gray-500 shrink-0 transition-transform ${webhookDropdownOpen ? 'rotate-180' : ''}`} />
-                                    </button>
-                                </div>
-                                <button
-                                    onClick={() => setWebhookModalOpen(true)}
-                                    className="shrink-0 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded-xl w-8 h-8 flex items-center justify-center gap-2 transition-colors"
-                                    title="Manage Webhooks"
-                                >
-                                    <Settings className="w-3.5 h-3.5" />
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
+            <div className="grid grid-cols-1 2xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.95fr)] gap-4 items-start p-2">
+                <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-1 gap-3 min-w-0">
                     <div className="space-y-1 min-w-0">
-                        <label className="text-xs uppercase tracking-wider text-gray-500 font-semibold h-4 flex items-center">Notification Type</label>
-                        {notificationTypeButtons}
-                    </div>
-                </div>
-            ) : (
-                <div className="space-y-4">
-                    <div>
-                        <label className="text-xs uppercase tracking-wider text-gray-500 font-semibold mb-2 block">Log Directory</label>
-                        <div className="flex gap-2 w-full max-w-full">
-                            <div className="flex-1 min-w-0 bg-black/40 border border-white/5 rounded-xl px-2 h-11 flex items-center gap-3 hover:border-blue-500/50 transition-colors">
-                                <div className="pl-2 shrink-0">
-                                    <FolderOpen className="w-5 h-5 text-blue-400" />
+                        <label className="text-xs uppercase tracking-wider text-gray-500 font-semibold h-4 flex items-center">Log Directory</label>
+                        <div className="flex gap-1 w-full max-w-full">
+                            <div className="flex-1 min-w-0 bg-black/40 border border-white/5 rounded-xl px-1.5 h-8 flex items-center gap-2 hover:border-blue-500/50 transition-colors">
+                                <div className="pl-1 shrink-0">
+                                    <FolderOpen className="w-4 h-4 text-blue-400" />
                                 </div>
                                 <input
                                     type="text"
                                     value={logDirectory || ''}
                                     placeholder="C:\...\arcdps.cbtlogs"
-                                    className="flex-1 bg-transparent border-none text-sm text-gray-300 placeholder-gray-600 focus:ring-0 px-2 min-w-0 w-full h-full"
+                                    className="flex-1 bg-transparent border-none text-[11px] text-gray-300 placeholder-gray-600 focus:ring-0 px-2 min-w-0 w-full h-full"
                                     onChange={(e) => setLogDirectory(e.target.value)}
                                     onBlur={(e) => {
                                         if (e.target.value) {
@@ -768,52 +652,48 @@ function App() {
                             </div>
                             <button
                                 onClick={handleSelectDirectory}
-                                className="shrink-0 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-xl w-11 h-11 flex items-center justify-center transition-colors"
+                                className="shrink-0 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-xl w-8 h-8 flex items-center justify-center transition-colors"
                                 title="Browse..."
                             >
-                                <FolderOpen className="w-5 h-5" />
+                                <FolderOpen className="w-3.5 h-3.5" />
                             </button>
                         </div>
                     </div>
 
-                    <div>
-                        <label className="text-xs uppercase tracking-wider text-gray-500 font-semibold mb-2 block">Discord Webhook</label>
-                        <div className="flex gap-2 w-full">
+                    <div className="space-y-1 min-w-0">
+                        <label className="text-xs uppercase tracking-wider text-gray-500 font-semibold h-4 flex items-center">Discord Webhook</label>
+                        <div className="flex gap-1 w-full">
                             <div ref={webhookDropdownRef} className="relative flex-1 min-w-0">
                                 <button
                                     type="button"
                                     onClick={() => setWebhookDropdownOpen((prev) => !prev)}
                                     ref={webhookDropdownButtonRef}
-                                    className={`w-full rounded-xl px-3 h-11 flex items-center justify-between gap-2 text-sm transition-all ${uiTheme === 'matte'
-                                        ? `bg-[#222629] text-slate-400 ${webhookDropdownOpen
-                                            ? 'shadow-[inset_-2px_-2px_4px_#2b3034,inset_2px_2px_4px_#191c1e]'
-                                            : 'shadow-[-2px_-2px_4px_#2b3034,2px_2px_4px_#191c1e] hover:text-slate-200'}`
-                                        : 'bg-black/40 border border-white/5 text-gray-300 hover:border-purple-500/50 hover:bg-black/50'
-                                        }`}
+                                    className="w-full bg-black/40 border border-white/5 rounded-xl px-2.5 h-8 flex items-center justify-between gap-2 text-[11px] text-gray-300 hover:border-purple-500/50 hover:bg-black/50 transition-colors"
                                     aria-haspopup="listbox"
                                     aria-expanded={webhookDropdownOpen}
                                 >
                                     <span className="truncate">
                                         {selectedWebhook?.name || 'Disabled'}
                                     </span>
-                                    <ChevronDown className={`w-4 h-4 shrink-0 transition-transform ${webhookDropdownOpen ? 'rotate-180' : ''} ${uiTheme === 'matte' ? 'text-slate-500' : 'text-gray-500'}`} />
+                                    <ChevronDown className={`w-4 h-4 text-gray-500 shrink-0 transition-transform ${webhookDropdownOpen ? 'rotate-180' : ''}`} />
                                 </button>
                             </div>
                             <button
                                 onClick={() => setWebhookModalOpen(true)}
-                                className={`shrink-0 rounded-xl w-11 h-11 flex items-center justify-center gap-2 transition-all ${uiTheme === 'matte'
-                                    ? 'bg-[#222629] text-slate-400 shadow-[-2px_-2px_4px_#2b3034,2px_2px_4px_#191c1e] hover:text-slate-200 active:shadow-[inset_-2px_-2px_4px_#2b3034,inset_2px_2px_4px_#191c1e]'
-                                    : 'bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 border border-purple-500/30'
-                                    }`}
+                                className="shrink-0 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded-xl w-8 h-8 flex items-center justify-center gap-2 transition-colors"
                                 title="Manage Webhooks"
                             >
-                                <Settings className="w-4 h-4" />
+                                <Settings className="w-3.5 h-3.5" />
                             </button>
                         </div>
                     </div>
-                    {notificationTypePanel}
                 </div>
-            )}
+
+                <div className="space-y-1 min-w-0">
+                    <label className="text-xs uppercase tracking-wider text-gray-500 font-semibold h-4 flex items-center">Notification Type</label>
+                    {notificationTypeButtons}
+                </div>
+            </div>
         </motion.div>
     );
 
@@ -827,7 +707,7 @@ function App() {
         + (statusCounts.calculating || 0);
     const winRate = totalUploads > 0 ? Math.round((winLoss.wins / totalUploads) * 100) : 0;
 
-    const statsTilesPanel = isTopDashboardLayout ? (
+    const statsTilesPanel = (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -921,86 +801,6 @@ function App() {
                         <div className="text-xl font-semibold text-emerald-200">{successCount}</div>
                         <div className="text-[11px] text-gray-500">Errors {errorCount}</div>
                     </div>
-                </div>
-            </div>
-        </motion.div>
-    ) : (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="grid grid-cols-2 gap-4 matte-tiles-shell"
-        >
-            <div className="relative h-24 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl px-3 py-2 matte-stat-card">
-                <div className="absolute left-3 top-2 text-gray-400 text-[11px] font-medium uppercase tracking-wider">Upload Status</div>
-                <div className="absolute inset-x-2 bottom-2 top-6 flex items-center justify-center">
-                    <div className="w-full h-full max-h-[68px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={uploadPieData}
-                                    dataKey="count"
-                                    nameKey="label"
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius="55%"
-                                    outerRadius="86%"
-                                    stroke="rgba(15, 23, 42, 0.9)"
-                                    strokeWidth={1}
-                                    paddingAngle={1}
-                                    isAnimationActive={false}
-                                >
-                                    {uploadPieData.map((entry) => (
-                                        <Cell key={entry.key} fill={entry.color} />
-                                    ))}
-                                </Pie>
-                                <text
-                                    x="50%"
-                                    y="50%"
-                                    textAnchor="middle"
-                                    dominantBaseline="middle"
-                                    className="fill-white text-[14px] font-bold"
-                                >
-                                    {totalUploads}
-                                </text>
-                                <Tooltip
-                                    formatter={(value: any, _name: any, payload: any) => {
-                                        const label = payload?.payload?.label || 'Status';
-                                        return [`${value ?? 0}`, label];
-                                    }}
-                                    contentStyle={{ backgroundColor: '#0f172a', borderColor: 'rgba(255,255,255,0.12)', borderRadius: '0.5rem', color: '#fff' }}
-                                    itemStyle={{ color: '#fff' }}
-                                    labelStyle={{ display: 'none' }}
-                                />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-            </div>
-            <div className="relative h-24 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl px-3 py-2 matte-stat-card uploader-kpi-card">
-                <div className="absolute left-3 top-2 text-gray-400 text-[11px] font-medium uppercase tracking-wider">W / L</div>
-                <div className="absolute inset-x-3 bottom-2 top-6 flex items-center justify-center">
-                    <div className="inline-flex translate-y-2 items-baseline text-[2rem] font-bold leading-none">
-                        <span style={{ color: '#86efac' }}>{winLoss.wins}</span>
-                        <span className="text-gray-500 mx-2">/</span>
-                        <span style={{ color: '#fca5a5' }}>{winLoss.losses}</span>
-                    </div>
-                </div>
-            </div>
-            <div className="relative h-24 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl px-3 py-2 matte-stat-card uploader-kpi-card">
-                <div className="absolute left-3 top-2 text-gray-400 text-[11px] font-medium uppercase tracking-wider">Avg Players</div>
-                <div className="absolute inset-x-3 bottom-2 top-6 flex items-center justify-center">
-                    <div className="inline-flex translate-y-2 items-baseline text-[2rem] font-bold leading-none">
-                        <span style={{ color: '#86efac' }}>{avgSquadSize}</span>
-                        <span className="text-gray-500 mx-2">/</span>
-                        <span style={{ color: '#fca5a5' }}>{avgEnemies}</span>
-                    </div>
-                </div>
-            </div>
-            <div className="relative h-24 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl px-3 py-2 matte-stat-card uploader-kpi-card">
-                <div className="absolute left-3 top-2 text-gray-400 text-[11px] font-medium uppercase tracking-wider">Squad KDR</div>
-                <div className="absolute inset-x-3 bottom-2 top-6 flex items-center justify-center">
-                    <div className="translate-y-2 text-[2.1rem] font-bold text-emerald-300 leading-none">{squadKdr}</div>
                 </div>
             </div>
         </motion.div>
@@ -1222,13 +1022,13 @@ function App() {
     );
 
     const devDatasetsCtx = {
-        devDatasetsEnabled, devDatasetsOpen, loadDevDatasets, devDatasetRefreshing, setDevDatasetsOpen, devDatasetName, setDevDatasetName, devDatasetSaving, setDevDatasetSaving, devDatasetSavingIdRef, setDevDatasetSaveProgress, computedStats, computedSkillUsageData, appVersion, view, expandedLogId, notificationType, embedStatSettings, mvpWeights, statsViewSettings, disruptionMethod, uiTheme, selectedWebhookId, bulkUploadMode, logs, setDevDatasets, setDevDatasetLoadModes, devDatasetSaveProgress, devDatasets, devDatasetLoadModes, setDevDatasetLoadingId, setDevDatasetLoadProgress, setLogs, setLogsForStats, logsRef, setPrecomputedStats, setScreenshotData, canceledLogsRef, datasetLoadRef, devDatasetStreamingIdRef, applyDevDatasetSnapshot, setDevDatasetDeleteConfirmId, devDatasetDeleteConfirmId, devDatasetLoadingId
+        devDatasetsEnabled, devDatasetsOpen, loadDevDatasets, devDatasetRefreshing, setDevDatasetsOpen, devDatasetName, setDevDatasetName, devDatasetSaving, setDevDatasetSaving, devDatasetSavingIdRef, setDevDatasetSaveProgress, computedStats, computedSkillUsageData, appVersion, view, expandedLogId, notificationType, embedStatSettings, mvpWeights, statsViewSettings, disruptionMethod, colorPalette, selectedWebhookId, bulkUploadMode, logs, setDevDatasets, setDevDatasetLoadModes, devDatasetSaveProgress, devDatasets, devDatasetLoadModes, setDevDatasetLoadingId, setDevDatasetLoadProgress, setLogs, setLogsForStats, logsRef, setPrecomputedStats, setScreenshotData, canceledLogsRef, datasetLoadRef, devDatasetStreamingIdRef, applyDevDatasetSnapshot, setDevDatasetDeleteConfirmId, devDatasetDeleteConfirmId, devDatasetLoadingId
     };
     const filePickerCtx = {
-        ...filePickerState, logDirectory, uiTheme
+        ...filePickerState, logDirectory
     };
     const appLayoutCtx = {
-        shellClassName, isDev, arcbridgeLogoStyle, updateAvailable, updateDownloaded, updateProgress, updateStatus, autoUpdateSupported, autoUpdateDisabledReason, view, settingsUpdateCheckRef, versionClickTimesRef, versionClickTimeoutRef, setDeveloperSettingsTrigger, appVersion, setView, showTerminal, setShowTerminal, devDatasetsEnabled, setDevDatasetsOpen, webUploadState, isModernTheme, setWebUploadState, statsViewMounted, logsForStats, mvpWeights, disruptionMethod, statsViewSettings, precomputedStats, computedStats, computedSkillUsageData, aggregationProgress, aggregationDiagnostics, statsDataProgress, setStatsViewSettings, uiTheme, dashboardLayout, handleWebUpload, selectedWebhookId, setEmbedStatSettings, setMvpWeights, setDisruptionMethod, setUiTheme, setKineticFontStyle, setKineticThemeVariant, setDashboardLayout, setGithubWebTheme, developerSettingsTrigger, helpUpdatesFocusTrigger, handleHelpUpdatesFocusConsumed, setWalkthroughOpen, setWhatsNewOpen, statsTilesPanel, activityPanel, configurationPanel, screenshotData, embedStatSettings, showClassIcons, enabledTopListCount, devDatasetsCtx, filePickerCtx, webhookDropdownOpen, webhookDropdownStyle, webhookDropdownPortalRef, webhooks, handleUpdateSettings, setSelectedWebhookId, setWebhookDropdownOpen, webhookModalOpen, setWebhookModalOpen, setWebhooks, showUpdateErrorModal, setShowUpdateErrorModal, updateError, whatsNewOpen, handleWhatsNewClose, whatsNewVersion, whatsNewNotes, walkthroughOpen, handleWalkthroughClose, handleWalkthroughLearnMore, isBulkUploadActive
+        shellClassName, isDev, arcbridgeLogoStyle, updateAvailable, updateDownloaded, updateProgress, updateStatus, autoUpdateSupported, autoUpdateDisabledReason, view, settingsUpdateCheckRef, versionClickTimesRef, versionClickTimeoutRef, setDeveloperSettingsTrigger, appVersion, setView, showTerminal, setShowTerminal, devDatasetsEnabled, setDevDatasetsOpen, webUploadState, setWebUploadState, statsViewMounted, logsForStats, mvpWeights, disruptionMethod, statsViewSettings, precomputedStats, computedStats, computedSkillUsageData, aggregationProgress, aggregationDiagnostics, statsDataProgress, setStatsViewSettings, colorPalette, setColorPalette, glassSurfaces, setGlassSurfaces, handleWebUpload, selectedWebhookId, setEmbedStatSettings, setMvpWeights, setDisruptionMethod, developerSettingsTrigger, helpUpdatesFocusTrigger, handleHelpUpdatesFocusConsumed, setWalkthroughOpen, setWhatsNewOpen, statsTilesPanel, activityPanel, configurationPanel, screenshotData, embedStatSettings, showClassIcons, enabledTopListCount, devDatasetsCtx, filePickerCtx, webhookDropdownOpen, webhookDropdownStyle, webhookDropdownPortalRef, webhooks, handleUpdateSettings, setSelectedWebhookId, setWebhookDropdownOpen, webhookModalOpen, setWebhookModalOpen, setWebhooks, showUpdateErrorModal, setShowUpdateErrorModal, updateError, whatsNewOpen, handleWhatsNewClose, whatsNewVersion, whatsNewNotes, walkthroughOpen, handleWalkthroughClose, handleWalkthroughLearnMore, isBulkUploadActive
     };
 
     return (
