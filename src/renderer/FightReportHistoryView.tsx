@@ -1,5 +1,5 @@
 import { ChevronDown } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type HistoryRepoOption = {
     key: string;
@@ -72,6 +72,53 @@ const buildRepoOptions = (settings: any): HistoryRepoOption[] => {
     return options;
 };
 
+function RepoDropdown({ options, selected, onSelect }: { options: HistoryRepoOption[]; selected: HistoryRepoOption; onSelect: (key: string) => void }) {
+    const [open, setOpen] = useState(false);
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!open) return;
+        const handleClick = (e: MouseEvent) => {
+            if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+        };
+        document.addEventListener('mousedown', handleClick);
+        return () => document.removeEventListener('mousedown', handleClick);
+    }, [open]);
+
+    return (
+        <div className="relative w-full md:w-80 shrink-0" ref={ref}>
+            <button
+                type="button"
+                onClick={() => setOpen((v) => !v)}
+                className="w-full flex items-center justify-between rounded-[4px] pl-3 pr-3 py-2.5 text-sm text-left"
+                style={{ background: 'var(--bg-input)', border: '1px solid var(--border-default)', color: 'var(--text-primary)' }}
+                aria-label="Select GitHub Pages history source"
+                aria-expanded={open}
+            >
+                <span className="truncate">{selected.label}</span>
+                <ChevronDown className={`w-4 h-4 shrink-0 ml-2 transition-transform ${open ? 'rotate-180' : ''}`} style={{ color: 'var(--text-secondary)' }} />
+            </button>
+            {open && (
+                <div className="absolute z-50 mt-1 w-full rounded-[4px] py-1 overflow-auto max-h-60" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-hover)', boxShadow: 'var(--shadow-dropdown)' }}>
+                    {options.map((option) => (
+                        <button
+                            key={option.key}
+                            type="button"
+                            onClick={() => { onSelect(option.key); setOpen(false); }}
+                            className={`w-full text-left px-3 py-2 text-sm transition-colors ${option.key === selected.key ? 'font-medium' : ''}`}
+                            style={{ color: option.key === selected.key ? 'var(--brand-primary)' : 'var(--text-primary)' }}
+                            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-hover)')}
+                            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                        >
+                            {option.label}
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
 export function FightReportHistoryView() {
     const [repoOptions, setRepoOptions] = useState<HistoryRepoOption[]>([]);
     const [selectedRepoKey, setSelectedRepoKey] = useState<string>('');
@@ -141,26 +188,13 @@ export function FightReportHistoryView() {
                         <div className="text-[10px] uppercase tracking-[0.22em]" style={{ color: 'var(--text-secondary)' }}>History Source</div>
                         <div className="text-xs text-gray-400">Switch between your default and starred GitHub Pages sites.</div>
                     </div>
-                    <div className="relative w-full md:w-80 shrink-0">
-                        <select
-                            value={selectedOption.key}
-                            onChange={(event) => setSelectedRepoKey(event.target.value)}
-                            className="w-full appearance-none rounded-[4px] pl-3 pr-9 py-2.5 text-sm focus:outline-none"
-                            style={{ background: 'var(--bg-input)', border: '1px solid var(--border-default)', color: 'var(--text-primary)' }}
-                            aria-label="Select GitHub Pages history source"
-                        >
-                            {repoOptions.map((option) => (
-                                <option key={option.key} value={option.key}>{option.label}</option>
-                            ))}
-                        </select>
-                        <ChevronDown className="w-4 h-4 text-gray-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
-                    </div>
+                    <RepoDropdown options={repoOptions} selected={selectedOption} onSelect={setSelectedRepoKey} />
                 </div>
             </div>
             <div className="flex-1 min-h-0">
                 <iframe
                     title="Fight report index"
-                    src={selectedOption.indexUrl}
+                    src={`${selectedOption.indexUrl}${selectedOption.indexUrl.includes('?') ? '&' : '?'}cb=${Date.now()}`}
                     className="w-full h-full border-0"
                     referrerPolicy="no-referrer"
                 />
