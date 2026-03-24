@@ -269,6 +269,12 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
         }
         return { active: false, phaseLabel: '', progressText: '', progressPercent: 0 };
     }, [statsDataProgress, logs.length]);
+
+    const logIdentityKey = useMemo(
+        () => `${logs.length}:${logs[0]?.id || ''}:${logs[logs.length - 1]?.id || ''}`,
+        [logs]
+    );
+
     const showDissolveLoading = aggregationSettling.active && !embedded;
     const dissolveBarTitle = aggregationSettling.phaseLabel;
     const dissolveBarMeta = aggregationSettling.progressText;
@@ -336,19 +342,16 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
         }
     }, [aggregationSettling.active, aggregationSettling.progressPercent, embedded]);
 
-    // Once dissolve has completed once, never show it again (prevents re-trigger on tab switch).
-    // If stats are already settled on mount (e.g. navigating back), skip dissolve immediately.
-    const alreadySettledOnMount = useRef(!aggregationSettling.active && stats != null);
-    const [dissolveCompletedOnce, setDissolveCompletedOnce] = useState(() => alreadySettledOnMount.current);
+    const [dissolveCompletedForLogKey, setDissolveCompletedForLogKey] = useState<string | null>(null);
     const rawDissolveActive = (showDissolveLoading && aggregationSettling.progressPercent < 100) || dissolveCompleting;
     useEffect(() => {
-        if (dissolveCompletedOnce) return;
+        if (dissolveCompletedForLogKey === logIdentityKey) return;
         // Mark completed after the dissolve completion animation finishes
         if (!rawDissolveActive && !dissolveCompleting && !aggregationSettling.active && stats != null) {
-            setDissolveCompletedOnce(true);
+            setDissolveCompletedForLogKey(logIdentityKey);
         }
-    }, [rawDissolveActive, dissolveCompleting, aggregationSettling.active, dissolveCompletedOnce, stats]);
-    const dissolveActive = rawDissolveActive && !dissolveCompletedOnce;
+    }, [rawDissolveActive, dissolveCompleting, aggregationSettling.active, dissolveCompletedForLogKey, logIdentityKey, stats]);
+    const dissolveActive = rawDissolveActive && dissolveCompletedForLogKey !== logIdentityKey;
     const statsActionsDisabled = dissolveActive || !sectionContentReady;
 
     const sectionWrapClass = dissolveActive
@@ -3779,7 +3782,7 @@ type SpikeFight = {
                 devMockUploadState={devMockUploadState}
             />
             {/* Dissolve bar: aggregation settling */}
-            {(aggregationSettling.active && !dissolveCompletedOnce) && (
+            {(aggregationSettling.active && dissolveCompletedForLogKey !== logIdentityKey) && (
                 <div className="mb-3 text-xs">
                     <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-2 text-[11px]" style={{ color: 'var(--text-secondary)' }}>
