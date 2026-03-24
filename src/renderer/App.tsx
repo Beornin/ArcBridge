@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { FolderOpen, UploadCloud, FileText, Settings, Image as ImageIcon, Layout, ChevronDown, Grid3X3, Trash2, FilePlus2 } from 'lucide-react';
 import { ExpandableLogCard } from './ExpandableLogCard';
 import { useStatsAggregationWorker } from './stats/hooks/useStatsAggregationWorker';
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { AppLayout } from './app/AppLayout';
 import { useDevDatasets } from './app/hooks/useDevDatasets';
 import { useFilePicker } from './app/hooks/useFilePicker';
@@ -500,7 +499,7 @@ function App() {
     }, [pendingLogUpdatesRef, scheduleAsyncStatsRecompute]);
 
     // Dashboard stats (upload counts, pie chart, squad/enemy averages, win/loss)
-    const { totalUploads, statusCounts, uploadPieData, avgSquadSize, avgEnemies, winLoss, squadKdr } = useDashboardStats(logs);
+    const { totalUploads, statusCounts, winLoss, squadKdr } = useDashboardStats(logs);
 
     const statsDataProgress = useStatsDataProgress(logs, view, isBulkUploadActive);
 
@@ -618,6 +617,15 @@ function App() {
         </div>
     );
 
+    const successCount = statusCounts.success || 0;
+    const errorCount = statusCounts.error || 0;
+    const uploadingCount = (statusCounts.queued || 0)
+        + (statusCounts.pending || 0)
+        + (statusCounts.uploading || 0)
+        + (statusCounts.retrying || 0)
+        + (statusCounts.discord || 0)
+        + (statusCounts.calculating || 0);
+
     const configurationPanel = (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -662,6 +670,33 @@ function App() {
                 </div>
             </div>
 
+            {/* Status card */}
+            <div className="rounded-[4px] border p-3" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-default)', boxShadow: 'var(--shadow-card)' }}>
+                <div className="text-[10px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-muted)' }}>Status</div>
+                <div className="space-y-0">
+                    <div className="flex items-center justify-between py-1.5">
+                        <span className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>Watcher</span>
+                        <span className="text-[11px] font-medium" style={{ color: logDirectory ? '#22c55e' : 'var(--text-muted)' }}>
+                            {logDirectory ? 'Active' : 'Inactive'}
+                        </span>
+                    </div>
+                    <div className="flex items-center justify-between py-1.5" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+                        <span className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>Upload queue</span>
+                        <span className="text-[11px] font-medium" style={{ color: uploadingCount > 0 ? 'var(--brand-primary)' : 'var(--text-muted)' }}>
+                            {uploadingCount > 0 ? `${uploadingCount} pending` : 'Idle'}
+                        </span>
+                    </div>
+                    <div className="flex items-center justify-between py-1.5" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+                        <span className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>Success / Errors</span>
+                        <span className="text-[11px] font-medium">
+                            <span style={{ color: '#22c55e' }}>{successCount}</span>
+                            <span style={{ color: 'var(--text-muted)' }}> / </span>
+                            <span style={{ color: errorCount > 0 ? '#ef4444' : 'var(--text-muted)' }}>{errorCount}</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
             {/* Discord Webhook card */}
             <div className="rounded-[4px] border p-3" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-default)', boxShadow: 'var(--shadow-card)' }}>
                 <div className="text-[10px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-muted)' }}>Discord Webhook</div>
@@ -698,112 +733,26 @@ function App() {
                 <div className="text-[10px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-muted)' }}>Notification Type</div>
                 {notificationTypeButtons}
             </div>
-        </motion.div>
-    );
 
-    const successCount = statusCounts.success || 0;
-    const errorCount = statusCounts.error || 0;
-    const uploadingCount = (statusCounts.queued || 0)
-        + (statusCounts.pending || 0)
-        + (statusCounts.uploading || 0)
-        + (statusCounts.retrying || 0)
-        + (statusCounts.discord || 0)
-        + (statusCounts.calculating || 0);
-    const winRate = totalUploads > 0 ? Math.round((winLoss.wins / totalUploads) * 100) : 0;
-
-    const statsTilesPanel = (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="space-y-3 matte-tiles-shell"
-        >
-            <div className="grid grid-cols-4 gap-3">
-                <div className="h-24 rounded-[4px] border px-4 py-3 flex items-center justify-between gap-3 matte-stat-card" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-default)', boxShadow: 'var(--shadow-card)' }}>
-                    <div className="min-w-0">
-                        <div className="text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Upload Status</div>
-                        <div className="mt-2 text-2xl font-bold leading-none" style={{ color: 'var(--brand-primary)' }}>{totalUploads}</div>
-                        <div className="mt-1 text-[11px]" style={{ color: 'var(--text-muted)' }}>
-                            {successCount} success • {errorCount} error{uploadingCount > 0 ? ` • ${uploadingCount} active` : ''}
-                        </div>
+            {/* Session card */}
+            <div className="rounded-[4px] border p-3" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-default)', boxShadow: 'var(--shadow-card)' }}>
+                <div className="text-[10px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-muted)' }}>Session</div>
+                <div className="space-y-0">
+                    <div className="flex items-center justify-between py-1.5">
+                        <span className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>Logs uploaded</span>
+                        <span className="text-[11px] font-medium" style={{ color: 'var(--text-primary)' }}>{totalUploads}</span>
                     </div>
-                    <div className="w-16 h-16 shrink-0">
-                        <div className="w-full h-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <PieChart>
-                                    <Pie
-                                        data={uploadPieData}
-                                        dataKey="count"
-                                        nameKey="label"
-                                        cx="50%"
-                                        cy="50%"
-                                        innerRadius="55%"
-                                        outerRadius="86%"
-                                        stroke="rgba(15, 23, 42, 0.9)"
-                                        strokeWidth={1}
-                                        paddingAngle={1}
-                                        isAnimationActive={false}
-                                    >
-                                        {uploadPieData.map((entry) => (
-                                            <Cell key={entry.key} fill={entry.color} />
-                                        ))}
-                                    </Pie>
-                                    <Tooltip
-                                        formatter={(value: any, _name: any, payload: any) => {
-                                            const label = payload?.payload?.label || 'Status';
-                                            return [`${value ?? 0}`, label];
-                                        }}
-                                        contentStyle={{ backgroundColor: '#161c24', borderColor: 'rgba(255,255,255,0.12)', borderRadius: '0.5rem', color: '#fff' }}
-                                        itemStyle={{ color: '#fff' }}
-                                        labelStyle={{ display: 'none' }}
-                                    />
-                                </PieChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </div>
-                </div>
-                <div className="h-24 rounded-[4px] border px-4 py-3 flex items-center justify-between gap-3 matte-stat-card uploader-kpi-card" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-default)', boxShadow: 'var(--shadow-card)' }}>
-                    <div>
-                        <div className="text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>W / L</div>
-                        <div className="inline-flex items-baseline text-2xl font-bold leading-none">
+                    <div className="flex items-center justify-between py-1.5" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+                        <span className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>Win / Loss</span>
+                        <span className="text-[11px] font-medium">
                             <span style={{ color: '#86efac' }}>{winLoss.wins}</span>
-                            <span className="mx-2" style={{ color: 'var(--text-muted)' }}>/</span>
+                            <span style={{ color: 'var(--text-muted)' }}> / </span>
                             <span style={{ color: '#fca5a5' }}>{winLoss.losses}</span>
-                        </div>
-                        <div className="text-[11px]" style={{ color: 'var(--text-muted)' }}>Totals</div>
+                        </span>
                     </div>
-                    <div className="text-right">
-                        <div className="text-[11px] uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Win rate</div>
-                        <div className="text-xl font-semibold text-emerald-200">{winRate}%</div>
-                        <div className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{totalUploads} logs</div>
-                    </div>
-                </div>
-                <div className="h-24 rounded-[4px] border px-4 py-3 flex items-center justify-between gap-3 matte-stat-card uploader-kpi-card" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-default)', boxShadow: 'var(--shadow-card)' }}>
-                    <div>
-                        <div className="text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Avg Players</div>
-                        <div className="inline-flex items-baseline text-2xl font-bold leading-none">
-                            <span style={{ color: '#86efac' }}>{avgSquadSize}</span>
-                            <span className="mx-2" style={{ color: 'var(--text-muted)' }}>/</span>
-                            <span style={{ color: '#fca5a5' }}>{avgEnemies}</span>
-                        </div>
-                        <div className="text-[11px]" style={{ color: 'var(--text-muted)' }}>Squad / Enemy</div>
-                    </div>
-                    <div className="text-right">
-                        <div className="text-[11px] uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Diff</div>
-                        <div className="text-xl font-semibold text-sky-200">{avgSquadSize - avgEnemies}</div>
-                        <div className="text-[11px]" style={{ color: 'var(--text-muted)' }}>Ratio {(avgEnemies ? (avgSquadSize / avgEnemies) : 0).toFixed(2)}</div>
-                    </div>
-                </div>
-                <div className="h-24 rounded-[4px] border px-4 py-3 flex items-center justify-between gap-3 matte-stat-card uploader-kpi-card" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-default)', boxShadow: 'var(--shadow-card)' }}>
-                    <div>
-                        <div className="text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Squad KDR</div>
-                        <div className="text-2xl font-bold text-emerald-300 leading-none">{squadKdr}</div>
-                        <div className="text-[11px]" style={{ color: 'var(--text-muted)' }}>Kills / Deaths</div>
-                    </div>
-                    <div className="text-right">
-                        <div className="text-[11px] uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Success</div>
-                        <div className="text-xl font-semibold text-emerald-200">{successCount}</div>
-                        <div className="text-[11px]" style={{ color: 'var(--text-muted)' }}>Errors {errorCount}</div>
+                    <div className="flex items-center justify-between py-1.5" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+                        <span className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>Squad KDR</span>
+                        <span className="text-[11px] font-medium" style={{ color: 'var(--text-primary)' }}>{squadKdr}</span>
                     </div>
                 </div>
             </div>
@@ -1035,7 +984,7 @@ function App() {
         ...filePickerState, logDirectory
     };
     const appLayoutCtx = {
-        shellClassName, isDev, arcbridgeLogoStyle, updateAvailable, updateDownloaded, updateProgress, updateStatus, autoUpdateSupported, autoUpdateDisabledReason, view, settingsUpdateCheckRef, versionClickTimesRef, versionClickTimeoutRef, setDeveloperSettingsTrigger, appVersion, setView, showTerminal, setShowTerminal, devDatasetsEnabled, setDevDatasetsOpen, webUploadState, setWebUploadState, statsViewMounted, logsForStats, mvpWeights, disruptionMethod, statsViewSettings, precomputedStats, computedStats, computedSkillUsageData, aggregationProgress, aggregationDiagnostics, statsDataProgress, setStatsViewSettings, colorPalette, setColorPalette, glassSurfaces, setGlassSurfaces, handleWebUpload, selectedWebhookId, setEmbedStatSettings, setMvpWeights, setDisruptionMethod, developerSettingsTrigger, helpUpdatesFocusTrigger, handleHelpUpdatesFocusConsumed, setWalkthroughOpen, setWhatsNewOpen, statsTilesPanel, activityPanel, configurationPanel, screenshotData, embedStatSettings, showClassIcons, enabledTopListCount, devDatasetsCtx, filePickerCtx, webhookDropdownOpen, webhookDropdownStyle, webhookDropdownPortalRef, webhooks, handleUpdateSettings, setSelectedWebhookId, setWebhookDropdownOpen, webhookModalOpen, setWebhookModalOpen, setWebhooks, showUpdateErrorModal, setShowUpdateErrorModal, updateError, whatsNewOpen, handleWhatsNewClose, whatsNewVersion, whatsNewNotes, walkthroughOpen, handleWalkthroughClose, handleWalkthroughLearnMore, isBulkUploadActive
+        shellClassName, isDev, arcbridgeLogoStyle, updateAvailable, updateDownloaded, updateProgress, updateStatus, autoUpdateSupported, autoUpdateDisabledReason, view, settingsUpdateCheckRef, versionClickTimesRef, versionClickTimeoutRef, setDeveloperSettingsTrigger, appVersion, setView, showTerminal, setShowTerminal, devDatasetsEnabled, setDevDatasetsOpen, webUploadState, setWebUploadState, statsViewMounted, logsForStats, mvpWeights, disruptionMethod, statsViewSettings, precomputedStats, computedStats, computedSkillUsageData, aggregationProgress, aggregationDiagnostics, statsDataProgress, setStatsViewSettings, colorPalette, setColorPalette, glassSurfaces, setGlassSurfaces, handleWebUpload, selectedWebhookId, setEmbedStatSettings, setMvpWeights, setDisruptionMethod, developerSettingsTrigger, helpUpdatesFocusTrigger, handleHelpUpdatesFocusConsumed, setWalkthroughOpen, setWhatsNewOpen, activityPanel, configurationPanel, screenshotData, embedStatSettings, showClassIcons, enabledTopListCount, devDatasetsCtx, filePickerCtx, webhookDropdownOpen, webhookDropdownStyle, webhookDropdownPortalRef, webhooks, handleUpdateSettings, setSelectedWebhookId, setWebhookDropdownOpen, webhookModalOpen, setWebhookModalOpen, setWebhooks, showUpdateErrorModal, setShowUpdateErrorModal, updateError, whatsNewOpen, handleWhatsNewClose, whatsNewVersion, whatsNewNotes, walkthroughOpen, handleWalkthroughClose, handleWalkthroughLearnMore, isBulkUploadActive
     };
 
     return (

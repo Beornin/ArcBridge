@@ -66,7 +66,6 @@ export function AppLayout({ ctx }: { ctx: any }) {
         handleHelpUpdatesFocusConsumed,
         setWalkthroughOpen,
         setWhatsNewOpen,
-        statsTilesPanel,
         activityPanel,
         configurationPanel,
         screenshotData,
@@ -597,17 +596,12 @@ export function AppLayout({ ctx }: { ctx: any }) {
                 ) : view === 'history' ? (
                     <FightReportHistoryView />
                 ) : view === 'stats' ? null : (
-                    <div className="dashboard-view dashboard-modern flex flex-col gap-0 flex-1 min-h-0 overflow-hidden matte-dashboard-shell">
-                        <div className="matte-panel-shell shrink-0 pb-3">
-                            {statsTilesPanel}
+                    <div className="dashboard-view dashboard-modern flex flex-1 min-h-0 overflow-hidden matte-dashboard-shell">
+                        <div className="dashboard-rail flex flex-col gap-3 overflow-y-auto p-3 matte-panel-shell matte-rail-shell" style={{ width: '300px', flexShrink: 0, background: 'var(--bg-elevated)', borderRight: '1px solid var(--border-subtle)' }}>
+                            {configurationPanel}
                         </div>
-                        <div className="grid grid-cols-[300px_1fr] gap-0 flex-1 min-h-0">
-                            <div className="dashboard-rail flex flex-col gap-3 overflow-y-auto pr-3 p-3 matte-panel-shell matte-rail-shell" style={{ background: 'var(--bg-elevated)', borderRight: '1px solid var(--border-subtle)' }}>
-                                {configurationPanel}
-                            </div>
-                            <div className="min-h-0 overflow-y-auto p-3 matte-activity-shell">
-                                {activityPanel}
-                            </div>
+                        <div className="flex-1 min-h-0 overflow-y-auto p-3 matte-activity-shell">
+                            {activityPanel}
                         </div>
                     </div>
                 )}
