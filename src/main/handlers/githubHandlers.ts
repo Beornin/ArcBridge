@@ -731,6 +731,31 @@ export function registerGithubHandlers(opts: GithubHandlerOptions) {
         return { pagesInfo, pagesPath };
     };
 
+    const resolveEffectivePagesPath = async (
+        effectiveOwner: string,
+        effectiveRepo: string,
+        effectiveBranch: string,
+        token: string,
+        isOverride: boolean
+    ): Promise<string> => {
+        if (!isOverride) {
+            const stored = getStoredPagesPath();
+            if (stored) return stored;
+            try {
+                const resolved = await resolvePagesSource(effectiveOwner, effectiveRepo, effectiveBranch, token);
+                return resolved.pagesPath;
+            } catch {
+                return '';
+            }
+        }
+        try {
+            const pagesInfo = await ensureGithubPages(effectiveOwner, effectiveRepo, effectiveBranch, token);
+            return normalizePagesPath(pagesInfo?.source?.path);
+        } catch {
+            return '';
+        }
+    };
+
     ipcMain.handle('get-github-repos', async () => {
         try {
             const token = store.get('githubToken') as string | undefined;
