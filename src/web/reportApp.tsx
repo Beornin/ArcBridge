@@ -1466,25 +1466,25 @@ export function ReportApp() {
                     backgroundColor: 'var(--bg-base)'
                 }}
             >
-                <div className="absolute inset-0 pointer-events-none">
+                <div className="fixed inset-0 pointer-events-none">
                     <div
-                        className="absolute -top-32 -right-24 h-80 w-80 rounded-full blur-[140px]"
-                        style={{ backgroundColor: 'var(--glow-primary)' }}
+                        className="absolute rounded-full"
+                        style={{ backgroundColor: 'var(--glow-primary)', width: 'clamp(320px, 30vw, 800px)', height: 'clamp(320px, 30vw, 800px)', filter: 'blur(clamp(140px, 12vw, 320px))', top: '-5%', right: '5%' }}
                     />
                     <div
-                        className="absolute top-40 -left-20 h-72 w-72 rounded-full blur-[120px]"
-                        style={{ backgroundColor: 'var(--glow-secondary)' }}
+                        className="absolute rounded-full"
+                        style={{ backgroundColor: 'var(--glow-secondary)', width: 'clamp(288px, 28vw, 750px)', height: 'clamp(288px, 28vw, 750px)', filter: 'blur(clamp(120px, 11vw, 300px))', top: '30%', left: '2%' }}
                     />
                     <div
-                        className="absolute bottom-10 right-10 h-64 w-64 rounded-full blur-[120px]"
-                        style={{ backgroundColor: 'var(--glow-secondary)' }}
+                        className="absolute rounded-full"
+                        style={{ backgroundColor: 'var(--glow-secondary)', width: 'clamp(256px, 25vw, 700px)', height: 'clamp(256px, 25vw, 700px)', filter: 'blur(clamp(120px, 11vw, 300px))', bottom: '5%', right: '15%' }}
                     />
                 </div>
                 <div className={`fixed inset-0 z-20 bg-black/40 backdrop-blur-sm transition-opacity ${isNarrowViewport ? '' : 'hidden'} ${tocOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} onClick={() => setTocOpen(false)} />
                 <aside
                     className={`fixed z-30 top-0 bottom-0 w-64 max-w-[80vw] transition-transform duration-300 ${isNarrowViewport ? '' : 'hidden'} ${tocOpen ? 'translate-x-0' : '-translate-x-full'}`}
                 >
-                    <div className="report-nav-sidebar h-full bg-white/5 border-r border-white/10 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.45)] flex flex-col">
+                    <div className="report-nav-sidebar h-full bg-black/20 border-r border-white/10 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.45)] flex flex-col">
                         <div className="px-5 pt-6 pb-4 flex items-center justify-between">
                             <div className="text-[11px] uppercase tracking-[0.4em] text-gray-400">Contents</div>
                             <button
@@ -1584,7 +1584,7 @@ export function ReportApp() {
                         </nav>
                     </div>
                 </aside>
-                <aside className={`report-nav-sidebar fixed inset-y-0 left-0 w-64 border-r border-white/10 bg-white/5 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.5)] z-20 ${isNarrowViewport ? 'hidden' : 'flex'}`}>
+                <aside className={`report-nav-sidebar fixed inset-y-0 left-0 w-64 border-r border-white/10 bg-black/20 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.5)] z-20 ${isNarrowViewport ? 'hidden' : 'flex'}`}>
                     <div className="flex flex-col w-full">
                         <div className="px-6 pt-6 pb-5">
                             <div className="flex items-center gap-3">
@@ -1833,18 +1833,18 @@ export function ReportApp() {
                     backgroundColor: 'var(--bg-base)'
                 }}
             >
-                <div className="absolute inset-0 pointer-events-none">
+                <div className="fixed inset-0 pointer-events-none">
                     <div
-                        className="absolute -top-32 -right-24 h-80 w-80 rounded-full blur-[140px]"
-                        style={{ backgroundColor: 'var(--glow-primary)' }}
+                        className="absolute rounded-full"
+                        style={{ backgroundColor: 'var(--glow-primary)', width: 'clamp(320px, 30vw, 800px)', height: 'clamp(320px, 30vw, 800px)', filter: 'blur(clamp(140px, 12vw, 320px))', top: '-5%', right: '5%' }}
                     />
                     <div
-                        className="absolute top-40 -left-20 h-72 w-72 rounded-full blur-[120px]"
-                        style={{ backgroundColor: 'var(--glow-secondary)' }}
+                        className="absolute rounded-full"
+                        style={{ backgroundColor: 'var(--glow-secondary)', width: 'clamp(288px, 28vw, 750px)', height: 'clamp(288px, 28vw, 750px)', filter: 'blur(clamp(120px, 11vw, 300px))', top: '30%', left: '2%' }}
                     />
                     <div
-                        className="absolute bottom-10 right-10 h-64 w-64 rounded-full blur-[120px]"
-                        style={{ backgroundColor: 'var(--glow-secondary)' }}
+                        className="absolute rounded-full"
+                        style={{ backgroundColor: 'var(--glow-secondary)', width: 'clamp(256px, 25vw, 700px)', height: 'clamp(256px, 25vw, 700px)', filter: 'blur(clamp(120px, 11vw, 300px))', bottom: '5%', right: '15%' }}
                     />
                 </div>
                 <div className="max-w-[2150px] mx-auto px-4 pt-4 pb-8 sm:px-6 sm:pt-5 sm:pb-10">
@@ -2161,18 +2161,18 @@ export function ReportApp() {
                 backgroundColor: 'var(--bg-base)'
             }}
         >
-            <div className="absolute inset-0 pointer-events-none">
+            <div className="fixed inset-0 pointer-events-none">
                 <div
-                    className="absolute -top-32 -right-24 h-80 w-80 rounded-full blur-[140px]"
-                    style={{ backgroundColor: 'var(--glow-primary)' }}
+                    className="absolute rounded-full"
+                    style={{ backgroundColor: 'var(--glow-primary)', width: 'clamp(320px, 28vw, 700px)', height: 'clamp(320px, 28vw, 700px)', filter: 'blur(clamp(140px, 10vw, 280px))', top: '-8rem', right: '-6rem' }}
                 />
                 <div
-                    className="absolute top-40 -left-20 h-72 w-72 rounded-full blur-[120px]"
-                    style={{ backgroundColor: 'var(--glow-secondary)' }}
+                    className="absolute rounded-full"
+                    style={{ backgroundColor: 'var(--glow-secondary)', width: 'clamp(288px, 25vw, 640px)', height: 'clamp(288px, 25vw, 640px)', filter: 'blur(clamp(120px, 9vw, 260px))', top: '10rem', left: '-5rem' }}
                 />
                 <div
-                    className="absolute bottom-10 right-10 h-64 w-64 rounded-full blur-[120px]"
-                    style={{ backgroundColor: 'var(--glow-secondary)' }}
+                    className="absolute rounded-full"
+                    style={{ backgroundColor: 'var(--glow-secondary)', width: 'clamp(256px, 22vw, 580px)', height: 'clamp(256px, 22vw, 580px)', filter: 'blur(clamp(120px, 9vw, 260px))', bottom: '2.5rem', right: '2.5rem' }}
                 />
             </div>
             <div className="max-w-[2150px] mx-auto px-4 pt-4 pb-8 sm:px-6 sm:pt-5 sm:pb-10">

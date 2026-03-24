@@ -631,7 +631,7 @@ export function AppLayout({ ctx }: { ctx: any }) {
             {webhookDropdownOpen && webhookDropdownStyle && createPortal(
                 <div
                     ref={webhookDropdownPortalRef}
-                    className="rounded-[4px] overflow-hidden border"
+                    className="app-dropdown rounded-[4px] overflow-hidden border"
                     style={{ ...webhookDropdownStyle, background: 'var(--bg-card)', borderColor: 'var(--border-default)', boxShadow: 'var(--shadow-dropdown)' } as React.CSSProperties}
                     role="listbox"
                 >

@@ -325,15 +325,18 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
         }
     }, [statsSettling.active, statsSettling.progressPercent, embedded]);
 
-    // Once dissolve has completed once, never show it again (prevents re-trigger on tab switch)
-    const [dissolveCompletedOnce, setDissolveCompletedOnce] = useState(false);
+    // Once dissolve has completed once, never show it again (prevents re-trigger on tab switch).
+    // If stats are already settled on mount (e.g. navigating back), skip dissolve immediately.
+    const alreadySettledOnMount = useRef(!statsSettling.active && stats != null);
+    const [dissolveCompletedOnce, setDissolveCompletedOnce] = useState(() => alreadySettledOnMount.current);
     const rawDissolveActive = (showDissolveLoading && statsSettling.progressPercent < 100) || dissolveCompleting;
     useEffect(() => {
         if (dissolveCompletedOnce) return;
-        if (!rawDissolveActive && !dissolveCompleting && !statsSettling.active) {
+        // Mark completed after the dissolve completion animation finishes
+        if (!rawDissolveActive && !dissolveCompleting && !statsSettling.active && stats != null) {
             setDissolveCompletedOnce(true);
         }
-    }, [rawDissolveActive, dissolveCompleting, statsSettling.active, dissolveCompletedOnce]);
+    }, [rawDissolveActive, dissolveCompleting, statsSettling.active, dissolveCompletedOnce, stats]);
     const dissolveActive = rawDissolveActive && !dissolveCompletedOnce;
 
     const sectionWrapClass = dissolveActive

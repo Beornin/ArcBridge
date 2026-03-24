@@ -15,7 +15,7 @@ export const MapDistributionSection = ({
         id="map-distribution"
         data-section-visible={isSectionVisible('map-distribution')}
         data-section-first={isFirstVisibleSection('map-distribution')}
-        className={sectionClass('map-distribution', 'bg-white/5 border border-white/10 rounded-2xl p-6 page-break-avoid scroll-mt-24')}
+        className={sectionClass('map-distribution', 'bg-white/5 border border-white/10 rounded-2xl p-6 page-break-avoid scroll-mt-24 mt-4')}
     >
         <h3 className="text-lg font-bold text-gray-200 mb-6 flex items-center gap-2">
             <MapIcon className="w-5 h-5 text-blue-400" />

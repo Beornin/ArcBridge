@@ -135,7 +135,7 @@ export const StatsHeader = ({
                         )}
                     </div>
                     {uploadMenuOpen && alternateUploadTargets.length > 0 && !uploadDisabled && (
-                        <div className="absolute right-0 top-full mt-2 z-50 min-w-[240px] rounded-md p-1" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-hover)', boxShadow: 'var(--shadow-dropdown)' }}>
+                        <div className="app-dropdown absolute right-0 top-full mt-2 z-50 min-w-[240px] rounded-md p-1" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-hover)', boxShadow: 'var(--shadow-dropdown)' }}>
                             {alternateUploadTargets.map((target) => (
                                 <button
                                     key={target.fullName}
