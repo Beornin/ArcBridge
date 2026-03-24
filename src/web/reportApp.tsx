@@ -18,6 +18,7 @@ import { Gw2FuryIcon } from '../renderer/ui/Gw2FuryIcon';
 import { Gw2SigilIcon } from '../renderer/ui/Gw2SigilIcon';
 import { buildRollupData, RollupData } from './rollup';
 import type { ReportPayload, ReportIndexEntry } from '../shared/reportTypes';
+import { normalizeCommanderDistance, normalizeTopDownContribution } from '../shared/reportNormalization';
 import {
     ShieldCheck,
     Shield,
@@ -791,46 +792,6 @@ export function ReportApp() {
         setRollupLoading(false);
         setRollupRequestedCount(0);
         setReportPathHint(reportId ? reportPath : null);
-
-        const normalizeCommanderDistance = (payload: ReportPayload) => {
-            const commanders = new Set((payload?.meta?.commanders || []).map((name) => String(name)));
-            if (commanders.size === 0) return payload;
-            const stats: any = payload.stats;
-            if (stats?.leaderboards?.closestToTag) {
-                stats.leaderboards.closestToTag = stats.leaderboards.closestToTag.map((entry: any) => {
-                    if (commanders.has(String(entry?.account))) {
-                        return { ...entry, value: 0 };
-                    }
-                    return entry;
-                });
-            }
-            if (stats?.closestToTag?.player && commanders.has(String(stats.closestToTag.player))) {
-                stats.closestToTag = { ...stats.closestToTag, value: 0 };
-            }
-            return payload;
-        };
-
-        const normalizeTopDownContribution = (payload: ReportPayload) => {
-            const stats: any = payload?.stats;
-            if (!stats || typeof stats !== 'object') return payload;
-            const rows = Array.isArray(stats?.leaderboards?.downContrib) ? stats.leaderboards.downContrib : [];
-            if (!rows.length) return payload;
-            const sorted = rows
-                .map((row: any) => ({ ...row, value: Number(row?.value ?? 0) }))
-                .filter((row: any) => Number.isFinite(row.value))
-                .sort((a: any, b: any) => (b.value - a.value) || String(a?.account || '').localeCompare(String(b?.account || '')));
-            const top = sorted[0];
-            if (!top) return payload;
-            stats.maxDownContrib = {
-                ...(stats.maxDownContrib || {}),
-                value: Number(top.value || 0),
-                player: String(top.account || stats.maxDownContrib?.player || '-'),
-                count: Number(top.count || stats.maxDownContrib?.count || 0),
-                profession: String(top.profession || stats.maxDownContrib?.profession || 'Unknown'),
-                professionList: Array.isArray(top.professionList) ? top.professionList : (stats.maxDownContrib?.professionList || [])
-            };
-            return payload;
-        };
 
         const applyPaletteFromReport = (reportData: ReportPayload) => {
             const { palette, glass } = readPaletteFromReport(reportData.stats);
