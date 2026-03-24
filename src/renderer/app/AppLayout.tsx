@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronDown, FilePlus2, Minus, RefreshCw, Square, X } from 'lucide-react';
+import { BarChart3, ChevronDown, Clock3, FilePlus2, LayoutDashboard, Minus, RefreshCw, Settings as SettingsIcon, Square, X } from 'lucide-react';
 import { Terminal as TerminalIcon } from 'lucide-react';
 import { SettingsView } from '../SettingsView';
 import { StatsView } from '../StatsView';
@@ -330,19 +330,25 @@ export function AppLayout({ ctx }: { ctx: any }) {
             </div>
 
             <div className="flex items-center px-3 py-1.5 gap-1 border-b shrink-0" style={{ borderColor: 'var(--border-subtle)', background: 'var(--bg-elevated)' }}>
-                {(['dashboard', 'stats', 'history', 'settings'] as const).map((tab) => (
+                {([
+                    { id: 'dashboard' as const, label: 'Dashboard', icon: LayoutDashboard },
+                    { id: 'stats' as const, label: 'Stats', icon: BarChart3 },
+                    { id: 'history' as const, label: 'History', icon: Clock3 },
+                    { id: 'settings' as const, label: 'Settings', icon: SettingsIcon },
+                ]).map(({ id, label, icon: Icon }) => (
                     <button
-                        key={tab}
-                        title={tab.charAt(0).toUpperCase() + tab.slice(1)}
-                        onClick={() => handleNavViewChange(tab)}
-                        className={`px-3 py-1.5 text-xs font-medium rounded-[4px] transition-colors capitalize ${
-                            activeNavView === tab
+                        key={id}
+                        title={label}
+                        onClick={() => handleNavViewChange(id)}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-[4px] transition-colors ${
+                            activeNavView === id
                                 ? 'text-[color:var(--brand-primary)]'
                                 : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'
                         }`}
-                        style={activeNavView === tab ? { background: 'var(--accent-bg)' } : {}}
+                        style={activeNavView === id ? { background: 'var(--accent-bg)' } : {}}
                     >
-                        {tab}
+                        <Icon className="w-3.5 h-3.5" />
+                        {label}
                     </button>
                 ))}
                 <div className="ml-auto flex items-center gap-2">
