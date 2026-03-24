@@ -1,6 +1,7 @@
 import { CSSProperties, useEffect, useMemo, useState, useRef } from 'react';
 import { StatsView } from '../renderer/StatsView';
-import { CRT_WEB_THEME_ID, DARK_GLASS_WEB_THEME_ID, DEFAULT_WEB_THEME, KINETIC_DARK_WEB_THEME_ID, KINETIC_SLATE_WEB_THEME_ID, KINETIC_WEB_THEME_ID, MATTE_WEB_THEME_ID, WebTheme, WEB_THEMES } from '../shared/webThemes';
+import type { ColorPalette } from '../shared/webThemes';
+import { readPaletteFromReport } from './paletteReader';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import metricsSpecMarkdown from '../shared/metrics-spec.md?raw';
@@ -82,227 +83,20 @@ interface ReportIndexEntry {
     };
 }
 
-type UiThemeChoice = 'classic' | 'modern' | 'crt' | 'matte' | 'kinetic' | 'dark-glass';
-type KineticWebFontChoice = 'default' | 'original';
-type KineticThemeVariantChoice = 'light' | 'midnight' | 'slate';
-
 const glassCard = 'border border-white/10 rounded-2xl shadow-xl backdrop-blur-md glass-card';
-const WEB_THEME_OVERRIDE_COOKIE = 'arcbridge_web_theme_override';
-const KINETIC_WEB_FONT_OVERRIDE_COOKIE = 'arcbridge_web_kinetic_font_override';
-const DEFAULT_THEME_SELECT_VALUE = '__default__';
-const WEB_REPORT_THEME_STYLESHEET_ID = 'arcbridge-web-report-theme-stylesheet';
 const ASSET_BASE_PATH_PROBE_PATHS = ['reports/index.json', 'logo.json'] as const;
 
-const readCookieValue = (name: string): string | null => {
-    if (typeof document === 'undefined') return null;
-    const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const match = document.cookie.match(new RegExp(`(?:^|; )${escaped}=([^;]*)`));
-    if (!match) return null;
-    try {
-        return decodeURIComponent(match[1]);
-    } catch {
-        return match[1];
-    }
-};
-
-const getWebReportThemeStylesheetHref = (uiTheme: UiThemeChoice): string => {
-    const file = uiTheme === 'modern'
-        ? 'modern'
-        : uiTheme === 'crt'
-            ? 'crt'
-            : uiTheme === 'matte'
-                ? 'matte'
-                : uiTheme === 'kinetic'
-                    ? 'kinetic'
-                    : uiTheme === 'dark-glass'
-                        ? 'dark-glass'
-                    : 'classic';
-    return `./web-report-themes/${file}.css`;
-};
-
-const ensureWebReportThemeStylesheet = (uiTheme: UiThemeChoice) => {
-    if (typeof document === 'undefined') return;
-    const href = getWebReportThemeStylesheetHref(uiTheme);
-    const head = document.head || document.getElementsByTagName('head')[0];
-    if (!head) return;
-    let link = document.getElementById(WEB_REPORT_THEME_STYLESHEET_ID) as HTMLLinkElement | null;
-    if (!link) {
-        link = document.createElement('link');
-        link.id = WEB_REPORT_THEME_STYLESHEET_ID;
-        link.rel = 'stylesheet';
-        head.appendChild(link);
-    }
-    const absoluteHref = new URL(href, window.location.href).toString();
-    if (link.href !== absoluteHref) {
-        link.href = href;
-    }
-};
-
-const writeCookieValue = (name: string, value: string, days = 365) => {
-    if (typeof document === 'undefined') return;
-    const maxAge = Math.max(0, Math.floor(days * 24 * 60 * 60));
-    document.cookie = `${name}=${encodeURIComponent(value)}; Max-Age=${maxAge}; Path=/; SameSite=Lax`;
-};
-
-const clearCookieValue = (name: string) => {
-    if (typeof document === 'undefined') return;
-    document.cookie = `${name}=; Max-Age=0; Path=/; SameSite=Lax`;
-};
-
-const normalizeKineticThemeVariant = (value: unknown): KineticThemeVariantChoice => {
-    if (value === 'midnight' || value === 'slate') return value;
-    return 'light';
-};
-
-const getKineticThemeIdForVariant = (value: unknown): string => {
-    const normalized = normalizeKineticThemeVariant(value);
-    if (normalized === 'midnight') return KINETIC_DARK_WEB_THEME_ID;
-    if (normalized === 'slate') return KINETIC_SLATE_WEB_THEME_ID;
-    return KINETIC_WEB_THEME_ID;
-};
-
-const inferKineticThemeVariantFromThemeId = (value: unknown): KineticThemeVariantChoice => {
-    if (value === KINETIC_DARK_WEB_THEME_ID) return 'midnight';
-    if (value === KINETIC_SLATE_WEB_THEME_ID) return 'slate';
-    return 'light';
-};
-
-const withThemeIdParam = (url: string, themeId: string): string => {
-    if (!url || !themeId) return url;
-    try {
-        const parsed = new URL(url, window.location.origin);
-        parsed.searchParams.set('themeId', themeId);
-        if (/^https?:\/\//i.test(url)) {
-            return parsed.toString();
-        }
-        return `${parsed.pathname}${parsed.search}${parsed.hash}`;
-    } catch {
-        const separator = url.includes('?') ? '&' : '?';
-        return `${url}${separator}themeId=${encodeURIComponent(themeId)}`;
-    }
-};
-
-const buildReportHref = (baseHref: string, reportId: string, themeId: string | null): string => {
+const buildReportHref = (baseHref: string, reportId: string): string => {
     const next = new URL(baseHref);
     next.searchParams.set('report', reportId || '');
-    if (themeId) {
-        next.searchParams.set('themeId', themeId);
-    }
     return next.toString();
 };
 
-const buildRollupHref = (baseHref: string, themeId: string | null): string => {
+const buildRollupHref = (baseHref: string): string => {
     const next = new URL(baseHref);
     next.searchParams.delete('report');
     next.searchParams.set('view', 'rollup');
-    if (themeId) {
-        next.searchParams.set('themeId', themeId);
-    }
     return next.toString();
-};
-
-const isValidThemeOverrideId = (themeId: string): boolean => {
-    if (!themeId) return false;
-    if (themeId === CRT_WEB_THEME_ID) return true;
-    return WEB_THEMES.some((entry) => entry.id === themeId);
-};
-
-const readThemeOverrideFromRuntime = (): string | null => {
-    const params = new URLSearchParams(window.location.search);
-    const fromQuery = params.get('themeId') || params.get('theme');
-    if (fromQuery && isValidThemeOverrideId(fromQuery)) {
-        return fromQuery;
-    }
-    // Check cookie for persisted viewer preference (lower priority than query param).
-    const persisted = readCookieValue(WEB_THEME_OVERRIDE_COOKIE);
-    if (persisted) {
-        try {
-            const parsed = JSON.parse(persisted);
-            const themeId = typeof parsed?.themeId === 'string' ? parsed.themeId.trim() : null;
-            if (themeId && isValidThemeOverrideId(themeId)) {
-                return themeId;
-            }
-        } catch {
-            // Ignore malformed cookie.
-        }
-    }
-    return null;
-};
-
-const resolveUiThemeFromOverride = (themeIdOverride: string | null, fallback: UiThemeChoice): UiThemeChoice => {
-    if (!themeIdOverride) return fallback;
-    if (themeIdOverride === MATTE_WEB_THEME_ID) return 'matte';
-    if (themeIdOverride === KINETIC_WEB_THEME_ID || themeIdOverride === KINETIC_DARK_WEB_THEME_ID || themeIdOverride === KINETIC_SLATE_WEB_THEME_ID) return 'kinetic';
-    if (themeIdOverride === CRT_WEB_THEME_ID) return 'crt';
-    // Base palette overrides (Arcane, Cobalt, etc.) fully switch to the classic structure.
-    return 'classic';
-};
-
-const readStoredThemeId = (value: unknown): string | null => {
-    if (typeof value !== 'string') return null;
-    const normalized = value.trim();
-    return normalized ? normalized : null;
-};
-
-const readReportThemeId = (stats: any): string | null => {
-    // For kinetic themes always derive the full theme ID from the variant field.
-    // paletteId may be the generic 'KineticPaper' (light) in older or mis-synced
-    // reports where githubWebTheme was stored before the variant-specific IDs existed.
-    if (stats?.reportTheme?.ui === 'kinetic') {
-        return getKineticThemeIdForVariant(stats?.reportTheme?.variant);
-    }
-    // dark-glass maps to the Aurora web theme when no explicit palette is stored.
-    if (stats?.reportTheme?.ui === 'dark-glass' || stats?.uiTheme === 'dark-glass') {
-        return readStoredThemeId(stats?.reportTheme?.paletteId)
-            || readStoredThemeId(stats?.reportTheme?.themeId)
-            || readStoredThemeId(stats?.webThemeId)
-            || DARK_GLASS_WEB_THEME_ID;
-    }
-    return readStoredThemeId(stats?.reportTheme?.paletteId)
-        || readStoredThemeId(stats?.reportTheme?.themeId)
-        || readStoredThemeId(stats?.webThemeId)
-        || null;
-};
-
-const readReportUiTheme = (stats: any): UiThemeChoice | null => {
-    const explicit = stats?.reportTheme?.ui;
-    if (explicit === 'modern' || explicit === 'classic' || explicit === 'crt' || explicit === 'matte' || explicit === 'kinetic' || explicit === 'dark-glass') {
-        return explicit;
-    }
-    const legacy = stats?.uiTheme;
-    if (legacy === 'modern' || legacy === 'classic' || legacy === 'crt' || legacy === 'matte' || legacy === 'kinetic' || legacy === 'dark-glass') {
-        return legacy;
-    }
-    const themeId = readReportThemeId(stats);
-    if (themeId === MATTE_WEB_THEME_ID) return 'matte';
-    if (themeId === KINETIC_WEB_THEME_ID || themeId === KINETIC_DARK_WEB_THEME_ID || themeId === KINETIC_SLATE_WEB_THEME_ID) return 'kinetic';
-    if (themeId === CRT_WEB_THEME_ID) return 'crt';
-    return null;
-};
-
-const isLegacyKineticReport = (stats: any): boolean => (
-    readReportUiTheme(stats) === 'kinetic'
-    && !readReportThemeId(stats)
-);
-
-const parseSiteTheme = (data: unknown): { ui: UiThemeChoice; paletteId: string; kineticFont: KineticWebFontChoice; kineticVariant: KineticThemeVariantChoice } | null => {
-    if (!data || typeof data !== 'object' || Array.isArray(data)) return null;
-    const payload = data as any;
-    const ui = payload?.siteTheme?.ui;
-    const paletteId = payload?.siteTheme?.paletteId;
-    if (ui === 'dark-glass') {
-        const resolvedPaletteId = (typeof paletteId === 'string' && paletteId.trim())
-            ? paletteId
-            : DARK_GLASS_WEB_THEME_ID;
-        return { ui: 'dark-glass', paletteId: resolvedPaletteId, kineticFont: 'default', kineticVariant: 'light' };
-    }
-    if ((ui === 'classic' || ui === 'modern' || ui === 'crt' || ui === 'matte' || ui === 'kinetic' || ui === 'dark-glass')
-        && paletteId && typeof paletteId === 'string') {
-        const kineticFont: KineticWebFontChoice = payload?.siteTheme?.kineticFont === 'original' ? 'original' : 'default';
-        const kineticVariant = normalizeKineticThemeVariant(payload?.siteTheme?.kineticVariant ?? inferKineticThemeVariantFromThemeId(paletteId));
-        return { ui, paletteId, kineticFont, kineticVariant };
-    }
-    return null;
 };
 
 const formatLocalRange = (start: string, end: string) => {
@@ -352,16 +146,6 @@ const formatHoursLabel = (durationMs: number) => {
 const formatRatio = (value: number) => {
     if (!Number.isFinite(value)) return '--';
     return value.toFixed(value >= 10 ? 1 : 2);
-};
-
-const scaleRgb = (rgb: string, factor: number) => {
-    const parts = String(rgb || '')
-        .split(',')
-        .map((value) => Math.max(0, Math.min(255, Math.round(Number(value.trim()) * factor))));
-    if (parts.length !== 3 || parts.some((value) => !Number.isFinite(value))) {
-        return 'rgb(24, 32, 48)';
-    }
-    return `rgb(${parts[0]}, ${parts[1]}, ${parts[2]})`;
 };
 
 type TocHeading = {
@@ -443,7 +227,6 @@ const BorderlandsPie = ({ value }: { value: number | null | undefined }) => {
 };
 
 export function ReportApp() {
-    const initialThemeOverride = readThemeOverrideFromRuntime();
     const initialSearchParams = useMemo(() => new URLSearchParams(window.location.search), []);
     const [report, setReport] = useState<ReportPayload | null>(null);
     const [index, setIndex] = useState<ReportIndexEntry[] | null>(null);
@@ -460,31 +243,17 @@ export function ReportApp() {
     const [error, setError] = useState<string | null>(null);
     const [reportPathHint, setReportPathHint] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
-    const [theme, setTheme] = useState<WebTheme>(() =>
-        (initialThemeOverride ? WEB_THEMES.find((e) => e.id === initialThemeOverride) : null) ?? DEFAULT_WEB_THEME
-    );
+    const [colorPalette, setColorPalette] = useState<ColorPalette>('electric-blue');
+    const [glassSurfaces, setGlassSurfaces] = useState(false);
     const [logoUrl, setLogoUrl] = useState<string | null>(null);
     const [logoIsDefault, setLogoIsDefault] = useState(false);
     const [tocOpen, setTocOpen] = useState(false);
-    const [uiTheme, setUiTheme] = useState<UiThemeChoice>(() => resolveUiThemeFromOverride(initialThemeOverride, 'classic'));
-    const [defaultUiTheme, setDefaultUiTheme] = useState<UiThemeChoice>('classic');
-    const [defaultThemeId, setDefaultThemeId] = useState<string>(DEFAULT_WEB_THEME.id);
-    const [siteTheme, setSiteTheme] = useState<{ ui: UiThemeChoice; paletteId: string; kineticFont: KineticWebFontChoice; kineticVariant: KineticThemeVariantChoice } | null>(null);
-    const [themeIdOverride, setThemeIdOverride] = useState<string | null>(initialThemeOverride);
     const requestedView = useMemo(() => (initialSearchParams.get('view') || '').trim().toLowerCase(), [initialSearchParams]);
     const reportId = useMemo(
         () => initialSearchParams.get('report') || window.location.pathname.match(/\/reports\/([^/]+)\/?$/)?.[1] || null,
         [initialSearchParams]
     );
     const isRollupView = useMemo(() => !reportId && requestedView === 'rollup', [reportId, requestedView]);
-    const queryThemeId = useMemo(() => {
-        const requested = initialSearchParams.get('themeId') || initialSearchParams.get('theme');
-        if (!requested) return null;
-        return isValidThemeOverrideId(requested) ? requested : null;
-    }, [initialSearchParams]);
-    const [kineticFontChoice, setKineticFontChoice] = useState<KineticWebFontChoice>('default');
-    const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
-    const [kineticFontDropdownOpen, setKineticFontDropdownOpen] = useState(false);
     const [proofOfWorkOpen, setProofOfWorkOpen] = useState(false);
     const [activeProofOfWorkHeadingId, setActiveProofOfWorkHeadingId] = useState('');
     const [metricsSpecSearch, setMetricsSpecSearch] = useState('');
@@ -506,11 +275,8 @@ export function ReportApp() {
     const statsWrapperRef = useRef<HTMLDivElement | null>(null);
     const metricsSpecContentRef = useRef<HTMLDivElement | null>(null);
     const metricsSpecSearchRef = useRef<HTMLDivElement | null>(null);
-    const themeDropdownRef = useRef<HTMLDivElement | null>(null);
-    const kineticFontDropdownRef = useRef<HTMLDivElement | null>(null);
     const metricsSpecHighlightRef = useRef<number | null>(null);
     const metricsSpecHeadingCountsRef = useRef<Map<string, number>>(new Map());
-    const siteThemeRef = useRef<{ ui: UiThemeChoice; paletteId: string } | null>(null);
     const pendingScrollIdRef = useRef<string | null>(null);
     const groupTopScrollRafRef = useRef<number | null>(null);
     const basePath = useMemo(() => {
@@ -533,13 +299,10 @@ export function ReportApp() {
         return pathName;
     }, []);
     const baseHref = useMemo(() => new URL(basePath, window.location.origin).toString(), [basePath]);
-    const themedIndexHref = useMemo(
-        () => (queryThemeId ? withThemeIdParam(baseHref, queryThemeId) : baseHref),
-        [queryThemeId, baseHref]
-    );
+    const themedIndexHref = baseHref;
     const rollupHref = useMemo(
-        () => buildRollupHref(baseHref, queryThemeId),
-        [baseHref, queryThemeId]
+        () => buildRollupHref(baseHref),
+        [baseHref]
     );
     const isDevLocalWeb = useMemo(() => {
         const isLocalhost = /^(localhost|127\.0\.0\.1)(:\d+)?$/.test(window.location.host);
@@ -610,13 +373,6 @@ export function ReportApp() {
     };
 
     useEffect(() => {
-        const persisted = readCookieValue(KINETIC_WEB_FONT_OVERRIDE_COOKIE);
-        if (persisted === 'original' || persisted === 'default') {
-            setKineticFontChoice(persisted);
-        }
-    }, []);
-
-    useEffect(() => {
         const updateViewportWidth = () => {
             const width = Math.max(0, Math.round(window.visualViewport?.width || window.innerWidth || 1280));
             setViewportWidth(width);
@@ -634,42 +390,16 @@ export function ReportApp() {
         if (!isNarrowViewport) setTocOpen(false);
     }, [isNarrowViewport]);
 
+    // Apply palette and glass body classes so CSS variables drive all theming.
     useEffect(() => {
-        const effectiveThemeId = themeIdOverride || defaultThemeId;
-        const matchedTheme = WEB_THEMES.find((entry) => entry.id === effectiveThemeId) || DEFAULT_WEB_THEME;
-        setTheme(matchedTheme);
-    }, [themeIdOverride, defaultThemeId]);
-
-    useEffect(() => {
-        if (!themeIdOverride) {
-            setUiTheme(defaultUiTheme);
-            return;
+        const body = document.body;
+        body.classList.add('web-report');
+        body.classList.remove('palette-electric-blue', 'palette-refined-cyan', 'palette-amber-warm', 'palette-emerald-mint');
+        if (colorPalette !== 'electric-blue') {
+            body.classList.add(`palette-${colorPalette}`);
         }
-        setUiTheme(resolveUiThemeFromOverride(themeIdOverride, defaultUiTheme));
-    }, [themeIdOverride, defaultUiTheme]);
-
-    // Apply the site-wide theme from index.json so all pages stay visually consistent.
-    // The structural UI (kinetic, classic, etc.) always follows the site theme.
-    // Palette defaults only apply when the viewer has no personal override (cookie/URL).
-    // Kinetic font follows the site setting unless the viewer has a cookie preference.
-    useEffect(() => {
-        if (!siteTheme) return;
-        siteThemeRef.current = siteTheme;
-        setDefaultUiTheme(siteTheme.ui);
-        if (!themeIdOverride) {
-            // For kinetic site themes, derive the correct variant-specific ID from kineticVariant.
-            // paletteId may be 'KineticPaper' (light) in legacy index.json files even when the
-            // actual configured variant is midnight or slate.
-            const resolvedPaletteId = siteTheme.ui === 'kinetic'
-                ? getKineticThemeIdForVariant(siteTheme.kineticVariant)
-                : siteTheme.paletteId;
-            setDefaultThemeId(resolvedPaletteId);
-        }
-        const cookieFont = readCookieValue(KINETIC_WEB_FONT_OVERRIDE_COOKIE);
-        if (!cookieFont) {
-            setKineticFontChoice(siteTheme.kineticFont);
-        }
-    }, [siteTheme, themeIdOverride]);
+        body.classList.toggle('glass-surfaces', glassSurfaces);
+    }, [colorPalette, glassSurfaces]);
 
     useEffect(() => {
         setAssetBasePath(assetBasePathCandidates[0] || '/');
@@ -959,7 +689,6 @@ export function ReportApp() {
         () => navGroups.find((group) => group.id === activeGroup) || navGroups[0],
         [navGroups, activeGroup]
     );
-    const isKineticUi = uiTheme === 'kinetic';
     const activeSectionIds = useMemo(() => {
         const baseIds = (activeGroupDef as any)?.sectionIds || (activeGroupDef?.items || []).map((item) => item.id);
         const ids = baseIds.map((id: string) => (id === 'kdr' ? 'overview' : id));
@@ -1072,79 +801,14 @@ export function ReportApp() {
             window.removeEventListener('hashchange', syncFromHash);
         };
     }, [navGroupByAnchor, navGroups]);
-    const isMatteUi = uiTheme === 'matte';
-    const isDarkGlassUi = uiTheme === 'dark-glass';
-    const resolvedTheme = theme;
-    // Use the kinetic override ID directly when an explicit kinetic variant is selected,
-    // otherwise fall back to defaultThemeId so the site/report's dark or slate variant is
-    // preserved (e.g. no-override on a kinetic-midnight site stays midnight).
-    const kineticVariantSourceId = (themeIdOverride === KINETIC_WEB_THEME_ID
-        || themeIdOverride === KINETIC_DARK_WEB_THEME_ID
-        || themeIdOverride === KINETIC_SLATE_WEB_THEME_ID)
-        ? themeIdOverride
-        : defaultThemeId;
-    const kineticVariant = isKineticUi ? inferKineticThemeVariantFromThemeId(kineticVariantSourceId) : 'light';
-    const isKineticDarkTheme = isKineticUi && kineticVariant !== 'light';
-    const isKineticSlateTheme = isKineticUi && kineticVariant === 'slate';
-    const accentRgb = isDarkGlassUi
-        ? '26, 115, 232'
-        : isKineticUi
-            ? (isKineticSlateTheme ? '181, 188, 201' : (isKineticDarkTheme ? '142, 155, 214' : '90, 80, 68'))
-            : resolvedTheme.rgb;
-    const defaultLogoColor = isMatteUi ? '#d8e1eb' : (isKineticUi ? (isKineticSlateTheme ? '#ece1cd' : (isKineticDarkTheme ? '#f0d8a9' : '#24211d')) : 'var(--accent)');
-    const accentVars = {
-        '--accent': `rgb(${accentRgb})`,
-        '--accent-rgb': accentRgb,
-        '--accent-soft': `rgba(${accentRgb}, ${isKineticUi ? (isKineticDarkTheme ? '0.22' : '0.18') : '0.32'})`,
-        '--accent-strong': `rgba(${accentRgb}, ${isKineticUi ? (isKineticDarkTheme ? '0.86' : '0.78') : '0.95'})`,
-        '--accent-border': `rgba(${accentRgb}, ${isKineticUi ? (isKineticDarkTheme ? '0.32' : '0.22') : '0.4'})`,
-        '--accent-glow': `rgba(${accentRgb}, ${isKineticUi ? (isKineticDarkTheme ? '0.14' : '0.08') : '0.18'})`,
-        '--accent-glow-soft': `rgba(${accentRgb}, ${isKineticUi ? (isKineticDarkTheme ? '0.08' : '0.04') : '0.08'})`
-    } as CSSProperties;
-    const isModernUi = uiTheme === 'modern' || uiTheme === 'matte' || uiTheme === 'kinetic' || uiTheme === 'dark-glass';
-    const darkGlassBackgroundImage = `
-        radial-gradient(ellipse 85% 220px at 38% -40px, rgba(26, 115, 232, 0.72) 0%, rgba(66, 133, 244, 0.55) 28%, rgba(103, 58, 183, 0.35) 52%, rgba(94, 53, 177, 0.12) 70%, transparent 88%),
-        radial-gradient(ellipse 55% 160px at 8% -20px, rgba(0, 188, 212, 0.38) 0%, rgba(26, 115, 232, 0.22) 45%, transparent 78%),
-        radial-gradient(ellipse 48% 140px at 88% -15px, rgba(94, 53, 177, 0.45) 0%, rgba(138, 43, 226, 0.25) 45%, transparent 80%),
-        radial-gradient(ellipse 35% 100px at 62% -5px, rgba(0, 230, 195, 0.12) 0%, transparent 70%)
-    `;
-    const reportBackgroundImage = isDarkGlassUi
-        ? darkGlassBackgroundImage
-        : resolvedTheme.pattern
-            ? (isMatteUi
-                ? undefined
-                : isKineticUi
-                    ? undefined
-                    : isModernUi
-                        ? `linear-gradient(180deg, rgba(14, 18, 26, 0.72), rgba(18, 24, 34, 0.78)), ${resolvedTheme.pattern}`
-                        : resolvedTheme.pattern)
-            : undefined;
-    const glassCardStyle: CSSProperties = isKineticUi
-        ? {
-            backgroundImage: 'none',
-            backgroundColor: isKineticSlateTheme ? 'rgba(78, 85, 95, 0.84)' : (isKineticDarkTheme ? 'rgba(57, 64, 93, 0.9)' : 'rgba(220, 210, 196, 0.95)'),
-            borderColor: isKineticSlateTheme ? 'rgba(223, 228, 238, 0.22)' : (isKineticDarkTheme ? 'rgba(164, 177, 228, 0.28)' : 'rgba(78, 67, 56, 0.18)')
-        }
-        : isDarkGlassUi
-        ? {
-            backgroundImage: 'none',
-            backgroundColor: 'var(--bg-card)',
-            borderColor: 'var(--border-default)'
-        }
-        : isMatteUi
-        ? { backgroundImage: 'none', backgroundColor: 'var(--bg-card)' }
-        : {
-            backgroundImage: isModernUi
-                ? (isDarkGlassUi
-                    ? 'linear-gradient(135deg, rgba(var(--accent-rgb), 0.16), rgba(var(--accent-rgb), 0.05) 70%)'
-                    : 'linear-gradient(135deg, rgba(var(--accent-rgb), 0.2), rgba(var(--accent-rgb), 0.06) 70%)')
-                : 'linear-gradient(135deg, rgba(var(--accent-rgb), 0.26), rgba(var(--accent-rgb), 0.08) 70%)'
-        };
-    const rollupTableHeaderStyle: CSSProperties = isKineticUi
-        ? { backgroundColor: isKineticSlateTheme ? '#4e555f' : (isKineticDarkTheme ? '#39405d' : '#c9bead') }
-        : isMatteUi
-        ? { backgroundColor: 'var(--bg-card)' }
-        : { backgroundColor: scaleRgb(accentRgb, isModernUi ? 0.42 : 0.34) };
+    // All theming is now driven by CSS variables set by palette/glass body classes.
+    const defaultLogoColor = 'var(--brand-primary)';
+    const glassCardStyle: CSSProperties = {
+        backgroundImage: 'none',
+        backgroundColor: 'var(--bg-card)',
+        borderColor: 'var(--border-default)'
+    };
+    const rollupTableHeaderStyle: CSSProperties = { backgroundColor: 'var(--bg-card)' };
 
     useEffect(() => {
         let isMounted = true;
@@ -1152,8 +816,6 @@ export function ReportApp() {
         setError(null);
         setReport(null);
         setIndex(null);
-        setSiteTheme(null);
-        siteThemeRef.current = null;
         setRollupData(null);
         setRollupError(null);
         setRollupLoading(false);
@@ -1200,19 +862,10 @@ export function ReportApp() {
             return payload;
         };
 
-        const applyThemeDefaults = (normalized: ReportPayload) => {
-            // Skip if a site-wide theme is already loaded — site theme takes priority.
-            if (themeIdOverride || siteThemeRef.current) return;
-            const themeChoice = readReportUiTheme(normalized?.stats);
-            if (themeChoice) {
-                setDefaultUiTheme(themeChoice);
-            }
-            const storedThemeId = readReportThemeId(normalized?.stats);
-            if (storedThemeId) {
-                setDefaultThemeId(storedThemeId);
-            } else if (isLegacyKineticReport(normalized?.stats)) {
-                setDefaultThemeId(KINETIC_DARK_WEB_THEME_ID);
-            }
+        const applyPaletteFromReport = (reportData: ReportPayload) => {
+            const { palette, glass } = readPaletteFromReport(reportData.stats);
+            setColorPalette(palette);
+            setGlassSurfaces(glass);
         };
 
         const loadIndex = (suppressError = false) => {
@@ -1223,8 +876,6 @@ export function ReportApp() {
                     // Support new object format { siteTheme, entries } and legacy plain array.
                     const entries = Array.isArray(data) ? data : (Array.isArray(data?.entries) ? data.entries : []);
                     setIndex(entries);
-                    const st = parseSiteTheme(data);
-                    if (st) setSiteTheme(st);
                 })
                 .catch(() => {
                     if (!isMounted) return;
@@ -1241,7 +892,7 @@ export function ReportApp() {
                 if (!isMounted) return;
                 const normalized = normalizeTopDownContribution(normalizeCommanderDistance(data));
                 setReport(normalized);
-                applyThemeDefaults(normalized);
+                applyPaletteFromReport(normalized);
             });
 
         if (isRollupView) {
@@ -1252,14 +903,13 @@ export function ReportApp() {
         }
 
         if (reportId) {
-            // Fetch index.json in parallel with the report to pick up the site-wide theme.
-            // This ensures individual report pages use the same theme as the rest of the site.
+            // Fetch index.json in parallel with the report for the report listing.
             fetch(`${basePath}reports/index.json`, { cache: 'no-store' })
                 .then((resp) => (resp.ok ? resp.json() : null))
                 .then((data) => {
                     if (!isMounted || !data) return;
-                    const st = parseSiteTheme(data);
-                    if (st) setSiteTheme(st);
+                    const entries = Array.isArray(data) ? data : (Array.isArray(data?.entries) ? data.entries : []);
+                    setIndex(entries);
                 })
                 .catch(() => {});
             loadReport().catch(() => {
@@ -1285,7 +935,7 @@ export function ReportApp() {
         return () => {
             isMounted = false;
         };
-    }, [basePath, isRollupView, reportId, themeIdOverride]);
+    }, [basePath, isRollupView, reportId]);
 
     useEffect(() => {
         if (!isRollupView || !index) {
@@ -1350,42 +1000,6 @@ export function ReportApp() {
         }
         document.title = 'ArcBridge Reports';
     }, [isRollupView, report]);
-
-    useEffect(() => {
-        // Skip if a viewer override or site-wide theme is already active.
-        // siteThemeRef guards against overriding the site palette with a stale per-report value
-        // when index.json resolves before report.json (race on individual report pages).
-        if (themeIdOverride || siteThemeRef.current) return;
-        const requestedThemeId = readReportThemeId(report?.stats);
-        if (requestedThemeId) {
-            setDefaultThemeId(requestedThemeId);
-            return;
-        }
-        if (isLegacyKineticReport(report?.stats)) {
-            setDefaultThemeId(KINETIC_DARK_WEB_THEME_ID);
-        }
-    }, [report, themeIdOverride]);
-
-    useEffect(() => {
-        const body = document.body;
-        body.classList.add('web-report');
-        body.classList.remove('theme-classic', 'theme-modern', 'theme-crt', 'theme-matte', 'theme-kinetic', 'theme-kinetic-dark', 'theme-kinetic-slate', 'theme-kinetic-font-original', 'theme-dark-glass');
-        if (isMatteUi) body.classList.add('theme-matte');
-        else if (uiTheme === 'modern') body.classList.add('theme-modern');
-        else if (uiTheme === 'crt') body.classList.add('theme-crt');
-        else if (uiTheme === 'dark-glass') body.classList.add('theme-dark-glass');
-        else if (uiTheme === 'kinetic') {
-            body.classList.add('theme-kinetic');
-            if (isKineticDarkTheme) body.classList.add('theme-kinetic-dark');
-            if (isKineticSlateTheme) body.classList.add('theme-kinetic-slate');
-            if (kineticFontChoice === 'original') body.classList.add('theme-kinetic-font-original');
-        }
-        else body.classList.add('theme-classic');
-    }, [uiTheme, isMatteUi, isKineticDarkTheme, isKineticSlateTheme, kineticFontChoice]);
-
-    useEffect(() => {
-        ensureWebReportThemeStylesheet(uiTheme);
-    }, [uiTheme]);
 
     useEffect(() => {
         let isMounted = true;
@@ -1485,52 +1099,6 @@ export function ReportApp() {
         setPlayerProfessionFilter('all');
     }, [playerProfessionFilter, playerProfessionOptions]);
 
-    const persistOverridesCookie = (nextThemeIdOverride: string | null) => {
-        if (!nextThemeIdOverride) {
-            clearCookieValue(WEB_THEME_OVERRIDE_COOKIE);
-            return;
-        }
-        writeCookieValue(WEB_THEME_OVERRIDE_COOKIE, JSON.stringify({
-            themeId: nextThemeIdOverride
-        }));
-    };
-
-    const selectThemeOverride = (value: string) => {
-        const nextThemeIdOverride = value === DEFAULT_THEME_SELECT_VALUE ? null : value;
-        if (nextThemeIdOverride && !WEB_THEMES.some((entry) => entry.id === nextThemeIdOverride)) return;
-        setThemeIdOverride(nextThemeIdOverride);
-        persistOverridesCookie(nextThemeIdOverride);
-        setThemeDropdownOpen(false);
-    };
-
-    const selectKineticFontChoice = (value: KineticWebFontChoice) => {
-        setKineticFontChoice(value);
-        writeCookieValue(KINETIC_WEB_FONT_OVERRIDE_COOKIE, value);
-        setKineticFontDropdownOpen(false);
-    };
-
-    useEffect(() => {
-        const onWindowPointerDown = (event: MouseEvent) => {
-            if (!themeDropdownRef.current) return;
-            const target = event.target as Node;
-            if (themeDropdownRef.current.contains(target)) return;
-            if (kineticFontDropdownRef.current && kineticFontDropdownRef.current.contains(target)) return;
-            setThemeDropdownOpen(false);
-            setKineticFontDropdownOpen(false);
-        };
-        const onWindowKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') {
-                setThemeDropdownOpen(false);
-                setKineticFontDropdownOpen(false);
-            }
-        };
-        window.addEventListener('mousedown', onWindowPointerDown);
-        window.addEventListener('keydown', onWindowKeyDown);
-        return () => {
-            window.removeEventListener('mousedown', onWindowPointerDown);
-            window.removeEventListener('keydown', onWindowKeyDown);
-        };
-    }, []);
     useEffect(() => () => {
         if (groupTopScrollRafRef.current !== null) {
             cancelAnimationFrame(groupTopScrollRafRef.current);
@@ -1538,114 +1106,11 @@ export function ReportApp() {
         }
     }, []);
 
-    const activeThemeLabel = useMemo(() => {
-        if (!themeIdOverride) return 'Default';
-        const active = WEB_THEMES.find((entry) => entry.id === themeIdOverride);
-        return active?.label || 'Default';
-    }, [themeIdOverride]);
-
-    const themeSelectControl = (
-        <div className="relative flex items-center gap-2" ref={themeDropdownRef}>
-            <div className="text-[9px] uppercase tracking-widest text-gray-400 whitespace-nowrap">Theme</div>
-            <button
-                type="button"
-                onClick={() => setThemeDropdownOpen((value) => !value)}
-                className="w-[152px] inline-flex items-center justify-between gap-2 rounded-full border px-3 py-1 text-[9px] uppercase tracking-widest text-white transition-colors focus:outline-none focus:ring-2 focus:ring-[color:var(--accent-soft)]"
-                style={{
-                    backgroundColor: 'var(--bg-card)',
-                    borderColor: 'var(--accent-border)'
-                }}
-            >
-                <span className="truncate text-left">{activeThemeLabel}</span>
-                <span className={`transition-transform ${themeDropdownOpen ? 'rotate-180' : ''}`}>▾</span>
-            </button>
-            {themeDropdownOpen && (
-                <div
-                    className="absolute right-0 bottom-[calc(100%+6px)] z-20 w-[240px] overflow-y-auto rounded-xl border shadow-2xl backdrop-blur-xl"
-                    style={{
-                        maxHeight: '240px',
-                        backgroundColor: 'color-mix(in srgb, var(--bg-card) 92%, black)',
-                        borderColor: 'var(--accent-border)'
-                    }}
-                >
-                    <button
-                        type="button"
-                        onClick={() => selectThemeOverride(DEFAULT_THEME_SELECT_VALUE)}
-                        className="w-full px-3 py-2 text-left text-[10px] uppercase tracking-[0.2em] text-gray-200 hover:bg-white/10 transition-colors"
-                    >
-                        Default
-                    </button>
-                    {WEB_THEMES.map((entry) => (
-                        <button
-                            key={entry.id}
-                            type="button"
-                            onClick={() => selectThemeOverride(entry.id)}
-                            className={`w-full px-3 py-2 text-left text-[10px] uppercase tracking-[0.2em] transition-colors hover:bg-white/10 ${themeIdOverride === entry.id ? 'text-[color:var(--accent)]' : 'text-gray-200'}`}
-                        >
-                            {entry.label}
-                        </button>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-
-    const kineticFontSelectControl = isKineticUi ? (
-        <div className="relative flex items-center gap-2" ref={kineticFontDropdownRef}>
-            <div className="text-[9px] uppercase tracking-widest text-gray-400 whitespace-nowrap">Font</div>
-            <button
-                type="button"
-                onClick={() => setKineticFontDropdownOpen((value) => !value)}
-                className="w-[152px] inline-flex items-center justify-between gap-2 rounded-full border px-3 py-1 text-[9px] uppercase tracking-widest text-white transition-colors focus:outline-none focus:ring-2 focus:ring-[color:var(--accent-soft)]"
-                style={{
-                    backgroundColor: 'var(--bg-card)',
-                    borderColor: 'var(--accent-border)'
-                }}
-            >
-                <span className="truncate text-left">{kineticFontChoice === 'original' ? 'Original App' : 'Kinetic Default'}</span>
-                <span className={`transition-transform ${kineticFontDropdownOpen ? 'rotate-180' : ''}`}>▾</span>
-            </button>
-            {kineticFontDropdownOpen && (
-                <div
-                    className="absolute right-0 bottom-[calc(100%+6px)] z-20 w-[240px] overflow-y-auto rounded-xl border shadow-2xl backdrop-blur-xl"
-                    style={{
-                        maxHeight: '180px',
-                        backgroundColor: 'color-mix(in srgb, var(--bg-card) 92%, black)',
-                        borderColor: 'var(--accent-border)'
-                    }}
-                >
-                    <button
-                        type="button"
-                        onClick={() => selectKineticFontChoice('default')}
-                        className={`w-full px-3 py-2 text-left text-[10px] uppercase tracking-[0.2em] transition-colors hover:bg-white/10 ${kineticFontChoice === 'default' ? 'text-[color:var(--accent)]' : 'text-gray-200'}`}
-                    >
-                        Kinetic Default
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => selectKineticFontChoice('original')}
-                        className={`w-full px-3 py-2 text-left text-[10px] uppercase tracking-[0.2em] transition-colors hover:bg-white/10 ${kineticFontChoice === 'original' ? 'text-[color:var(--accent)]' : 'text-gray-200'}`}
-                    >
-                        Original App
-                    </button>
-                </div>
-            )}
-        </div>
-    ) : null;
-
     const legalNoticePane = (
         <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-[11px] text-gray-500">
             <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                 <div className="text-[11px] font-semibold uppercase tracking-[0.35em] text-gray-400">Legal Notice</div>
                 <div className="flex flex-wrap items-end gap-2">
-                    <div className="min-w-[160px]">
-                        {themeSelectControl}
-                    </div>
-                    {kineticFontSelectControl && (
-                        <div className="min-w-[160px]">
-                            {kineticFontSelectControl}
-                        </div>
-                    )}
                     <a
                         href="https://github.com/darkharasho/ArcBridge"
                         target="_blank"
@@ -1992,31 +1457,23 @@ export function ReportApp() {
             <div
                 className="min-h-screen text-white relative overflow-x-hidden"
                 style={{
-                    backgroundColor: isMatteUi
-                        ? 'var(--bg-base)'
-                        : (isKineticUi
-                            ? (isKineticSlateTheme ? '#353a41' : (isKineticDarkTheme ? '#2b3048' : '#d8d1c5'))
-                            : (isDarkGlassUi ? '#101218' : (isModernUi ? '#0f141c' : '#0f172a'))),
-                    backgroundImage: isMatteUi ? 'none' : reportBackgroundImage,
-                    ...accentVars
+                    backgroundColor: 'var(--bg-base)'
                 }}
             >
-                {!isMatteUi && !isKineticUi && !isDarkGlassUi && (
-                    <div className="absolute inset-0 pointer-events-none">
-                        <div
-                            className="absolute -top-32 -right-24 h-80 w-80 rounded-full blur-[140px]"
-                            style={{ backgroundColor: 'var(--accent-glow)' }}
-                        />
-                        <div
-                            className="absolute top-40 -left-20 h-72 w-72 rounded-full blur-[120px]"
-                            style={{ backgroundColor: 'var(--accent-glow-soft)' }}
-                        />
-                        <div
-                            className="absolute bottom-10 right-10 h-64 w-64 rounded-full blur-[120px]"
-                            style={{ backgroundColor: 'var(--accent-glow-soft)' }}
-                        />
-                    </div>
-                )}
+                <div className="absolute inset-0 pointer-events-none">
+                    <div
+                        className="absolute -top-32 -right-24 h-80 w-80 rounded-full blur-[140px]"
+                        style={{ backgroundColor: 'var(--glow-primary)' }}
+                    />
+                    <div
+                        className="absolute top-40 -left-20 h-72 w-72 rounded-full blur-[120px]"
+                        style={{ backgroundColor: 'var(--glow-secondary)' }}
+                    />
+                    <div
+                        className="absolute bottom-10 right-10 h-64 w-64 rounded-full blur-[120px]"
+                        style={{ backgroundColor: 'var(--glow-secondary)' }}
+                    />
+                </div>
                 <div className={`fixed inset-0 z-20 bg-black/40 backdrop-blur-sm transition-opacity ${isNarrowViewport ? '' : 'hidden'} ${tocOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} onClick={() => setTocOpen(false)} />
                 <aside
                     className={`fixed z-30 top-0 bottom-0 w-64 max-w-[80vw] transition-transform duration-300 ${isNarrowViewport ? '' : 'hidden'} ${tocOpen ? 'translate-x-0' : '-translate-x-full'}`}
@@ -2323,7 +1780,6 @@ export function ReportApp() {
                                 precomputedStats={report.stats}
                                 statsViewSettings={report.stats?.statsViewSettings}
                                 embedded
-                                uiTheme={uiTheme}
                                 sectionVisibility={(id) => activeSectionIds.has(id)}
                                 dashboardTitle={`Statistics Dashboard - ${activeGroupDef?.label || 'Overview'}`}
                             />
@@ -2368,31 +1824,23 @@ export function ReportApp() {
             <div
                 className="min-h-screen text-white relative overflow-x-hidden"
                 style={{
-                    backgroundColor: isMatteUi
-                        ? 'var(--bg-base)'
-                        : (isKineticUi
-                            ? (isKineticSlateTheme ? '#353a41' : (isKineticDarkTheme ? '#2b3048' : '#d8d1c5'))
-                            : (isDarkGlassUi ? '#101218' : (isModernUi ? '#0f141c' : '#0f172a'))),
-                    backgroundImage: isMatteUi ? 'none' : reportBackgroundImage,
-                    ...accentVars
+                    backgroundColor: 'var(--bg-base)'
                 }}
             >
-                {!isMatteUi && !isKineticUi && !isDarkGlassUi && (
-                    <div className="absolute inset-0 pointer-events-none">
-                        <div
-                            className="absolute -top-32 -right-24 h-80 w-80 rounded-full blur-[140px]"
-                            style={{ backgroundColor: 'var(--accent-glow)' }}
-                        />
-                        <div
-                            className="absolute top-40 -left-20 h-72 w-72 rounded-full blur-[120px]"
-                            style={{ backgroundColor: 'var(--accent-glow-soft)' }}
-                        />
-                        <div
-                            className="absolute bottom-10 right-10 h-64 w-64 rounded-full blur-[120px]"
-                            style={{ backgroundColor: 'var(--accent-glow-soft)' }}
-                        />
-                    </div>
-                )}
+                <div className="absolute inset-0 pointer-events-none">
+                    <div
+                        className="absolute -top-32 -right-24 h-80 w-80 rounded-full blur-[140px]"
+                        style={{ backgroundColor: 'var(--glow-primary)' }}
+                    />
+                    <div
+                        className="absolute top-40 -left-20 h-72 w-72 rounded-full blur-[120px]"
+                        style={{ backgroundColor: 'var(--glow-secondary)' }}
+                    />
+                    <div
+                        className="absolute bottom-10 right-10 h-64 w-64 rounded-full blur-[120px]"
+                        style={{ backgroundColor: 'var(--glow-secondary)' }}
+                    />
+                </div>
                 <div className="max-w-[2150px] mx-auto px-4 pt-4 pb-8 sm:px-6 sm:pt-5 sm:pb-10">
                     <div className="rounded-2xl border border-white/5 bg-black/20 p-4 sm:p-6">
                         <div className={`${glassCard} p-5 sm:p-6 mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between`} style={glassCardStyle}>
@@ -2704,31 +2152,23 @@ export function ReportApp() {
         <div
             className="min-h-screen text-white relative overflow-x-hidden"
             style={{
-                backgroundColor: isMatteUi
-                    ? 'var(--bg-base)'
-                    : (isKineticUi
-                        ? (isKineticSlateTheme ? '#353a41' : (isKineticDarkTheme ? '#2b3048' : '#d8d1c5'))
-                        : (isDarkGlassUi ? '#101218' : (isModernUi ? '#0f141c' : '#0f172a'))),
-                backgroundImage: isMatteUi ? 'none' : reportBackgroundImage,
-                ...accentVars
+                backgroundColor: 'var(--bg-base)'
             }}
         >
-            {!isMatteUi && !isKineticUi && !isDarkGlassUi && (
-                <div className="absolute inset-0 pointer-events-none">
-                    <div
-                        className="absolute -top-32 -right-24 h-80 w-80 rounded-full blur-[140px]"
-                        style={{ backgroundColor: 'var(--accent-glow)' }}
-                    />
-                    <div
-                        className="absolute top-40 -left-20 h-72 w-72 rounded-full blur-[120px]"
-                        style={{ backgroundColor: 'var(--accent-glow-soft)' }}
-                    />
-                    <div
-                        className="absolute bottom-10 right-10 h-64 w-64 rounded-full blur-[120px]"
-                        style={{ backgroundColor: 'var(--accent-glow-soft)' }}
-                    />
-                </div>
-            )}
+            <div className="absolute inset-0 pointer-events-none">
+                <div
+                    className="absolute -top-32 -right-24 h-80 w-80 rounded-full blur-[140px]"
+                    style={{ backgroundColor: 'var(--glow-primary)' }}
+                />
+                <div
+                    className="absolute top-40 -left-20 h-72 w-72 rounded-full blur-[120px]"
+                    style={{ backgroundColor: 'var(--glow-secondary)' }}
+                />
+                <div
+                    className="absolute bottom-10 right-10 h-64 w-64 rounded-full blur-[120px]"
+                    style={{ backgroundColor: 'var(--glow-secondary)' }}
+                />
+            </div>
             <div className="max-w-[2150px] mx-auto px-4 pt-4 pb-8 sm:px-6 sm:pt-5 sm:pb-10">
                 <div id="report-list-container" className="rounded-2xl border border-white/5 bg-black/20 p-4 sm:p-6">
                     <div id="report-top" className={`${glassCard} p-5 sm:p-6 mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between`} style={glassCardStyle}>
@@ -2852,7 +2292,7 @@ export function ReportApp() {
                             {filteredIndex.map((entry) => (
                                 <a
                                     key={entry.id}
-                                    href={buildReportHref(baseHref, entry.id, queryThemeId)}
+                                    href={buildReportHref(baseHref, entry.id)}
                                     className={`${glassCard} px-5 py-4 hover:border-[color:var(--accent-border)] transition-colors group`}
                                     style={glassCardStyle}
                                 >

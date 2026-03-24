@@ -4,26 +4,6 @@ import path from 'node:path';
 import https from 'node:https';
 import { createHash } from 'node:crypto';
 import { spawn } from 'node:child_process';
-// TODO(Task 8): Remove these legacy constants once buildWebReportPayload is rewritten
-const DEFAULT_WEB_THEME_ID = 'Arcane';
-const KINETIC_DARK_WEB_THEME_ID = 'KineticPaperDark';
-const KINETIC_SLATE_WEB_THEME_ID = 'KineticPaperSlate';
-const normalizeKineticThemeVariant = (value: unknown): 'light' | 'midnight' | 'slate' => {
-    if (value === 'midnight' || value === 'slate') return value;
-    return 'light';
-};
-const inferKineticThemeVariantFromThemeId = (themeId: unknown): 'light' | 'midnight' | 'slate' => {
-    if (themeId === KINETIC_DARK_WEB_THEME_ID) return 'midnight';
-    if (themeId === KINETIC_SLATE_WEB_THEME_ID) return 'slate';
-    return 'light';
-};
-// TODO(Task 8): Remove this stub once buildWebReportPayload is rewritten
-type UiThemeValue = 'classic' | 'modern' | 'crt' | 'matte' | 'kinetic' | 'dark-glass';
-const UI_THEME_VALUES = new Set<string>(['classic', 'modern', 'crt', 'matte', 'kinetic', 'dark-glass']);
-const resolveWebPublishTheme = (uiTheme: string, requestedThemeId: string): { selectedTheme: { id: string } | null; uiThemeValue: UiThemeValue } => {
-    const uiThemeValue: UiThemeValue = UI_THEME_VALUES.has(uiTheme) ? (uiTheme as UiThemeValue) : 'classic';
-    return { selectedTheme: { id: requestedThemeId || DEFAULT_WEB_THEME_ID }, uiThemeValue };
-};
 import { MAX_GITHUB_BLOB_BYTES, MAX_GITHUB_REPORT_JSON_BYTES } from '../devDatasets';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -422,21 +402,15 @@ const formatBytes = (value: number) => {
 const buildWebReportPayload = (
     reportMeta: any,
     sourceStats: any,
-    uiThemeValue: 'classic' | 'modern' | 'crt' | 'matte' | 'kinetic' | 'dark-glass',
-    webThemeId: string,
-    kineticThemeVariant?: 'light' | 'midnight' | 'slate'
+    colorPalette: string,
+    glassSurfaces: boolean
 ) => {
     const payload = {
         meta: { ...(reportMeta || {}) },
         stats: {
             ...(sourceStats || {}),
-            reportTheme: {
-                ui: uiThemeValue,
-                paletteId: webThemeId,
-                ...(uiThemeValue === 'kinetic' ? { variant: normalizeKineticThemeVariant(kineticThemeVariant) } : {})
-            },
-            uiTheme: uiThemeValue,
-            webThemeId
+            colorPalette,
+            glassSurfaces
         } as Record<string, any>
     };
 
@@ -1269,16 +1243,13 @@ export function registerGithubHandlers(opts: GithubHandlerOptions) {
                 ...payload.meta,
                 appVersion: app.getVersion()
             };
-            const uiTheme = store.get('uiTheme', 'classic') as string;
-            const requestedThemeId = (store.get('githubWebTheme', DEFAULT_WEB_THEME_ID) as string) || DEFAULT_WEB_THEME_ID;
-            const { selectedTheme, uiThemeValue } = resolveWebPublishTheme(uiTheme, requestedThemeId);
-            const kineticThemeVariant = normalizeKineticThemeVariant(store.get('kineticThemeVariant', inferKineticThemeVariantFromThemeId(selectedTheme?.id || DEFAULT_WEB_THEME_ID)));
+            const paletteValue = (store.get('colorPalette', 'electric-blue') as string) || 'electric-blue';
+            const glassValue = !!store.get('glassSurfaces', false);
             const builtReport = buildWebReportPayload(
                 reportMeta,
                 payload.stats || {},
-                uiThemeValue,
-                selectedTheme?.id || DEFAULT_WEB_THEME_ID,
-                kineticThemeVariant
+                paletteValue,
+                glassValue
             );
 
             sendWebUploadStatus('Packaging', 'Preparing report bundle...', 40);
@@ -1359,10 +1330,9 @@ export function registerGithubHandlers(opts: GithubHandlerOptions) {
             }
 
             const mergedEntries = [indexEntry, ...existingEntries.filter((entry) => entry?.id !== reportMeta.id)];
-            const kineticFont = (store.get('kineticFontStyle', 'default') as string) === 'original' ? 'original' : 'default';
-            const kineticVariant = normalizeKineticThemeVariant(store.get('kineticThemeVariant', inferKineticThemeVariantFromThemeId(selectedTheme?.id || DEFAULT_WEB_THEME_ID)));
             const indexPayload = {
-                siteTheme: { ui: uiThemeValue, paletteId: selectedTheme?.id || DEFAULT_WEB_THEME_ID, kineticFont, ...(uiThemeValue === 'kinetic' ? { kineticVariant } : {}) },
+                colorPalette: paletteValue,
+                glassSurfaces: glassValue,
                 entries: mergedEntries
             };
 
@@ -1521,16 +1491,13 @@ export function registerGithubHandlers(opts: GithubHandlerOptions) {
                 ...payload.meta,
                 appVersion: app.getVersion()
             };
-            const uiTheme = store.get('uiTheme', 'classic') as string;
-            const requestedThemeId = (store.get('githubWebTheme', DEFAULT_WEB_THEME_ID) as string) || DEFAULT_WEB_THEME_ID;
-            const { selectedTheme, uiThemeValue } = resolveWebPublishTheme(uiTheme, requestedThemeId);
-            const localKineticVariant = normalizeKineticThemeVariant(store.get('kineticThemeVariant', inferKineticThemeVariantFromThemeId(selectedTheme?.id || DEFAULT_WEB_THEME_ID)));
+            const localPalette = (store.get('colorPalette', 'electric-blue') as string) || 'electric-blue';
+            const localGlass = !!store.get('glassSurfaces', false);
             const builtReport = buildWebReportPayload(
                 reportMeta,
                 payload.stats || {},
-                uiThemeValue,
-                selectedTheme?.id || DEFAULT_WEB_THEME_ID,
-                localKineticVariant
+                localPalette,
+                localGlass
             );
             const reportsRoot = path.join(webRoot, 'reports');
             const reportDir = path.join(reportsRoot, reportMeta.id);
@@ -1611,9 +1578,9 @@ export function registerGithubHandlers(opts: GithubHandlerOptions) {
                 return normalizedUrl === currentUrl ? entry : { ...entry, url: normalizedUrl };
             });
             const mergedLocalEntries = [indexEntry, ...normalizedExistingEntries.filter((entry) => entry?.id !== reportMeta.id)];
-            const localKineticFont = (store.get('kineticFontStyle', 'default') as string) === 'original' ? 'original' : 'default';
             const localIndexPayload = {
-                siteTheme: { ui: uiThemeValue, paletteId: selectedTheme?.id || DEFAULT_WEB_THEME_ID, kineticFont: localKineticFont, ...(uiThemeValue === 'kinetic' ? { kineticVariant: localKineticVariant } : {}) },
+                colorPalette: localPalette,
+                glassSurfaces: localGlass,
                 entries: mergedLocalEntries
             };
             fs.writeFileSync(indexPath, JSON.stringify(localIndexPayload, null, 2));
