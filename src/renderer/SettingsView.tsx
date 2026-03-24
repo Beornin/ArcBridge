@@ -1,9 +1,9 @@
 import { memo, useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Settings, Key, X as CloseIcon, Minimize, BarChart3, Users, Sparkles, Compass, BookOpen, Cloud, Link as LinkIcon, RefreshCw, Plus, Trash2, ExternalLink, Zap, Star, Download, Upload, ChevronDown } from 'lucide-react';
-import { DashboardLayout, IEmbedStatSettings, DEFAULT_DASHBOARD_LAYOUT, DEFAULT_DISCORD_ENEMY_SPLIT_SETTINGS, DEFAULT_EMBED_STATS, DEFAULT_MVP_WEIGHTS, DEFAULT_STATS_VIEW_SETTINGS, IMvpWeights, DisruptionMethod, DEFAULT_DISRUPTION_METHOD, IStatsViewSettings, UiTheme, DEFAULT_UI_THEME, KineticFontStyle, DEFAULT_KINETIC_FONT_STYLE, KineticThemeVariant, DEFAULT_KINETIC_THEME_VARIANT, normalizeMvpWeights } from './global.d';
+import { IEmbedStatSettings, DEFAULT_DISCORD_ENEMY_SPLIT_SETTINGS, DEFAULT_EMBED_STATS, DEFAULT_MVP_WEIGHTS, DEFAULT_STATS_VIEW_SETTINGS, IMvpWeights, DisruptionMethod, DEFAULT_DISRUPTION_METHOD, IStatsViewSettings, normalizeMvpWeights } from './global.d';
 import { METRICS_SPEC } from '../shared/metricsSettings';
-import { BASE_WEB_THEMES, CRT_WEB_THEME, CRT_WEB_THEME_ID, DARK_GLASS_WEB_THEME, DARK_GLASS_WEB_THEME_ID, DEFAULT_WEB_THEME_ID, KINETIC_DARK_WEB_THEME, KINETIC_DARK_WEB_THEME_ID, KINETIC_SLATE_WEB_THEME, KINETIC_SLATE_WEB_THEME_ID, KINETIC_WEB_THEME, KINETIC_WEB_THEME_ID, MATTE_WEB_THEME, MATTE_WEB_THEME_ID } from '../shared/webThemes';
+import { PALETTES, type ColorPalette, DEFAULT_PALETTE_ID } from '../shared/webThemes';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import metricsSpecMarkdown from '../shared/metrics-spec.md?raw';
@@ -12,29 +12,6 @@ import { ProofOfWorkModal } from './ui/ProofOfWorkModal';
 
 // Pure helpers — defined outside the component so they are never recreated on re-render.
 // Exported so they can be unit-tested independently.
-
-export function normalizeKineticThemeVariant(value: unknown): KineticThemeVariant {
-    if (value === 'midnight' || value === 'slate') return value;
-    return DEFAULT_KINETIC_THEME_VARIANT;
-}
-
-export function getKineticThemeIdForVariant(variant: KineticThemeVariant): string {
-    if (variant === 'midnight') return KINETIC_DARK_WEB_THEME_ID;
-    if (variant === 'slate') return KINETIC_SLATE_WEB_THEME_ID;
-    return KINETIC_WEB_THEME_ID;
-}
-
-export function inferKineticThemeVariantFromThemeId(themeId: unknown): KineticThemeVariant {
-    if (themeId === KINETIC_DARK_WEB_THEME_ID) return 'midnight';
-    if (themeId === KINETIC_SLATE_WEB_THEME_ID) return 'slate';
-    return 'light';
-}
-
-export function isKineticWebThemeId(themeId: unknown): boolean {
-    return themeId === KINETIC_WEB_THEME_ID
-        || themeId === KINETIC_DARK_WEB_THEME_ID
-        || themeId === KINETIC_SLATE_WEB_THEME_ID;
-}
 
 export function slugifyHeading(label: string) {
     return label
@@ -92,30 +69,20 @@ const IMPORT_SETTING_META: Array<{ key: string; label: string; description: stri
     { key: 'webhooks', label: 'Webhook List', description: 'Saved webhook entries.', section: 'Discord' },
     { key: 'selectedWebhookId', label: 'Selected Webhook', description: 'Active webhook entry.', section: 'Discord' },
     { key: 'closeBehavior', label: 'Close Behavior', description: 'Minimize vs quit on close.', section: 'App' },
-    { key: 'uiTheme', label: 'UI Theme', description: 'Classic, Modern Slate, Matte Slate, Kinetic Paper, or CRT Hacker theme.', section: 'App' },
-    { key: 'dashboardLayout', label: 'Dashboard Layout', description: 'Place upload stats at the top or in the side rail.', section: 'App' },
+    { key: 'colorPalette', label: 'Color Palette', description: 'Accent color palette for the UI.', section: 'App' },
+    { key: 'glassSurfaces', label: 'Glass Surfaces', description: 'Enable frosted-glass card surfaces.', section: 'App' },
     { key: 'embedStatSettings', label: 'Embed Stat Toggles', description: 'Discord embed sections and lists.', section: 'Stats' },
     { key: 'mvpWeights', label: 'MVP Weights', description: 'Score weighting for MVP.', section: 'Stats' },
     { key: 'statsViewSettings', label: 'Stats View Settings', description: 'Dashboard stats configuration.', section: 'Stats' },
     { key: 'disruptionMethod', label: 'CC/Strip Method', description: 'Count, duration, or tiered.', section: 'Stats' },
-    { key: 'kineticFontStyle', label: 'Kinetic Font Style', description: 'Use kinetic default font or original app font.', section: 'App' },
-    { key: 'kineticThemeVariant', label: 'Kinetic Theme Variant', description: 'Light, Midnight, or Slate for Kinetic.', section: 'App' },
     { key: 'githubRepoOwner', label: 'GitHub Owner', description: 'GitHub Pages owner/org.', section: 'GitHub' },
     { key: 'githubRepoName', label: 'GitHub Repo', description: 'GitHub Pages repository.', section: 'GitHub' },
     { key: 'githubBranch', label: 'GitHub Branch', description: 'Branch for web uploads.', section: 'GitHub' },
     { key: 'githubPagesBaseUrl', label: 'GitHub Pages URL', description: 'Base URL for hosted reports.', section: 'GitHub' },
     { key: 'githubToken', label: 'GitHub Token', description: 'Token used for uploads.', section: 'GitHub' },
-    { key: 'githubWebTheme', label: 'Web Theme', description: 'Theme for hosted reports.', section: 'GitHub' },
     { key: 'githubLogoPath', label: 'Web Logo', description: 'Logo path used for reports.', section: 'GitHub' },
     { key: 'githubFavoriteRepos', label: 'Favorite Repos', description: 'Pinned repos list.', section: 'GitHub' }
 ];
-
-const DARK_GLASS_PREVIEW_BACKGROUND = [
-    'radial-gradient(ellipse 85% 220px at 38% -40px, rgba(26, 115, 232, 0.72) 0%, rgba(66, 133, 244, 0.55) 28%, rgba(103, 58, 183, 0.35) 52%, rgba(94, 53, 177, 0.12) 70%, transparent 88%)',
-    'radial-gradient(ellipse 55% 160px at 8% -20px, rgba(0, 188, 212, 0.38) 0%, rgba(26, 115, 232, 0.22) 45%, transparent 78%)',
-    'radial-gradient(ellipse 48% 140px at 88% -15px, rgba(94, 53, 177, 0.45) 0%, rgba(138, 43, 226, 0.25) 45%, transparent 80%)',
-    'radial-gradient(ellipse 35% 100px at 62% -5px, rgba(0, 230, 195, 0.12) 0%, transparent 70%)'
-].join(', ');
 
 interface SettingsViewProps {
     onBack: () => void;
@@ -127,12 +94,10 @@ interface SettingsViewProps {
     onMvpWeightsSaved?: (weights: IMvpWeights) => void;
     onStatsViewSettingsSaved?: (settings: IStatsViewSettings) => void;
     onDisruptionMethodSaved?: (method: DisruptionMethod) => void;
-    onUiThemeSaved?: (theme: UiTheme) => void;
-    onKineticFontStyleSaved?: (style: KineticFontStyle) => void;
-    onKineticThemeVariantSaved?: (variant: KineticThemeVariant) => void;
-    onDashboardLayoutSaved?: (layout: DashboardLayout) => void;
-    dashboardLayout?: DashboardLayout;
-    onGithubWebThemeSaved?: (themeId: string) => void;
+    onColorPaletteSaved?: (palette: ColorPalette) => void;
+    onGlassSurfacesSaved?: (glass: boolean) => void;
+    colorPalette?: ColorPalette;
+    glassSurfaces?: boolean;
     developerSettingsTrigger?: number;
     isBulkUploadActive?: boolean;
 }
@@ -209,7 +174,7 @@ function SettingsSection({ title, icon: Icon, children, delay = 0, action, secti
     );
 }
 
-export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpenWhatsNew, onOpenWalkthrough, helpUpdatesFocusTrigger, onHelpUpdatesFocusConsumed, onMvpWeightsSaved, onStatsViewSettingsSaved, onDisruptionMethodSaved, onUiThemeSaved, onKineticFontStyleSaved, onKineticThemeVariantSaved, onDashboardLayoutSaved, dashboardLayout: dashboardLayoutProp, onGithubWebThemeSaved, developerSettingsTrigger, isBulkUploadActive }: SettingsViewProps) {
+export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpenWhatsNew, onOpenWalkthrough, helpUpdatesFocusTrigger, onHelpUpdatesFocusConsumed, onMvpWeightsSaved, onStatsViewSettingsSaved, onDisruptionMethodSaved, onColorPaletteSaved, onGlassSurfacesSaved, colorPalette: colorPaletteProp, glassSurfaces: glassSurfacesProp, developerSettingsTrigger, isBulkUploadActive }: SettingsViewProps) {
 
     const [dpsReportToken, setDpsReportToken] = useState<string>('');
     const [closeBehavior, setCloseBehavior] = useState<'minimize' | 'quit'>('minimize');
@@ -218,14 +183,11 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
     const [mvpWeights, setMvpWeights] = useState<IMvpWeights>(DEFAULT_MVP_WEIGHTS);
     const [statsViewSettings, setStatsViewSettings] = useState<IStatsViewSettings>(DEFAULT_STATS_VIEW_SETTINGS);
     const [disruptionMethod, setDisruptionMethod] = useState<DisruptionMethod>(DEFAULT_DISRUPTION_METHOD);
-    const [uiTheme, setUiTheme] = useState<UiTheme>(DEFAULT_UI_THEME);
-    const [kineticFontStyle, setKineticFontStyle] = useState<KineticFontStyle>(DEFAULT_KINETIC_FONT_STYLE);
-    const [kineticThemeVariant, setKineticThemeVariant] = useState<KineticThemeVariant>(DEFAULT_KINETIC_THEME_VARIANT);
-    const [dashboardLayout, setDashboardLayout] = useState<DashboardLayout>(dashboardLayoutProp || DEFAULT_DASHBOARD_LAYOUT);
+    const [colorPalette, setColorPalette] = useState<ColorPalette>(colorPaletteProp ?? DEFAULT_PALETTE_ID);
+    const [glassSurfaces, setGlassSurfaces] = useState(glassSurfacesProp ?? false);
     const [githubRepoName, setGithubRepoName] = useState('');
     const [githubRepoOwner, setGithubRepoOwner] = useState('');
     const [githubToken, setGithubToken] = useState('');
-    const [githubWebTheme, setGithubWebTheme] = useState(DEFAULT_WEB_THEME_ID);
     const [githubFavoriteRepos, setGithubFavoriteRepos] = useState<string[]>([]);
     const [githubAuthStatus, setGithubAuthStatus] = useState<'idle' | 'pending' | 'connected' | 'error'>('idle');
     const [githubAuthMessage, setGithubAuthMessage] = useState<string | null>(null);
@@ -252,16 +214,10 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
     const [isSaving, setIsSaving] = useState(false);
     const [hasLoaded, setHasLoaded] = useState(false);
     const [showSaved, setShowSaved] = useState(false);
-    const [githubThemeStatus, setGithubThemeStatus] = useState<string | null>(null);
-    const [githubThemeStatusKind, setGithubThemeStatusKind] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
     const [dpsCacheStatus, setDpsCacheStatus] = useState<string | null>(null);
     const [dpsCacheBusy, setDpsCacheBusy] = useState(false);
     const [dpsCacheProgress, setDpsCacheProgress] = useState<number>(0);
     const [dpsCacheProgressLabel, setDpsCacheProgressLabel] = useState<string | null>(null);
-    const lastSyncedThemeRef = useRef<string | null>(null);
-    const themeSyncInFlightRef = useRef(false);
-    const queuedThemeRef = useRef<string | null>(null);
-    const buildPollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [githubTemplateStatus, setGithubTemplateStatus] = useState<string | null>(null);
     const [githubTemplateStatusKind, setGithubTemplateStatusKind] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
     const lastEnsuredRepoRef = useRef<string | null>(null);
@@ -298,19 +254,6 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
     const logoSyncInFlightRef = useRef(false);
     const queuedLogoPathRef = useRef<string | null>(null);
     const favoriteRepoSet = useMemo(() => new Set(githubFavoriteRepos), [githubFavoriteRepos]);
-    const availableWebThemes = useMemo(() => {
-        if (uiTheme === 'crt') return [CRT_WEB_THEME];
-        if (uiTheme === 'matte') return [MATTE_WEB_THEME];
-        if (uiTheme === 'kinetic') return [KINETIC_WEB_THEME, KINETIC_DARK_WEB_THEME, KINETIC_SLATE_WEB_THEME];
-        if (uiTheme === 'dark-glass') return [DARK_GLASS_WEB_THEME];
-        return BASE_WEB_THEMES;
-    }, [uiTheme]);
-    const orderedThemes = useMemo(() => {
-        const active = availableWebThemes.find((theme) => theme.id === githubWebTheme);
-        if (!active) return availableWebThemes;
-        return [active, ...availableWebThemes.filter((theme) => theme.id !== githubWebTheme)];
-    }, [availableWebThemes, githubWebTheme]);
-    const isModernLayout = uiTheme === 'classic' || uiTheme === 'modern' || uiTheme === 'crt' || uiTheme === 'matte' || uiTheme === 'kinetic' || uiTheme === 'dark-glass';
     const metricsSpecContentRef = useRef<HTMLDivElement | null>(null);
 
     const metricsSpecHeadingCountsRef = useRef<Map<string, number>>(new Map());
@@ -511,37 +454,6 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
         };
     }, [proofOfWorkOpen, metricsSpecNav]);
 
-    useEffect(() => {
-        if (uiTheme === 'crt') {
-            if (githubWebTheme !== CRT_WEB_THEME_ID) {
-                setGithubWebTheme(CRT_WEB_THEME_ID);
-            }
-            return;
-        }
-        if (uiTheme === 'matte') {
-            if (githubWebTheme !== MATTE_WEB_THEME_ID) {
-                setGithubWebTheme(MATTE_WEB_THEME_ID);
-            }
-            return;
-        }
-        if (uiTheme === 'kinetic') {
-            const expectedThemeId = getKineticThemeIdForVariant(kineticThemeVariant);
-            if (githubWebTheme !== expectedThemeId) {
-                setGithubWebTheme(expectedThemeId);
-            }
-            return;
-        }
-        if (uiTheme === 'dark-glass') {
-            if (githubWebTheme !== DARK_GLASS_WEB_THEME_ID) {
-                setGithubWebTheme(DARK_GLASS_WEB_THEME_ID);
-            }
-            return;
-        }
-        if (githubWebTheme === CRT_WEB_THEME_ID || githubWebTheme === MATTE_WEB_THEME_ID || isKineticWebThemeId(githubWebTheme)) {
-            setGithubWebTheme(DEFAULT_WEB_THEME_ID);
-        }
-    }, [uiTheme, githubWebTheme, kineticThemeVariant]);
-
     const applySettingsToState = (settings: any) => {
         setDpsReportToken(settings.dpsReportToken || '');
         setCloseBehavior(settings.closeBehavior || 'minimize');
@@ -550,14 +462,12 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
         setSplitEnemiesByTeam(Boolean(settings.discordSplitEnemiesByTeam) || Boolean(discordEnemySplitSettings.image || discordEnemySplitSettings.embed || discordEnemySplitSettings.tiled));
         setMvpWeights(normalizeMvpWeights(settings.mvpWeights));
         setStatsViewSettings({ ...DEFAULT_STATS_VIEW_SETTINGS, ...(settings.statsViewSettings || {}) });
-        const resolvedTheme = (settings.uiTheme as UiTheme) || DEFAULT_UI_THEME;
-        setUiTheme(resolvedTheme);
-        setKineticFontStyle((settings.kineticFontStyle as KineticFontStyle) || DEFAULT_KINETIC_FONT_STYLE);
-        setKineticThemeVariant(normalizeKineticThemeVariant(settings.kineticThemeVariant ?? inferKineticThemeVariantFromThemeId(settings.githubWebTheme)));
-        const resolvedLayout = settings.dashboardLayout === 'top' || settings.dashboardLayout === 'side'
-            ? settings.dashboardLayout
-            : (dashboardLayoutProp || DEFAULT_DASHBOARD_LAYOUT);
-        setDashboardLayout(resolvedLayout);
+        if (settings.colorPalette && ['electric-blue', 'refined-cyan', 'amber-warm', 'emerald-mint'].includes(settings.colorPalette)) {
+            setColorPalette(settings.colorPalette);
+        }
+        if (typeof settings.glassSurfaces === 'boolean') {
+            setGlassSurfaces(settings.glassSurfaces);
+        }
         if (settings.disruptionMethod) {
             setDisruptionMethod(settings.disruptionMethod);
         }
@@ -565,7 +475,6 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
         setGithubCreateOwner('');
         setGithubRepoName(settings.githubRepoName || '');
         setGithubToken(settings.githubToken || '');
-        setGithubWebTheme(settings.githubWebTheme || DEFAULT_WEB_THEME_ID);
         setGithubLogoPath(settings.githubLogoPath || null);
         setGithubFavoriteRepos(Array.isArray(settings.githubFavoriteRepos) ? settings.githubFavoriteRepos : []);
         if (settings.githubToken) {
@@ -584,13 +493,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
             setHasLoaded(true);
         };
         loadSettings();
-    }, [dashboardLayoutProp]);
-
-    useEffect(() => {
-        if (dashboardLayoutProp === 'top' || dashboardLayoutProp === 'side') {
-            setDashboardLayout(dashboardLayoutProp);
-        }
-    }, [dashboardLayoutProp]);
+    }, []);
 
     useEffect(() => {
         if (!window.electronAPI?.onClearDpsReportCacheProgress) return;
@@ -735,14 +638,11 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
         mvpWeights,
         statsViewSettings,
         disruptionMethod,
-        uiTheme,
-        kineticFontStyle,
-        kineticThemeVariant,
-        dashboardLayout,
+        colorPalette,
+        glassSurfaces,
         githubRepoOwner,
         githubRepoName,
         githubToken,
-        githubWebTheme,
         githubLogoPath,
         githubFavoriteRepos
     });
@@ -850,14 +750,11 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
             mvpWeights: mvpWeights,
             statsViewSettings: statsViewSettings,
             disruptionMethod: disruptionMethod,
-            uiTheme,
-            kineticFontStyle,
-            kineticThemeVariant,
-            dashboardLayout,
+            colorPalette,
+            glassSurfaces,
             githubRepoName: githubRepoName || null,
             githubRepoOwner: githubRepoOwner || null,
             githubToken: githubToken || null,
-            githubWebTheme: githubWebTheme || DEFAULT_WEB_THEME_ID,
             githubLogoPath: githubLogoPath || null,
             githubFavoriteRepos
         });
@@ -865,22 +762,14 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
         onMvpWeightsSaved?.(mvpWeights);
         onStatsViewSettingsSaved?.(statsViewSettings);
         onDisruptionMethodSaved?.(disruptionMethod);
-        onUiThemeSaved?.(uiTheme);
-        onKineticFontStyleSaved?.(kineticFontStyle);
-        onKineticThemeVariantSaved?.(kineticThemeVariant);
-        onGithubWebThemeSaved?.(githubWebTheme || DEFAULT_WEB_THEME_ID);
+        onColorPaletteSaved?.(colorPalette);
+        onGlassSurfacesSaved?.(glassSurfaces);
 
         setTimeout(() => {
             setIsSaving(false);
             setShowSaved(true);
             setTimeout(() => setShowSaved(false), 1200);
         }, 500);
-    };
-
-    const updateDashboardLayout = (layout: DashboardLayout) => {
-        setDashboardLayout(layout);
-        window.electronAPI?.saveSettings?.({ dashboardLayout: layout });
-        onDashboardLayoutSaved?.(layout);
     };
 
     useEffect(() => {
@@ -897,14 +786,11 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
         mvpWeights,
         statsViewSettings,
         disruptionMethod,
-        uiTheme,
-        kineticFontStyle,
-        kineticThemeVariant,
-        dashboardLayout,
+        colorPalette,
+        glassSurfaces,
         githubRepoName,
         githubRepoOwner,
         githubToken,
-        githubWebTheme,
         githubLogoPath,
         githubFavoriteRepos,
         hasLoaded
@@ -1108,117 +994,6 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
         return () => clearTimeout(timeout);
     }, [githubRepoName, githubRepoOwner, githubToken, githubAuthStatus, hasLoaded]);
 
-    useEffect(() => {
-        if (!window.electronAPI?.onGithubThemeStatus) return;
-        const unsubscribe = window.electronAPI.onGithubThemeStatus((payload) => {
-            const stage = payload?.stage || '';
-            const stageLower = stage.toLowerCase();
-            if (stageLower.includes('error')) {
-                setGithubThemeStatusKind('error');
-                setGithubThemeStatus(payload?.message || stage || null);
-                return;
-            }
-            if (stageLower.includes('complete')) {
-                setGithubThemeStatusKind('pending');
-                setGithubThemeStatus('Commit pushed. Waiting for Pages build...');
-                return;
-            }
-            setGithubThemeStatusKind('pending');
-            setGithubThemeStatus(payload?.message || stage || null);
-        });
-        return () => {
-            unsubscribe?.();
-        };
-    }, []);
-
-    useEffect(() => {
-        return () => {
-            if (buildPollRef.current) {
-                clearTimeout(buildPollRef.current);
-            }
-        };
-    }, []);
-
-    const pollGithubBuildStatus = async (startedAt: number) => {
-        if (!window.electronAPI?.getGithubPagesBuildStatus) return;
-        let attempts = 0;
-        const poll = async () => {
-            attempts += 1;
-            const statusResp = await window.electronAPI.getGithubPagesBuildStatus();
-            if (!statusResp?.success) {
-                setGithubThemeStatusKind('pending');
-                setGithubThemeStatus('Theme updated. Waiting for Pages build...');
-            } else {
-                const status = String(statusResp.status || '').toLowerCase();
-                const updatedAt = statusResp.updatedAt ? Date.parse(statusResp.updatedAt) : null;
-                const isFresh = updatedAt !== null && updatedAt >= startedAt;
-                if ((status === 'built' || status === 'success') && isFresh) {
-                    setGithubThemeStatusKind('success');
-                    setGithubThemeStatus('Theme live on GitHub Pages.');
-                    return;
-                }
-                if (status === 'errored' || status === 'error' || status === 'failed') {
-                    setGithubThemeStatusKind('error');
-                    setGithubThemeStatus(statusResp.errorMessage || 'Pages build failed.');
-                    return;
-                }
-                setGithubThemeStatusKind('pending');
-                setGithubThemeStatus(isFresh ? 'GitHub Pages is building the theme...' : 'Waiting for new Pages build to start...');
-            }
-            if (attempts < 10) {
-                buildPollRef.current = setTimeout(poll, 6000);
-            }
-        };
-        if (buildPollRef.current) {
-            clearTimeout(buildPollRef.current);
-        }
-        poll();
-    };
-
-    const runThemeSync = async (themeId: string) => {
-        if (!window.electronAPI?.applyGithubTheme) return;
-        themeSyncInFlightRef.current = true;
-        setGithubThemeStatusKind('pending');
-        setGithubThemeStatus('Updating GitHub Pages theme. This can take a minute...');
-        const startedAt = Date.now();
-        const result = await window.electronAPI.applyGithubTheme({ themeId });
-        if (result?.success) {
-            lastSyncedThemeRef.current = themeId;
-            await pollGithubBuildStatus(startedAt);
-        } else {
-            setGithubThemeStatusKind('error');
-            setGithubThemeStatus(result?.error || 'Theme update failed.');
-        }
-        themeSyncInFlightRef.current = false;
-        if (queuedThemeRef.current && queuedThemeRef.current !== lastSyncedThemeRef.current) {
-            const nextTheme = queuedThemeRef.current;
-            queuedThemeRef.current = null;
-            runThemeSync(nextTheme);
-        }
-    };
-
-    useEffect(() => {
-        if (!hasLoaded) return;
-        if (!githubWebTheme) return;
-        if (lastSyncedThemeRef.current === null) {
-            lastSyncedThemeRef.current = githubWebTheme;
-            return;
-        }
-        if (githubWebTheme === lastSyncedThemeRef.current) return;
-        if (githubAuthStatus !== 'connected') return;
-        if (!githubRepoName || !githubToken) return;
-        if (themeSyncInFlightRef.current) {
-            queuedThemeRef.current = githubWebTheme;
-            setGithubThemeStatusKind('pending');
-            setGithubThemeStatus('Theme change queued. Will publish after current update.');
-            return;
-        }
-        const timeout = setTimeout(() => {
-            runThemeSync(githubWebTheme);
-        }, 400);
-        return () => clearTimeout(timeout);
-    }, [githubWebTheme, githubAuthStatus, githubRepoName, githubToken, hasLoaded]);
-
     const runLogoSync = async (logoPath: string) => {
         if (!window.electronAPI?.applyGithubLogo) return;
         logoSyncInFlightRef.current = true;
@@ -1397,8 +1172,8 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                 </div>
             </motion.div>
 
-            <div className={isModernLayout ? 'flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[220px_minmax(0,1fr)] gap-4' : 'flex flex-col flex-1 min-h-0'}>
-                {isModernLayout && (
+            <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[220px_minmax(0,1fr)] gap-4">
+                {(
                     <aside className="hidden lg:flex flex-col gap-3 min-h-0">
                         <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
                             <div className="text-[11px] uppercase tracking-[0.25em] text-gray-500 mb-2">Quick Actions</div>
@@ -1432,193 +1207,43 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                         </div>
                     </aside>
                 )}
-                <div ref={settingsScrollRef} className={`${isModernLayout ? 'min-h-0 overflow-y-auto pr-2 space-y-4' : 'flex-1 min-h-0 overflow-y-auto pr-2 space-y-4'}`}>
+                <div ref={settingsScrollRef} className="min-h-0 overflow-y-auto pr-2 space-y-4">
                     <SettingsSection title="Appearance" icon={Sparkles} delay={0.02} sectionId="appearance">
                         <p className="text-sm text-gray-400 mb-4">
-                            Switch between Classic, Modern Slate, Matte Slate, Kinetic Paper, or CRT Hacker.
+                            Choose a color palette for the interface accent colors.
                         </p>
-                        <div className="flex flex-wrap gap-3">
-                            <button
-                                type="button"
-                                onClick={() => setUiTheme('classic')}
-                                className={`px-4 py-2 rounded-xl text-xs font-semibold border transition-colors ${uiTheme === 'classic'
-                                    ? 'bg-blue-500/20 text-blue-200 border-blue-500/40'
-                                    : 'bg-white/5 text-gray-300 border-white/10 hover:text-white hover:border-white/30'
-                                    }`}
-                            >
-                                Classic (Default)
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setUiTheme('modern')}
-                                className={`px-4 py-2 rounded-xl text-xs font-semibold border transition-colors ${uiTheme === 'modern'
-                                    ? 'bg-purple-500/20 text-purple-200 border-purple-500/40'
-                                    : 'bg-white/5 text-gray-300 border-white/10 hover:text-white hover:border-white/30'
-                                    }`}
-                            >
-                                Modern Slate
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setUiTheme('matte')}
-                                className={`px-4 py-2 rounded-xl text-xs font-semibold border transition-colors ${uiTheme === 'matte'
-                                    ? 'bg-cyan-500/20 text-cyan-200 border-cyan-400/50'
-                                    : 'bg-white/5 text-gray-300 border-white/10 hover:text-white hover:border-white/30'
-                                    }`}
-                            >
-                                Matte Slate
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setUiTheme('kinetic')}
-                                className={`px-4 py-2 rounded-xl text-xs font-semibold border transition-colors ${uiTheme === 'kinetic'
-                                    ? (kineticThemeVariant === 'light'
-                                        ? 'bg-teal-500/20 text-teal-200 border-teal-400/50'
-                                        : 'bg-amber-500/20 text-amber-100 border-amber-300/45 shadow-[0_0_0_1px_rgba(252,211,77,0.08)]')
-                                    : 'bg-white/5 text-gray-300 border-white/10 hover:text-white hover:border-white/30'
-                                    }`}
-                            >
-                                Kinetic Paper
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setUiTheme('dark-glass')}
-                                className={`px-4 py-2 rounded-xl text-xs font-semibold border transition-colors ${uiTheme === 'dark-glass'
-                                    ? 'bg-blue-500/20 text-blue-200 border-blue-500/40'
-                                    : 'bg-white/5 text-gray-300 border-white/10 hover:text-white hover:border-white/30'
-                                    }`}
-                            >
-                                Dark Glass
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setUiTheme('crt')}
-                                className={`px-4 py-2 rounded-xl text-xs font-semibold border transition-colors ${uiTheme === 'crt'
-                                    ? 'bg-emerald-500/20 text-emerald-200 border-emerald-400/60'
-                                    : 'bg-white/5 text-gray-300 border-white/10 hover:text-white hover:border-white/30'
-                                    }`}
-                            >
-                                CRT Hacker
-                            </button>
+                        <div className="text-[11px] uppercase tracking-[0.2em] text-gray-500 mb-2">
+                            Color Palette
                         </div>
-                        <AnimatePresence initial={false}>
-                            {uiTheme === 'kinetic' && (
-                                <motion.div
-                                    key="kinetic-font-options"
-                                    initial={{ opacity: 0, y: -8, height: 0 }}
-                                    animate={{ opacity: 1, y: 0, height: 'auto' }}
-                                    exit={{ opacity: 0, y: -8, height: 0 }}
-                                    transition={{ duration: 0.24, ease: 'easeOut' }}
-                                    className="mt-4 overflow-hidden"
-                                >
-                                    <div className="rounded-xl border border-white/10 bg-black/20 px-3 py-3 space-y-3">
-                                        <div>
-                                            <div className="text-[11px] uppercase tracking-[0.2em] text-gray-500 mb-2">
-                                                Kinetic Variant
-                                            </div>
-                                            <div className="flex flex-wrap gap-2">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setKineticThemeVariant('light')}
-                                                    className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold border transition-colors ${kineticThemeVariant === 'light'
-                                                        ? 'bg-teal-500/20 text-teal-200 border-teal-400/50'
-                                                        : 'bg-white/5 text-gray-300 border-white/10 hover:text-white hover:border-white/30'
-                                                        }`}
-                                                >
-                                                    Light
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setKineticThemeVariant('midnight')}
-                                                    className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold border transition-colors ${kineticThemeVariant === 'midnight'
-                                                        ? 'bg-amber-500/20 text-amber-100 border-amber-300/45 shadow-[0_0_0_1px_rgba(252,211,77,0.08)]'
-                                                        : 'bg-white/5 text-gray-300 border-white/10 hover:text-white hover:border-white/30'
-                                                        }`}
-                                                >
-                                                    Midnight
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setKineticThemeVariant('slate')}
-                                                    className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold border transition-colors ${kineticThemeVariant === 'slate'
-                                                        ? 'bg-amber-500/20 text-amber-100 border-amber-300/45 shadow-[0_0_0_1px_rgba(252,211,77,0.08)]'
-                                                        : 'bg-white/5 text-gray-300 border-white/10 hover:text-white hover:border-white/30'
-                                                        }`}
-                                                >
-                                                    Slate
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div className="border-t border-white/10" />
-                                        <div>
-                                            <div className="text-[11px] uppercase tracking-[0.2em] text-gray-500 mb-2">
-                                                Kinetic Font
-                                            </div>
-                                            <div className="flex flex-wrap gap-2">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setKineticFontStyle('default')}
-                                                    className={`kinetic-font-option px-3 py-1.5 rounded-lg text-[11px] font-semibold border transition-colors ${kineticFontStyle === 'default'
-                                                        ? 'kinetic-font-option--active'
-                                                        : ''
-                                                        } ${kineticFontStyle === 'default'
-                                                            ? 'bg-teal-500/20 text-teal-200 border-teal-400/50'
-                                                            : 'bg-white/5 text-gray-300 border-white/10 hover:text-white hover:border-white/30'
-                                                        }`}
-                                                >
-                                                    Default Kinetic Font
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setKineticFontStyle('original')}
-                                                    className={`kinetic-font-option px-3 py-1.5 rounded-lg text-[11px] font-semibold border transition-colors ${kineticFontStyle === 'original'
-                                                        ? 'kinetic-font-option--active'
-                                                        : ''
-                                                        } ${kineticFontStyle === 'original'
-                                                            ? 'bg-indigo-500/20 text-indigo-200 border-indigo-400/50'
-                                                            : 'bg-white/5 text-gray-300 border-white/10 hover:text-white hover:border-white/30'
-                                                        }`}
-                                                >
-                                                    Original App Font
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                        <div className="mt-4 rounded-xl border border-white/10 bg-black/20 px-3 py-3">
-                            <div className="text-[11px] uppercase tracking-[0.2em] text-gray-500 mb-2">
-                                Dashboard Layout
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                                <button
-                                    type="button"
-                                    onClick={() => updateDashboardLayout('top')}
-                                    className={`dashboard-layout-option px-3 py-1.5 rounded-lg text-[11px] font-semibold border transition-colors ${dashboardLayout === 'top'
-                                        ? 'dashboard-layout-option--active'
-                                        : ''
-                                        } ${dashboardLayout === 'top'
-                                            ? 'bg-teal-500/20 text-teal-200 border-teal-400/50'
-                                            : 'bg-white/5 text-gray-300 border-white/10 hover:text-white hover:border-white/30'
-                                        }`}
-                                >
-                                    Upload Stats: Top
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => updateDashboardLayout('side')}
-                                    className={`dashboard-layout-option px-3 py-1.5 rounded-lg text-[11px] font-semibold border transition-colors ${dashboardLayout === 'side'
-                                        ? 'dashboard-layout-option--active'
-                                        : ''
-                                        } ${dashboardLayout === 'side'
-                                            ? 'bg-indigo-500/20 text-indigo-200 border-indigo-400/50'
-                                            : 'bg-white/5 text-gray-300 border-white/10 hover:text-white hover:border-white/30'
-                                        }`}
-                                >
-                                    Upload Stats: Side
-                                </button>
-                            </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            {(Object.values(PALETTES) as import('../shared/webThemes').PaletteDefinition[]).map((palette) => {
+                                const isActive = colorPalette === palette.id;
+                                return (
+                                    <button
+                                        key={palette.id}
+                                        type="button"
+                                        onClick={() => setColorPalette(palette.id)}
+                                        className={`rounded-xl border px-3 py-3 text-left transition-colors ${isActive
+                                            ? 'border-white/40 bg-white/10'
+                                            : 'border-white/10 bg-white/5 hover:border-white/30'
+                                            }`}
+                                    >
+                                        <div
+                                            className="w-full h-8 rounded-lg mb-2 border border-white/10"
+                                            style={{ backgroundImage: palette.gradient }}
+                                        />
+                                        <div className="text-xs font-semibold text-gray-200">{palette.label}</div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <div className="mt-4">
+                            <Toggle
+                                enabled={glassSurfaces}
+                                onChange={(v) => setGlassSurfaces(v)}
+                                label="Glass Surfaces"
+                                description="Enable frosted-glass card backgrounds with backdrop blur"
+                            />
                         </div>
                     </SettingsSection>
                     {/* DPS Report Token Section */}
@@ -1932,58 +1557,6 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                                 </div>
                             </div>
 
-                        </div>
-                        <div className="bg-black/30 border border-white/10 rounded-xl p-4 mb-4">
-                            <div className="text-xs uppercase tracking-widest text-gray-500 mb-3">Web Theme</div>
-                            <div className={`mb-3 rounded-lg border px-3 py-2 text-xs ${githubThemeStatusKind === 'success'
-                                ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-200'
-                                : githubThemeStatusKind === 'error'
-                                    ? 'border-rose-500/40 bg-rose-500/10 text-rose-200'
-                                    : 'border-cyan-500/30 bg-cyan-500/10 text-cyan-200'
-                                }`}
-                            >
-                                {githubThemeStatus || 'Theme changes publish automatically to GitHub Pages.'}
-                            </div>
-                            {uiTheme === 'dark-glass' ? (
-                                <div className="rounded-xl border border-[rgba(26,115,232,0.35)] bg-[rgba(26,115,232,0.06)] px-3 py-3 flex items-center gap-3">
-                                    <div
-                                        className="w-16 h-12 rounded-lg shrink-0 border border-white/10"
-                                        style={{ backgroundImage: DARK_GLASS_PREVIEW_BACKGROUND, backgroundColor: '#101218' }}
-                                    />
-                                    <div>
-                                        <div className="text-xs font-semibold text-gray-200">Aurora</div>
-                                        <div className="text-[11px] text-gray-500 mt-0.5">Locked to Dark Glass theme</div>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-56 overflow-y-auto pr-1">
-                                    {orderedThemes.map((theme) => {
-                                        const isActive = theme.id === githubWebTheme;
-                                        return (
-                                            <button
-                                                key={theme.id}
-                                                onClick={() => {
-                                                    setGithubWebTheme(theme.id);
-                                                    if (uiTheme === 'kinetic' && isKineticWebThemeId(theme.id)) {
-                                                        setKineticThemeVariant(inferKineticThemeVariantFromThemeId(theme.id));
-                                                    }
-                                                }}
-                                                className={`rounded-xl border px-3 py-3 text-left transition-colors ${isActive
-                                                    ? 'border-cyan-400/60 bg-cyan-500/10'
-                                                    : 'border-white/10 bg-white/5 hover:border-white/30'
-                                                    }`}
-                                                style={{ boxShadow: isActive ? `0 0 18px rgba(${theme.rgb}, 0.25)` : undefined }}
-                                            >
-                                                <div
-                                                    className="w-full h-12 rounded-lg mb-2 border border-white/10"
-                                                    style={{ backgroundImage: theme.pattern, backgroundColor: '#10141b' }}
-                                                />
-                                                <div className="text-xs font-semibold text-gray-200">{theme.label}</div>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            )}
                         </div>
                         <div className="bg-black/30 border border-white/10 rounded-xl p-4 mb-4">
                             <div className="text-xs uppercase tracking-widest text-gray-500 mb-3">Logo</div>
@@ -2707,7 +2280,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
                 </div>
             </div >
 
-            <div className={`fixed bottom-4 left-4 right-4 z-40 ${isModernLayout ? 'lg:hidden' : ''}`}>
+            <div className="fixed bottom-4 left-4 right-4 z-40 lg:hidden">
                 <div className="flex items-center justify-between gap-2 rounded-2xl border border-white/25 bg-white/5 backdrop-blur-2xl px-3 py-1.5 shadow-[0_24px_65px_rgba(0,0,0,0.55)]">
                     <button
                         onClick={() => setSettingsNavOpen((open) => !open)}
@@ -2730,7 +2303,7 @@ export function SettingsView({ onBack: _onBack, onEmbedStatSettingsSaved, onOpen
             {
                 settingsNavOpen && (
                     <div
-                        className={`app-modal-overlay fixed inset-0 z-50 flex items-center justify-center px-4 ${isModernLayout ? 'lg:hidden' : ''}`}
+                        className="app-modal-overlay fixed inset-0 z-50 flex items-center justify-center px-4 lg:hidden"
                         onClick={(event) => {
                             if (event.target === event.currentTarget) {
                                 setSettingsNavOpen(false);
