@@ -258,17 +258,18 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
             progressPercent
         };
     }, [statsDataProgress, aggregationProgress, logs.length]);
-    const showStatsSettlingBanner = statsSettling.active;
-    const statsSettlingBannerTitle = statsSettling.phaseLabel;
-    const statsSettlingBannerMeta = statsSettling.progressText;
-    const blurStatsDashboard = showStatsSettlingBanner && statsSettling.progressPercent < 100;
-    const statsActionsDisabled = showStatsSettlingBanner || !sectionContentReady;
+    const showDissolveLoading = statsSettling.active && !embedded;
+    const dissolveBarTitle = statsSettling.phaseLabel;
+    const dissolveBarMeta = statsSettling.progressText;
+
+    const [dissolveCompleting, setDissolveCompleting] = useState(false);
+    const statsActionsDisabled = showDissolveLoading || !sectionContentReady;
     useEffect(() => {
         if (statsLoadingJokeTimerRef.current !== null) {
             window.clearTimeout(statsLoadingJokeTimerRef.current);
             statsLoadingJokeTimerRef.current = null;
         }
-        if (!showStatsSettlingBanner) return;
+        if (!showDissolveLoading) return;
         const nextJoke = () => {
             if (statsLoadingJokeDeckRef.current.length === 0 || statsLoadingJokeCursorRef.current >= statsLoadingJokeDeckRef.current.length) {
                 statsLoadingJokeDeckRef.current = shuffled(STATS_LOADING_JOKES);
@@ -307,16 +308,47 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
                 statsLoadingJokeTimerRef.current = null;
             }
         };
-    }, [showStatsSettlingBanner]);
+    }, [showDissolveLoading]);
+    // Trigger 500ms completion animation when progress reaches 100%
     useEffect(() => {
-        if (embedded || typeof document === 'undefined') return;
-        document.body.classList.toggle('stats-dashboard-loading', blurStatsDashboard);
-        return () => {
-            document.body.classList.remove('stats-dashboard-loading');
-        };
-    }, [embedded, blurStatsDashboard]);
+        if (statsSettling.progressPercent >= 100 && statsSettling.active && !embedded) {
+            setDissolveCompleting(true);
+            const timer = setTimeout(() => setDissolveCompleting(false), 500);
+            return () => clearTimeout(timer);
+        }
+    }, [statsSettling.progressPercent, statsSettling.active, embedded]);
+
+    // Only clear dissolveCompleting early if settling never reached 100% (e.g. cancelled)
     useEffect(() => {
-        if (showStatsSettlingBanner) {
+        if (!statsSettling.active && statsSettling.progressPercent < 100) {
+            setDissolveCompleting(false);
+        }
+    }, [statsSettling.active, statsSettling.progressPercent]);
+
+    const dissolveActive = (showDissolveLoading && statsSettling.progressPercent < 100) || dissolveCompleting;
+
+    const sectionWrapClass = dissolveActive
+        ? (dissolveCompleting ? 'stats-section-wrap stats-section-wrap--materializing' : 'stats-section-wrap stats-section-wrap--unloaded')
+        : 'stats-section-wrap stats-section-wrap--loaded';
+
+    const renderSectionWrap = (children: React.ReactNode) => (
+        <div className={sectionWrapClass}>
+            {children}
+            {dissolveActive && !dissolveCompleting && (
+                <>
+                    <span className="stats-dissolve-particle" />
+                    <span className="stats-dissolve-particle" />
+                    <span className="stats-dissolve-particle" />
+                    <span className="stats-dissolve-particle" />
+                    <span className="stats-dissolve-particle" />
+                    <span className="stats-dissolve-particle" />
+                </>
+            )}
+        </div>
+    );
+
+    useEffect(() => {
+        if (showDissolveLoading) {
             setSectionContentReady(false);
             return;
         }
@@ -345,8 +377,8 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
                 window.clearTimeout(handle);
             }
         };
-    }, [showStatsSettlingBanner]);
-    const sectionsReady = sectionContentReady && !showStatsSettlingBanner;
+    }, [showDissolveLoading]);
+    const sectionsReady = sectionContentReady && !showDissolveLoading;
     const needsTopSkillsData = sectionsReady && (
         isSectionVisibleFast('top-skills-outgoing')
         || isSectionVisibleFast('player-breakdown')
@@ -442,7 +474,7 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
 
     useEffect(() => {
         if (!window?.electronAPI?.fetchImageAsDataUrl) return;
-        if (showStatsSettlingBanner) return;
+        if (showDissolveLoading) return;
         let cancelled = false;
         const run = () => {
             if (cancelled) return;
@@ -502,7 +534,7 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
                 window.clearTimeout(handle);
             }
         };
-    }, [safeStats, showStatsSettlingBanner, needsTopSkillsData]);
+    }, [safeStats, showDissolveLoading, needsTopSkillsData]);
 
     const skillUsageData = useMemo(() => {
         const source = (precomputedStats?.skillUsageData ?? computedSkillUsageData) as Partial<SkillUsageSummary> | undefined;
@@ -543,7 +575,7 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
 
     const {
         scrollContainerRef,
-    } = useStatsNavigation(embedded, true, blurStatsDashboard);
+    } = useStatsNavigation(embedded, true, dissolveActive);
 
     const {
         devMockUploadState,
@@ -3575,7 +3607,7 @@ type SpikeFight = {
             backgroundImage: 'linear-gradient(160deg, rgba(var(--accent-rgb), 0.12), rgba(var(--accent-rgb), 0.04) 70%)'
         }
         : undefined;
-    const resolvedScrollContainerStyle: CSSProperties | undefined = blurStatsDashboard
+    const resolvedScrollContainerStyle: CSSProperties | undefined = dissolveActive
         ? {
             ...(scrollContainerStyle || {}),
             overflowY: 'hidden'
@@ -3684,29 +3716,42 @@ type SpikeFight = {
                 devMockAvailable={devMockAvailable}
                 devMockUploadState={devMockUploadState}
             />
-            {showStatsSettlingBanner && (
-                <div className="stats-settling-banner mb-3 rounded-xl border px-4 py-3 text-xs">
+            {showDissolveLoading && (
+                <div className="mb-3 text-xs">
                     <div className="flex items-center justify-between gap-3">
-                        <div className="stats-settling-banner__title font-semibold">{statsSettlingBannerTitle}</div>
-                        <div className="stats-settling-banner__meta text-[11px]">{statsSettlingBannerMeta}</div>
+                        <div className="flex items-center gap-2 text-[11px]" style={{ color: 'var(--text-secondary)' }}>
+                            <span className="stats-dissolve-heartbeat" />
+                            <span className="font-medium">{dissolveBarTitle}</span>
+                            <span style={{ opacity: 0.7 }}>{dissolveBarMeta}</span>
+                        </div>
                     </div>
                     {statsSettling.active && (
-                        <div className="stats-settling-banner__track mt-2 h-1.5 overflow-hidden rounded-full">
+                        <div className="stats-dissolve-bar">
                             <div
-                                className="stats-settling-banner__bar h-full rounded-full transition-all duration-300"
+                                className="stats-dissolve-bar__fill"
                                 style={{ width: `${statsSettling.progressPercent}%` }}
                             />
+                            <div
+                                className="stats-dissolve-bar__glow"
+                                style={{ left: `calc(${statsSettling.progressPercent}% - 5px)` }}
+                            />
+                            <div style={{ position: 'absolute', left: `${statsSettling.progressPercent}%`, top: '50%', transform: 'translateY(-50%)' }}>
+                                <span className="stats-dissolve-bar__particle" />
+                                <span className="stats-dissolve-bar__particle" />
+                                <span className="stats-dissolve-bar__particle" />
+                                <span className="stats-dissolve-bar__particle" />
+                                <span className="stats-dissolve-bar__particle" />
+                            </div>
                         </div>
                     )}
-                    <div className="stats-settling-banner__meta stats-settling-banner__joke mt-2 text-xs opacity-90">{statsSettlingBannerJoke}</div>
                 </div>
             )}
 
-            <div className={`${embedded ? '' : 'flex-1 min-h-0 flex'} relative ${blurStatsDashboard ? 'stats-dashboard-loading-shell' : ''}`}>
+            <div className={`${embedded ? '' : 'flex-1 min-h-0 flex'} relative`}>
                 <div
                     id="stats-dashboard-container"
                     ref={scrollContainerRef}
-                    className={`${scrollContainerClass} ${embedded ? '' : 'flex-1'} ${blurStatsDashboard ? 'stats-dashboard-scroll-lock' : ''}`}
+                    className={`${scrollContainerClass} ${embedded ? '' : 'flex-1'} ${dissolveActive ? 'stats-dashboard-scroll-lock' : ''}`}
                     style={resolvedScrollContainerStyle}
                 >
                 <StatsSharedContext.Provider value={sharedCtxValue}>
@@ -3714,15 +3759,15 @@ type SpikeFight = {
                     <div className="stats-layout stats-layout-modern grid gap-4 grid-cols-1">
                         <div className="space-y-4 min-w-0">
                             <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-                                <OverviewSection
-                                />
+                                {renderSectionWrap(<OverviewSection
+                                />)}
 
-                                <FightBreakdownSection
+                                {renderSectionWrap(<FightBreakdownSection
                                     fightBreakdownTab={fightBreakdownTab}
                                     setFightBreakdownTab={setFightBreakdownTab}
-                                />
+                                />)}
 
-                                <TopPlayersSection
+                                {renderSectionWrap(<TopPlayersSection
                                     showTopStats={showTopStats}
                                     showMvp={showMvp}
                                     topStatsMode={topStatsMode}
@@ -3730,15 +3775,15 @@ type SpikeFight = {
                                     setExpandedLeader={setExpandedLeader}
                                     formatTopStatValue={formatTopStatValue}
                                     isMvpStatEnabled={isMvpStatEnabled}
-                                />
+                                />)}
                             </div>
 
-                            <TopSkillsSection
+                            {renderSectionWrap(<TopSkillsSection
                                 topSkillsMetric={topSkillsMetric}
                                 onTopSkillsMetricChange={updateTopSkillsMetric}
-                            />
+                            />)}
 
-                            <BoonOutputSection
+                            {renderSectionWrap(<BoonOutputSection
                                 activeBoonCategory={activeBoonCategory}
                                 setActiveBoonCategory={(val: string) => setActiveBoonCategory(val as BoonCategory)}
                                 activeBoonMetric={activeBoonMetric}
@@ -3750,8 +3795,8 @@ type SpikeFight = {
                                 setBoonSearch={setBoonSearch}
                                 formatBoonMetricDisplay={formatBoonMetricDisplay}
                                 getBoonMetricValue={getBoonMetricValue}
-                            />
-                            <BoonTimelineSection
+                            />)}
+                            {renderSectionWrap(<BoonTimelineSection
                                 boonSearch={boonTimelineSearch}
                                 setBoonSearch={setBoonTimelineSearch}
                                 boons={filteredBoonTimelineBoons}
@@ -3773,8 +3818,8 @@ type SpikeFight = {
                                 drilldownData={boonTimelineDrilldown.data}
                                 showIncomingHeatmap={showBoonTimelineIncomingHeatmap}
                                 setShowIncomingHeatmap={setShowBoonTimelineIncomingHeatmap}
-                            />
-                            <BoonUptimeSection
+                            />)}
+                            {renderSectionWrap(<BoonUptimeSection
                                 boonSearch={boonUptimeSearch}
                                 setBoonSearch={setBoonUptimeSearch}
                                 boons={filteredBoonUptimeBoons}
@@ -3795,26 +3840,26 @@ type SpikeFight = {
                                 overallUptimePercent={boonUptimeOverallPercent}
                                 showStackCapLine={Boolean(activeBoonUptime?.stacking)}
                                 subgroupMembers={boonUptimeSubgroupMembers}
-                            />
+                            />)}
 
-                            <OffenseSection
+                            {renderSectionWrap(<OffenseSection
                                 offenseSearch={offenseSearch}
                                 setOffenseSearch={setOffenseSearch}
                                 activeOffenseStat={activeOffenseStat}
                                 setActiveOffenseStat={setActiveOffenseStat}
                                 offenseViewMode={offenseViewMode}
                                 setOffenseViewMode={setOffenseViewMode}
-                            />
+                            />)}
 
-                            <DamageModifiersSection
+                            {renderSectionWrap(<DamageModifiersSection
                                 search={damageModSearch}
                                 setSearch={setDamageModSearch}
                                 activeMod={activeDamageMod}
                                 setActiveMod={setActiveDamageMod}
                                 incoming={false}
-                            />
+                            />)}
 
-                            <PlayerBreakdownSection
+                            {renderSectionWrap(<PlayerBreakdownSection
                                 viewMode={playerBreakdownViewMode}
                                 setViewMode={setPlayerBreakdownViewMode}
                                 playerSkillBreakdowns={playerSkillBreakdowns}
@@ -3837,13 +3882,13 @@ type SpikeFight = {
                                 activePlayerSkill={activePlayerSkill}
                                 activeClassBreakdown={activeClassBreakdown}
                                 activeClassSkill={activeClassSkill}
-                            />
+                            />)}
 
-                            <DamageBreakdownSection
+                            {renderSectionWrap(<DamageBreakdownSection
                                 playerSkillBreakdowns={playerSkillBreakdowns}
-                            />
+                            />)}
 
-                            <SpikeDamageSection
+                            {renderSectionWrap(<SpikeDamageSection
                                 spikePlayerFilter={spikePlayerFilter}
                                 setSpikePlayerFilter={setSpikePlayerFilter}
                                 groupedSpikePlayers={groupedSpikePlayers}
@@ -3865,9 +3910,9 @@ type SpikeFight = {
                                 spikeDrilldownDeathIndices={spikeDrilldown.deathIndices}
                                 spikeFightSkillRows={spikeFightSkillRows}
                                 spikeFightSkillTitle="Outgoing Skill Damage (Selected Fight)"
-                            />
+                            />)}
 
-                            <ConditionsSection
+                            {renderSectionWrap(<ConditionsSection
                                 conditionSummary={conditionSummary}
                                 conditionPlayers={conditionPlayers}
                                 conditionSearch={conditionSearch}
@@ -3880,26 +3925,26 @@ type SpikeFight = {
                                 effectiveConditionSort={effectiveConditionSort as any}
                                 setConditionSort={setConditionSort as any}
                                 showConditionDamage={showConditionDamage}
-                            />
+                            />)}
 
-                            <DefenseSection
+                            {renderSectionWrap(<DefenseSection
                                 defenseSearch={defenseSearch}
                                 setDefenseSearch={setDefenseSearch}
                                 activeDefenseStat={activeDefenseStat}
                                 setActiveDefenseStat={setActiveDefenseStat}
                                 defenseViewMode={defenseViewMode}
                                 setDefenseViewMode={setDefenseViewMode}
-                            />
+                            />)}
 
-                            <DamageModifiersSection
+                            {renderSectionWrap(<DamageModifiersSection
                                 search={incomingDamageModSearch}
                                 setSearch={setIncomingDamageModSearch}
                                 activeMod={activeIncomingDamageMod}
                                 setActiveMod={setActiveIncomingDamageMod}
                                 incoming={true}
-                            />
+                            />)}
 
-                            <SpikeDamageSection
+                            {renderSectionWrap(<SpikeDamageSection
                                 sectionId="incoming-strike-damage"
                                 title="Incoming Strike Damage"
                                 subtitle="Select one enemy class to chart incoming strike pressure per fight."
@@ -3928,9 +3973,9 @@ type SpikeFight = {
                                 spikeDrilldownDeathIndices={incomingStrikeDrilldown.deathIndices}
                                 spikeFightSkillRows={incomingStrikeFightSkillRows}
                                 spikeFightSkillTitle="Incoming Skill Damage (Selected Fight)"
-                            />
+                            />)}
 
-                            <DamageMitigationSection
+                            {renderSectionWrap(<DamageMitigationSection
                                 damageMitigationSearch={damageMitigationSearch}
                                 setDamageMitigationSearch={setDamageMitigationSearch}
                                 activeDamageMitigationStat={activeDamageMitigationStat}
@@ -3939,9 +3984,9 @@ type SpikeFight = {
                                 setDamageMitigationViewMode={setDamageMitigationViewMode}
                                 damageMitigationScope={damageMitigationScope}
                                 setDamageMitigationScope={setDamageMitigationScope}
-                            />
+                            />)}
 
-                            <SupportSection
+                            {renderSectionWrap(<SupportSection
                                 supportSearch={supportSearch}
                                 setSupportSearch={setSupportSearch}
                                 activeSupportStat={activeSupportStat}
@@ -3950,9 +3995,9 @@ type SpikeFight = {
                                 setSupportViewMode={setSupportViewMode}
                                 cleanseScope={cleanseScope}
                                 setCleanseScope={setCleanseScope}
-                            />
+                            />)}
 
-                            <HealingSection
+                            {renderSectionWrap(<HealingSection
                                 activeHealingMetric={activeHealingMetric}
                                 setActiveHealingMetric={setActiveHealingMetric}
                                 healingCategory={healingCategory}
@@ -3960,24 +4005,24 @@ type SpikeFight = {
                                 activeResUtilitySkill={activeResUtilitySkill}
                                 setActiveResUtilitySkill={setActiveResUtilitySkill}
                                 skillUsageData={skillUsageData}
-                            />
+                            />)}
 
-                            <HealingBreakdownSection
+                            {renderSectionWrap(<HealingBreakdownSection
                                 healingBreakdownPlayers={safeStats.healingBreakdownPlayers}
-                            />
+                            />)}
 
-                            <FightDiffModeSection
-                            />
+                            {renderSectionWrap(<FightDiffModeSection
+                            />)}
 
-                            <SpecialBuffsSection
+                            {renderSectionWrap(<SpecialBuffsSection
                                 specialSearch={specialSearch}
                                 setSpecialSearch={setSpecialSearch}
                                 activeSpecialTab={activeSpecialTab}
                                 setActiveSpecialTab={setActiveSpecialTab}
                                 activeSpecialTable={activeSpecialTable}
-                            />
+                            />)}
 
-                            <SigilRelicUptimeSection
+                            {renderSectionWrap(<SigilRelicUptimeSection
                                 hasSigilRelicTables={sigilRelicTables.length > 0}
                                 sigilRelicSearch={sigilRelicSearch}
                                 setSigilRelicSearch={setSigilRelicSearch}
@@ -3985,9 +4030,9 @@ type SpikeFight = {
                                 activeSigilRelicTab={activeSigilRelicTab}
                                 setActiveSigilRelicTab={setActiveSigilRelicTab}
                                 activeSigilRelicTable={activeSigilRelicTable}
-                            />
+                            />)}
 
-                            <SkillUsageSection
+                            {renderSectionWrap(<SkillUsageSection
                                 selectedPlayers={selectedPlayers}
                                 setSelectedPlayers={setSelectedPlayers}
                                 removeSelectedPlayer={removeSelectedPlayer}
@@ -4019,9 +4064,9 @@ type SpikeFight = {
                                 getLineStrokeColor={getLineStrokeColor}
                                 getLineDashForPlayer={getLineDashForPlayer}
                                 formatSkillUsageValue={formatSkillUsageValue}
-                            />
+                            />)}
 
-                            <ApmSection
+                            {renderSectionWrap(<ApmSection
                                 apmSpecAvailable={apmSpecAvailable}
                                 skillUsageAvailable={skillUsageAvailable}
                                 apmSpecTables={apmSpecTables}
@@ -4042,70 +4087,70 @@ type SpikeFight = {
                                 formatApmValue={formatApmValue}
                                 formatCastRateValue={formatCastRateValue}
                                 formatCastCountValue={formatCastCountValue}
-                            />
+                            />)}
 
                         </div>
                         <div className="space-y-4 min-w-0">
-                            <SquadCompositionSection
+                            {renderSectionWrap(<SquadCompositionSection
                                 sortedSquadClassData={sortedSquadClassData}
                                 sortedEnemyClassData={sortedEnemyClassData}
                                 getProfessionIconPath={getProfessionIconPath}
-                            />
+                            />)}
 
-                            <CommanderStatsSection
+                            {renderSectionWrap(<CommanderStatsSection
                                 commanderStats={commanderStats}
                                 getProfessionIconPath={getProfessionIconPath}
-                            />
+                            />)}
 
-                            <SquadDamageComparisonSection />
+                            {renderSectionWrap(<SquadDamageComparisonSection />)}
 
-                            <SquadKillPressureSection />
+                            {renderSectionWrap(<SquadKillPressureSection />)}
 
-                            <HealEffectivenessSection
+                            {renderSectionWrap(<HealEffectivenessSection
                                 fights={healEffectivenessFights}
-                            />
+                            />)}
 
-                            <SquadTagDistanceDeathsSection
+                            {renderSectionWrap(<SquadTagDistanceDeathsSection
                                 fights={tagDistanceDeathsData}
-                            />
+                            />)}
 
-                            <AttendanceSection
+                            {renderSectionWrap(<AttendanceSection
                                 attendanceRows={attendanceData}
                                 getProfessionIconPath={getProfessionIconPath}
-                            />
+                            />)}
 
-                            <SquadCompByFightSection
+                            {renderSectionWrap(<SquadCompByFightSection
                                 fights={squadCompByFight}
                                 getProfessionIconPath={getProfessionIconPath}
-                            />
+                            />)}
 
-                            <FightCompSection
+                            {renderSectionWrap(<FightCompSection
                                 fights={fightCompByFight}
                                 getProfessionIconPath={getProfessionIconPath}
-                            />
+                            />)}
 
-                            <MapDistributionSection
+                            {renderSectionWrap(<MapDistributionSection
                                 mapData={safeStats.mapData}
-                            />
+                            />)}
 
-                            <TimelineSection
+                            {renderSectionWrap(<TimelineSection
                                 timelineData={safeStats.timelineData}
                                 timelineFriendlyScope={timelineFriendlyScope}
                                 setTimelineFriendlyScope={setTimelineFriendlyScope}
-                            />
+                            />)}
                         </div>
                     </div>
                 ) : (
                     <>
-                        {isSectionVisible('overview') && <OverviewSection
-                        />}
+                        {isSectionVisible('overview') && renderSectionWrap(<OverviewSection
+                        />)}
 
-                        {isSectionVisible('fight-breakdown') && <FightBreakdownSection
+                        {isSectionVisible('fight-breakdown') && renderSectionWrap(<FightBreakdownSection
                             fightBreakdownTab={fightBreakdownTab}
                             setFightBreakdownTab={setFightBreakdownTab}
-                        />}
+                        />)}
 
-                        {isSectionVisible('top-players') && <TopPlayersSection
+                        {isSectionVisible('top-players') && renderSectionWrap(<TopPlayersSection
                             showTopStats={showTopStats}
                             showMvp={showMvp}
                             topStatsMode={topStatsMode}
@@ -4113,95 +4158,95 @@ type SpikeFight = {
                             setExpandedLeader={setExpandedLeader}
                             formatTopStatValue={formatTopStatValue}
                             isMvpStatEnabled={isMvpStatEnabled}
-                        />}
+                        />)}
 
-                        {isSectionVisible('top-skills-outgoing') && <TopSkillsSection
+                        {isSectionVisible('top-skills-outgoing') && renderSectionWrap(<TopSkillsSection
                             topSkillsMetric={topSkillsMetric}
                             onTopSkillsMetricChange={updateTopSkillsMetric}
-                        />}
+                        />)}
 
-                        {isSectionVisible('squad-composition') && <SquadCompositionSection
+                        {isSectionVisible('squad-composition') && renderSectionWrap(<SquadCompositionSection
                             sortedSquadClassData={sortedSquadClassData}
                             sortedEnemyClassData={sortedEnemyClassData}
                             getProfessionIconPath={getProfessionIconPath}
-                        />}
+                        />)}
 
-                        {isSectionVisible('commander-stats') && <CommanderStatsSection
+                        {isSectionVisible('commander-stats') && renderSectionWrap(<CommanderStatsSection
                             commanderStats={commanderStats}
                             getProfessionIconPath={getProfessionIconPath}
-                        />}
+                        />)}
 
-                        {isSectionVisible('commander-push-timing') && <CommanderPushTimingSection
+                        {isSectionVisible('commander-push-timing') && renderSectionWrap(<CommanderPushTimingSection
                             commanderStats={commanderStats}
-                        />}
+                        />)}
 
-                        {isSectionVisible('commander-target-conversion') && <CommanderTargetConversionSection
+                        {isSectionVisible('commander-target-conversion') && renderSectionWrap(<CommanderTargetConversionSection
                             commanderStats={commanderStats}
-                        />}
+                        />)}
 
-                        {isSectionVisible('commander-tag-movement') && <CommanderTagMovementSection
+                        {isSectionVisible('commander-tag-movement') && renderSectionWrap(<CommanderTagMovementSection
                             commanderStats={commanderStats}
-                        />}
+                        />)}
 
-                        {isSectionVisible('commander-tag-death-response') && <CommanderTagDeathResponseSection
+                        {isSectionVisible('commander-tag-death-response') && renderSectionWrap(<CommanderTagDeathResponseSection
                             commanderStats={commanderStats}
-                        />}
+                        />)}
 
-                        {isSectionVisible('squad-damage-comparison') && <SquadDamageComparisonSection />}
+                        {isSectionVisible('squad-damage-comparison') && renderSectionWrap(<SquadDamageComparisonSection />)}
 
-                        {isSectionVisible('squad-kill-pressure') && <SquadKillPressureSection />}
+                        {isSectionVisible('squad-kill-pressure') && renderSectionWrap(<SquadKillPressureSection />)}
 
-                        {isSectionVisible('heal-effectiveness') && <HealEffectivenessSection
+                        {isSectionVisible('heal-effectiveness') && renderSectionWrap(<HealEffectivenessSection
                             fights={healEffectivenessFights}
-                        />}
+                        />)}
 
-                        {isSectionVisible('squad-tag-distance-deaths') && <SquadTagDistanceDeathsSection
+                        {isSectionVisible('squad-tag-distance-deaths') && renderSectionWrap(<SquadTagDistanceDeathsSection
                             fights={tagDistanceDeathsData}
-                        />}
+                        />)}
 
-                        {isSectionVisible('attendance-ledger') && <AttendanceSection
+                        {isSectionVisible('attendance-ledger') && renderSectionWrap(<AttendanceSection
                             attendanceRows={attendanceData}
                             getProfessionIconPath={getProfessionIconPath}
-                        />}
+                        />)}
 
-                        {isSectionVisible('squad-comp-fight') && <SquadCompByFightSection
+                        {isSectionVisible('squad-comp-fight') && renderSectionWrap(<SquadCompByFightSection
                             fights={squadCompByFight}
                             getProfessionIconPath={getProfessionIconPath}
-                        />}
+                        />)}
 
-                        {isSectionVisible('fight-comp') && <FightCompSection
+                        {isSectionVisible('fight-comp') && renderSectionWrap(<FightCompSection
                             fights={fightCompByFight}
                             getProfessionIconPath={getProfessionIconPath}
-                        />}
+                        />)}
 
-                        {isSectionVisible('timeline') && <TimelineSection
+                        {isSectionVisible('timeline') && renderSectionWrap(<TimelineSection
                             timelineData={safeStats.timelineData}
                             timelineFriendlyScope={timelineFriendlyScope}
                             setTimelineFriendlyScope={setTimelineFriendlyScope}
-                        />}
+                        />)}
 
-                        {isSectionVisible('map-distribution') && <MapDistributionSection
+                        {isSectionVisible('map-distribution') && renderSectionWrap(<MapDistributionSection
                             mapData={safeStats.mapData}
-                        />}
+                        />)}
 
-                        {isSectionVisible('offense-detailed') && <OffenseSection
+                        {isSectionVisible('offense-detailed') && renderSectionWrap(<OffenseSection
                             offenseSearch={offenseSearch}
                             setOffenseSearch={setOffenseSearch}
                             activeOffenseStat={activeOffenseStat}
                             setActiveOffenseStat={setActiveOffenseStat}
                             offenseViewMode={offenseViewMode}
                             setOffenseViewMode={setOffenseViewMode}
-                        />}
+                        />)}
 
-                        {isSectionVisible('damage-modifiers') && <DamageModifiersSection
+                        {isSectionVisible('damage-modifiers') && renderSectionWrap(<DamageModifiersSection
                             search={damageModSearch}
                             setSearch={setDamageModSearch}
                             activeMod={activeDamageMod}
                             setActiveMod={setActiveDamageMod}
                             incoming={false}
-                        />}
+                        />)}
 
-                        {isSectionVisible('player-breakdown') && <PlayerBreakdownSection
+                        {isSectionVisible('player-breakdown') && renderSectionWrap(<PlayerBreakdownSection
                             viewMode={playerBreakdownViewMode}
                             setViewMode={setPlayerBreakdownViewMode}
                             playerSkillBreakdowns={playerSkillBreakdowns}
@@ -4224,13 +4269,13 @@ type SpikeFight = {
                             activePlayerSkill={activePlayerSkill}
                             activeClassBreakdown={activeClassBreakdown}
                             activeClassSkill={activeClassSkill}
-                        />}
+                        />)}
 
-                        {isSectionVisible('damage-breakdown') && <DamageBreakdownSection
+                        {isSectionVisible('damage-breakdown') && renderSectionWrap(<DamageBreakdownSection
                             playerSkillBreakdowns={playerSkillBreakdowns}
-                        />}
+                        />)}
 
-                        {isSectionVisible('spike-damage') && <SpikeDamageSection
+                        {isSectionVisible('spike-damage') && renderSectionWrap(<SpikeDamageSection
                             spikePlayerFilter={spikePlayerFilter}
                             setSpikePlayerFilter={setSpikePlayerFilter}
                             groupedSpikePlayers={groupedSpikePlayers}
@@ -4252,9 +4297,9 @@ type SpikeFight = {
                             spikeDrilldownDeathIndices={spikeDrilldown.deathIndices}
                             spikeFightSkillRows={spikeFightSkillRows}
                             spikeFightSkillTitle="Outgoing Skill Damage (Selected Fight)"
-                        />}
+                        />)}
 
-                        {isSectionVisible('conditions-outgoing') && <ConditionsSection
+                        {isSectionVisible('conditions-outgoing') && renderSectionWrap(<ConditionsSection
                             conditionSummary={conditionSummary}
                             conditionPlayers={conditionPlayers}
                             conditionSearch={conditionSearch}
@@ -4267,26 +4312,26 @@ type SpikeFight = {
                             effectiveConditionSort={effectiveConditionSort as any}
                             setConditionSort={setConditionSort as any}
                             showConditionDamage={showConditionDamage}
-                        />}
+                        />)}
 
-                        {isSectionVisible('defense-detailed') && <DefenseSection
+                        {isSectionVisible('defense-detailed') && renderSectionWrap(<DefenseSection
                             defenseSearch={defenseSearch}
                             setDefenseSearch={setDefenseSearch}
                             activeDefenseStat={activeDefenseStat}
                             setActiveDefenseStat={setActiveDefenseStat}
                             defenseViewMode={defenseViewMode}
                             setDefenseViewMode={setDefenseViewMode}
-                        />}
+                        />)}
 
-                        {isSectionVisible('incoming-damage-modifiers') && <DamageModifiersSection
+                        {isSectionVisible('incoming-damage-modifiers') && renderSectionWrap(<DamageModifiersSection
                             search={incomingDamageModSearch}
                             setSearch={setIncomingDamageModSearch}
                             activeMod={activeIncomingDamageMod}
                             setActiveMod={setActiveIncomingDamageMod}
                             incoming={true}
-                        />}
+                        />)}
 
-                        {isSectionVisible('incoming-strike-damage') && <SpikeDamageSection
+                        {isSectionVisible('incoming-strike-damage') && renderSectionWrap(<SpikeDamageSection
                             sectionId="incoming-strike-damage"
                             title="Incoming Strike Damage"
                             subtitle="Select one enemy class to chart incoming strike pressure per fight."
@@ -4315,9 +4360,9 @@ type SpikeFight = {
                             spikeDrilldownDeathIndices={incomingStrikeDrilldown.deathIndices}
                             spikeFightSkillRows={incomingStrikeFightSkillRows}
                             spikeFightSkillTitle="Incoming Skill Damage (Selected Fight)"
-                        />}
+                        />)}
 
-                        {isSectionVisible('defense-mitigation') && <DamageMitigationSection
+                        {isSectionVisible('defense-mitigation') && renderSectionWrap(<DamageMitigationSection
                             damageMitigationSearch={damageMitigationSearch}
                             setDamageMitigationSearch={setDamageMitigationSearch}
                             activeDamageMitigationStat={activeDamageMitigationStat}
@@ -4326,9 +4371,9 @@ type SpikeFight = {
                             setDamageMitigationViewMode={setDamageMitigationViewMode}
                             damageMitigationScope={damageMitigationScope}
                             setDamageMitigationScope={setDamageMitigationScope}
-                        />}
+                        />)}
 
-                        {isSectionVisible('boon-output') && <BoonOutputSection
+                        {isSectionVisible('boon-output') && renderSectionWrap(<BoonOutputSection
                             activeBoonCategory={activeBoonCategory}
                             setActiveBoonCategory={(val: string) => setActiveBoonCategory(val as BoonCategory)}
                             activeBoonMetric={activeBoonMetric}
@@ -4340,8 +4385,8 @@ type SpikeFight = {
                             setBoonSearch={setBoonSearch}
                             formatBoonMetricDisplay={formatBoonMetricDisplay}
                             getBoonMetricValue={getBoonMetricValue}
-                        />}
-                        {isSectionVisible('boon-timeline') && <BoonTimelineSection
+                        />)}
+                        {isSectionVisible('boon-timeline') && renderSectionWrap(<BoonTimelineSection
                             boonSearch={boonTimelineSearch}
                             setBoonSearch={setBoonTimelineSearch}
                             boons={filteredBoonTimelineBoons}
@@ -4363,8 +4408,8 @@ type SpikeFight = {
                             drilldownData={boonTimelineDrilldown.data}
                             showIncomingHeatmap={showBoonTimelineIncomingHeatmap}
                             setShowIncomingHeatmap={setShowBoonTimelineIncomingHeatmap}
-                        />}
-                        {isSectionVisible('boon-uptime') && <BoonUptimeSection
+                        />)}
+                        {isSectionVisible('boon-uptime') && renderSectionWrap(<BoonUptimeSection
                             boonSearch={boonUptimeSearch}
                             setBoonSearch={setBoonUptimeSearch}
                             boons={filteredBoonUptimeBoons}
@@ -4385,9 +4430,9 @@ type SpikeFight = {
                             overallUptimePercent={boonUptimeOverallPercent}
                             showStackCapLine={Boolean(activeBoonUptime?.stacking)}
                             subgroupMembers={boonUptimeSubgroupMembers}
-                        />}
+                        />)}
 
-                        {isSectionVisible('support-detailed') && <SupportSection
+                        {isSectionVisible('support-detailed') && renderSectionWrap(<SupportSection
                             supportSearch={supportSearch}
                             setSupportSearch={setSupportSearch}
                             activeSupportStat={activeSupportStat}
@@ -4396,9 +4441,9 @@ type SpikeFight = {
                             setSupportViewMode={setSupportViewMode}
                             cleanseScope={cleanseScope}
                             setCleanseScope={setCleanseScope}
-                        />}
+                        />)}
 
-                        {isSectionVisible('healing-stats') && <HealingSection
+                        {isSectionVisible('healing-stats') && renderSectionWrap(<HealingSection
                             activeHealingMetric={activeHealingMetric}
                             setActiveHealingMetric={setActiveHealingMetric}
                             healingCategory={healingCategory}
@@ -4406,24 +4451,24 @@ type SpikeFight = {
                             activeResUtilitySkill={activeResUtilitySkill}
                             setActiveResUtilitySkill={setActiveResUtilitySkill}
                             skillUsageData={skillUsageData}
-                        />}
+                        />)}
 
-                        {isSectionVisible('healing-breakdown') && <HealingBreakdownSection
+                        {isSectionVisible('healing-breakdown') && renderSectionWrap(<HealingBreakdownSection
                             healingBreakdownPlayers={safeStats.healingBreakdownPlayers}
-                        />}
+                        />)}
 
-                        {isSectionVisible('fight-diff-mode') && <FightDiffModeSection
-                        />}
+                        {isSectionVisible('fight-diff-mode') && renderSectionWrap(<FightDiffModeSection
+                        />)}
 
-                        {isSectionVisible('special-buffs') && <SpecialBuffsSection
+                        {isSectionVisible('special-buffs') && renderSectionWrap(<SpecialBuffsSection
                             specialSearch={specialSearch}
                             setSpecialSearch={setSpecialSearch}
                             activeSpecialTab={activeSpecialTab}
                             setActiveSpecialTab={setActiveSpecialTab}
                             activeSpecialTable={activeSpecialTable}
-                        />}
+                        />)}
 
-                        {isSectionVisible('sigil-relic-uptime') && <SigilRelicUptimeSection
+                        {isSectionVisible('sigil-relic-uptime') && renderSectionWrap(<SigilRelicUptimeSection
                             hasSigilRelicTables={sigilRelicTables.length > 0}
                             sigilRelicSearch={sigilRelicSearch}
                             setSigilRelicSearch={setSigilRelicSearch}
@@ -4431,9 +4476,9 @@ type SpikeFight = {
                             activeSigilRelicTab={activeSigilRelicTab}
                             setActiveSigilRelicTab={setActiveSigilRelicTab}
                             activeSigilRelicTable={activeSigilRelicTable}
-                        />}
+                        />)}
 
-                        {isSectionVisible('skill-usage') && <SkillUsageSection
+                        {isSectionVisible('skill-usage') && renderSectionWrap(<SkillUsageSection
                             selectedPlayers={selectedPlayers}
                             setSelectedPlayers={setSelectedPlayers}
                             removeSelectedPlayer={removeSelectedPlayer}
@@ -4465,9 +4510,9 @@ type SpikeFight = {
                             getLineStrokeColor={getLineStrokeColor}
                             getLineDashForPlayer={getLineDashForPlayer}
                             formatSkillUsageValue={formatSkillUsageValue}
-                        />}
+                        />)}
 
-                        {isSectionVisible('apm-stats') && <ApmSection
+                        {isSectionVisible('apm-stats') && renderSectionWrap(<ApmSection
                             apmSpecAvailable={apmSpecAvailable}
                             skillUsageAvailable={skillUsageAvailable}
                             apmSpecTables={apmSpecTables}
@@ -4488,16 +4533,16 @@ type SpikeFight = {
                             formatApmValue={formatApmValue}
                             formatCastRateValue={formatCastRateValue}
                             formatCastCountValue={formatCastCountValue}
-                        />}
+                        />)}
 
                     </>
+                )}
+                {dissolveActive && (
+                    <div className="stats-dissolve-joke">{statsSettlingBannerJoke}</div>
                 )}
                 </StatsSharedContext.Provider>
                 {!embedded && <div className="h-24" aria-hidden="true" />}
             </div>
-                {blurStatsDashboard && (
-                    <div className="stats-dashboard-loading-overlay" aria-hidden="true" />
-                )}
             </div>
         </div>
     );
