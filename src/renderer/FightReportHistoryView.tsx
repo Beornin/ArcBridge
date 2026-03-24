@@ -459,13 +459,12 @@ export function FightReportHistoryView() {
             ) : (() => {
                 const activeReport = tabs.find((t) => t.id === activeTab);
                 return activeReport ? (
-                    <div className="flex-1 min-h-0 overflow-y-auto">
+                    <div className="flex-1 min-h-0 flex flex-col px-4 pt-2 pb-2">
                         <StatsView
                             logs={[]}
                             onBack={() => setActiveTab('list')}
                             precomputedStats={activeReport.report.stats}
                             statsViewSettings={activeReport.report.stats?.statsViewSettings}
-                            embedded
                             dashboardTitle={activeReport.title}
                         />
                     </div>
