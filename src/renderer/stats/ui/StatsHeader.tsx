@@ -85,7 +85,9 @@ export const StatsHeader = ({
     return (
         <motion.div
             initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.1 }}
+            transition={{ duration: 0.35, ease: 'easeOut' }}
             className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-3 shrink-0 px-2">
         <div className="flex items-start gap-3 sm:items-center sm:gap-4">
             <div className="space-y-0">
