@@ -100,9 +100,10 @@ export const StatsHeader = ({
                     <button
                         onClick={onDevMockUpload}
                         disabled={devMockUploadState.uploading || actionsDisabled}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 bg-amber-500/15 text-amber-200 border border-amber-500/30 enabled:hover:bg-amber-500/25"
+                        className="flex items-center gap-2 px-4 py-2 rounded-md font-medium text-sm transition-colors disabled:opacity-50"
+                        style={{ background: 'var(--accent-bg)', color: 'var(--text-primary)', border: '1px solid var(--accent-border)' }}
                     >
-                        <Sparkles className="w-4 h-4" />
+                        <Sparkles className="w-4 h-4" style={{ color: 'var(--brand-primary)' }} />
                         {devMockUploadState.uploading ? 'Building...' : 'Dev Mock Upload'}
                     </button>
                 )}
@@ -112,9 +113,10 @@ export const StatsHeader = ({
                             onClick={onWebUpload}
                             disabled={uploadDisabled}
                             aria-disabled={uploadDisabled}
-                            className={`stats-action-upload flex items-center gap-2 px-4 py-2 bg-emerald-600 enabled:hover:bg-emerald-500 text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${alternateUploadTargets.length > 0 ? 'rounded-l-lg rounded-r-none' : 'rounded-lg'}`}
+                            className={`stats-action-upload flex items-center gap-2 px-4 py-2 font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${alternateUploadTargets.length > 0 ? 'rounded-l-md rounded-r-none' : 'rounded-md'}`}
+                            style={{ background: 'var(--accent-bg-strong)', color: 'var(--text-primary)', border: '1px solid var(--accent-border)' }}
                         >
-                            <UploadCloud className="w-4 h-4" />
+                            <UploadCloud className="w-4 h-4" style={{ color: 'var(--brand-primary)' }} />
                             {uploadingWeb ? 'Uploading...' : 'Upload to Web'}
                         </button>
                         {alternateUploadTargets.length > 0 && (
@@ -124,7 +126,8 @@ export const StatsHeader = ({
                                 disabled={uploadDisabled}
                                 aria-haspopup="menu"
                                 aria-expanded={uploadMenuOpen}
-                                className="stats-action-upload flex items-center justify-center px-2 bg-emerald-700 enabled:hover:bg-emerald-600 text-white rounded-r-lg border-l border-emerald-400/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="stats-action-upload flex items-center justify-center px-2 rounded-r-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                style={{ background: 'var(--accent-bg)', color: 'var(--text-primary)', border: '1px solid var(--accent-border)', borderLeft: 'none' }}
                                 title="Choose upload repository"
                             >
                                 <ChevronDown className={`w-4 h-4 transition-transform ${uploadMenuOpen ? 'rotate-180' : ''}`} />
@@ -132,7 +135,7 @@ export const StatsHeader = ({
                         )}
                     </div>
                     {uploadMenuOpen && alternateUploadTargets.length > 0 && !uploadDisabled && (
-                        <div className="absolute right-0 top-full mt-2 z-50 min-w-[240px] rounded-lg border border-white/10 bg-black/90 p-1 shadow-xl backdrop-blur-md">
+                        <div className="absolute right-0 top-full mt-2 z-50 min-w-[240px] rounded-md p-1" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-hover)', boxShadow: 'var(--shadow-dropdown)' }}>
                             {alternateUploadTargets.map((target) => (
                                 <button
                                     key={target.fullName}
@@ -141,7 +144,10 @@ export const StatsHeader = ({
                                         setUploadMenuOpen(false);
                                         onWebUploadToTarget?.(target.fullName);
                                     }}
-                                    className="block w-full rounded-md px-3 py-2 text-left text-xs text-gray-100 transition-colors hover:bg-white/10"
+                                    className="block w-full rounded-sm px-3 py-2 text-left text-xs transition-colors"
+                                    style={{ color: 'var(--text-primary)' }}
+                                    onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-hover)')}
+                                    onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                                 >
                                     {target.label}
                                 </button>
@@ -149,7 +155,7 @@ export const StatsHeader = ({
                         </div>
                     )}
                     {!canUploadWeb && !actionsDisabled && (
-                        <div className="stats-share-tooltip pointer-events-none absolute right-0 top-full mt-2 w-56 rounded-md border border-white/10 bg-black/90 px-2 py-1 text-[11px] text-gray-200 opacity-0 shadow-lg transition-opacity group-hover:opacity-100 z-50">
+                        <div className="stats-share-tooltip pointer-events-none absolute right-0 top-full mt-2 w-56 rounded-md px-2 py-1 text-[11px] opacity-0 shadow-lg transition-opacity group-hover:opacity-100 z-50" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-hover)', color: 'var(--text-secondary)' }}>
                             Add at least one fight before uploading a web report.
                         </div>
                     )}
@@ -159,13 +165,14 @@ export const StatsHeader = ({
                         onClick={onShare}
                         disabled={shareDisabled}
                         aria-disabled={shareDisabled}
-                        className="stats-action-discord flex items-center gap-2 px-4 py-2 bg-indigo-600 enabled:hover:bg-indigo-500 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="stats-action-discord flex items-center gap-2 px-4 py-2 rounded-md font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        style={{ background: 'var(--accent-bg-strong)', color: 'var(--text-primary)', border: '1px solid var(--accent-border)' }}
                     >
-                        <Share2 className="w-4 h-4" />
+                        <Share2 className="w-4 h-4" style={{ color: 'var(--brand-primary)' }} />
                         {shareLabel}
                     </button>
                     {!canShareDiscord && (
-                        <div className="stats-share-tooltip pointer-events-none absolute right-0 top-full mt-2 w-56 rounded-md border border-white/10 bg-black/90 px-2 py-1 text-[11px] text-gray-200 opacity-0 shadow-lg transition-opacity group-hover:opacity-100 z-50">
+                        <div className="stats-share-tooltip pointer-events-none absolute right-0 top-full mt-2 w-56 rounded-md px-2 py-1 text-[11px] opacity-0 shadow-lg transition-opacity group-hover:opacity-100 z-50" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-hover)', color: 'var(--text-secondary)' }}>
                             Select a Discord webhook to enable sharing.
                         </div>
                     )}
