@@ -700,7 +700,7 @@ const migrateLegacyInstallName = () => {
 
 
 function createTray() {
-    const iconPath = path.join(process.env.VITE_PUBLIC || '', 'img/ArcBridge.png');
+    const iconPath = path.join(process.env.VITE_PUBLIC || '', 'img/AxiBridge.png');
     const icon = nativeImage.createFromPath(iconPath);
     tray = new Tray(icon.resize({ width: 16, height: 16 }));
 
@@ -747,7 +747,7 @@ function createTray() {
 function createWindow() {
     const bounds = store.get('windowBounds') as { width: number, height: number } | undefined;
 
-    const iconPath = path.join(process.env.VITE_PUBLIC || '', 'img/ArcBridgeAppIcon.png');
+    const iconPath = path.join(process.env.VITE_PUBLIC || '', 'img/AxiBridgeAppIcon.png');
     console.log(`[Main] Loading icon from: ${iconPath}`);
     const appIcon = nativeImage.createFromPath(iconPath);
 

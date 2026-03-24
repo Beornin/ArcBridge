@@ -79,7 +79,7 @@ const ICON_MAP: Record<string, ReactNode> = {
     arcbridge: (
         <span
             className="arcbridge-logo w-5 h-5 inline-block mb-1 mx-1"
-            style={{ WebkitMaskImage: 'url(/svg/ArcBridge.svg)', maskImage: 'url(/svg/ArcBridge.svg)' }}
+            style={{ WebkitMaskImage: 'url(/svg/AxiBridge.svg)', maskImage: 'url(/svg/AxiBridge.svg)' }}
             aria-label="ArcBridge logo"
         />
     )
@@ -221,7 +221,7 @@ export function HowToModal({ isOpen, onClose, isBulkUploadActive }: HowToModalPr
                                 {selectedNode.id === 'arcbridge' && (
                                     <span
                                         className="arcbridge-logo h-6 w-6"
-                                        style={{ WebkitMaskImage: 'url(/svg/ArcBridge.svg)', maskImage: 'url(/svg/ArcBridge.svg)' }}
+                                        style={{ WebkitMaskImage: 'url(/svg/AxiBridge.svg)', maskImage: 'url(/svg/AxiBridge.svg)' }}
                                         aria-label="ArcBridge logo"
                                     />
                                 )}

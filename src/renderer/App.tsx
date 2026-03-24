@@ -568,7 +568,7 @@ function App() {
         return cleanup;
     }, []);
 
-    const appIconPath = `${import.meta.env.BASE_URL || './'}svg/ArcBridge.svg`;
+    const appIconPath = `${import.meta.env.BASE_URL || './'}svg/AxiBridge.svg`;
     const arcbridgeLogoStyle = { WebkitMaskImage: `url(${appIconPath})`, maskImage: `url(${appIconPath})` } as const;
     const isDev = import.meta.env.DEV;
     const shellClassName = 'app-shell h-screen w-screen text-white overflow-hidden flex flex-col';

@@ -1007,7 +1007,7 @@ export function ReportApp() {
             .then((resp) => (resp.ok ? resp.json() : Promise.reject()))
             .then((data) => {
                 if (!isMounted) return;
-                const defaultPath = 'svg/ArcBridge.svg';
+                const defaultPath = 'svg/AxiBridge.svg';
                 const path = data?.path ? String(data.path) : defaultPath;
                 const version = data?.updatedAt ? String(data.updatedAt) : '';
                 const urlBase = joinAssetPath(assetBasePath, path);
@@ -1320,7 +1320,7 @@ export function ReportApp() {
     );
 
     if (report) {
-        const arcbridgeLogoUrl = joinAssetPath(assetBasePath, 'svg/ArcBridge.svg');
+        const arcbridgeLogoUrl = joinAssetPath(assetBasePath, 'svg/AxiBridge.svg');
         const animateGroupScrollToTop = () => {
             if (groupTopScrollRafRef.current !== null) {
                 cancelAnimationFrame(groupTopScrollRafRef.current);
