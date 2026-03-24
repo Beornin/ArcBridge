@@ -17,6 +17,7 @@ import { Gw2DamMitIcon } from '../renderer/ui/Gw2DamMitIcon';
 import { Gw2FuryIcon } from '../renderer/ui/Gw2FuryIcon';
 import { Gw2SigilIcon } from '../renderer/ui/Gw2SigilIcon';
 import { buildRollupData, RollupData } from './rollup';
+import type { ReportPayload, ReportIndexEntry } from '../shared/reportTypes';
 import {
     ShieldCheck,
     Shield,
@@ -51,37 +52,6 @@ import {
     ShieldMinus
 } from 'lucide-react';
 
-interface ReportMeta {
-    id: string;
-    title: string;
-    commanders: string[];
-    dateStart: string;
-    dateEnd: string;
-    dateLabel: string;
-    generatedAt: string;
-    appVersion?: string;
-}
-
-interface ReportPayload {
-    meta: ReportMeta;
-    stats: any;
-}
-
-interface ReportIndexEntry {
-    id: string;
-    title: string;
-    commanders: string[];
-    dateStart: string;
-    dateEnd: string;
-    dateLabel: string;
-    url: string;
-    summary?: {
-        borderlandsPct?: number | null;
-        mapSlices?: Array<{ name: string; value: number; color: string }>;
-        avgSquadSize?: number | null;
-        avgEnemySize?: number | null;
-    };
-}
 
 const glassCard = 'border border-white/10 rounded-2xl shadow-xl backdrop-blur-md glass-card';
 const ASSET_BASE_PATH_PROBE_PATHS = ['reports/index.json', 'logo.json'] as const;
