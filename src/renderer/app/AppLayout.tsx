@@ -331,6 +331,7 @@ export function AppLayout({ ctx }: { ctx: any }) {
                 {(['dashboard', 'stats', 'history', 'settings'] as const).map((tab) => (
                     <button
                         key={tab}
+                        title={tab.charAt(0).toUpperCase() + tab.slice(1)}
                         onClick={() => handleNavViewChange(tab)}
                         className={`px-3 py-1.5 text-xs font-medium rounded-[4px] transition-colors capitalize ${
                             activeNavView === tab
