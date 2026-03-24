@@ -1065,8 +1065,8 @@ body.web-report #top-players .mvp-gold-icon-badge {
 }
 
 @keyframes dissolve-heartbeat {
-  0%, 100% { opacity: 0.3; transform: scale(0.85); }
-  50% { opacity: 0.8; transform: scale(1.15); }
+  0%, 100% { opacity: 0.4; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.3); }
 }
 
 @keyframes section-arrive {
@@ -1156,11 +1156,15 @@ body.web-report #top-players .mvp-gold-icon-badge {
   position: relative;
 }
 
+@keyframes section-breathe {
+  0%, 100% { opacity: 0.4; filter: saturate(0) brightness(0.65); }
+  50% { opacity: 0.55; filter: saturate(0) brightness(0.75); }
+}
+
 /* Show real sections but styled as skeleton placeholders */
 .stats-section-wrap--unloaded > * {
   pointer-events: none;
-  filter: saturate(0) brightness(0.7);
-  opacity: 0.5;
+  animation: section-breathe 4s ease-in-out infinite;
 }
 
 .stats-section-wrap--unloaded > .stats-dissolve-particle {
@@ -1192,7 +1196,7 @@ body.web-report #top-players .mvp-gold-icon-badge {
   pointer-events: none;
   filter: saturate(0.5) brightness(0.85);
   opacity: 0.7;
-  transition: opacity 1s ease, filter 1s ease;
+  transition: opacity 1.4s ease, filter 1.4s ease;
 }
 
 .stats-section-wrap--materializing::after {
