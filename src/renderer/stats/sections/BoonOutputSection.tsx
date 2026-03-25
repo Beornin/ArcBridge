@@ -297,7 +297,7 @@ export const BoonOutputSection = ({
         ) : (
             <StatsTableLayout
                 expanded={expandedSection === 'boon-output'}
-                sidebarClassName={`px-3 pt-3 pb-2 flex flex-col min-h-0 ${expandedSection === 'boon-output' ? 'h-full flex-1' : 'self-start'}`}
+                sidebarClassName={`pr-3 flex flex-col min-h-0 overflow-y-auto ${expandedSection === 'boon-output' ? 'h-full flex-1' : ''}`}
                 sidebarStyle={undefined}
                 contentClassName={`overflow-hidden ${expandedSection === 'boon-output' ? 'flex flex-col min-h-0' : ''}`}
                 contentStyle={undefined}
@@ -339,19 +339,10 @@ export const BoonOutputSection = ({
                         <StatsTableShell
                             expanded={expandedSection === 'boon-output'}
                             maxHeightClass="max-h-64"
-                            header={
-                                <div className="flex items-center justify-between px-4 py-3" style={{ background: 'var(--bg-hover)' }}>
-                                    <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-                                        <InlineIconLabel name={activeBoonTable.name} iconUrl={activeBoonTable.icon} iconClassName="h-4 w-4" />
-                                    </div>
-                                    <div className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>
-                                        {`${activeBoonCategory.replace('Buffs', '')} • ${activeBoonMetric === 'total' ? 'Total Gen' : activeBoonMetric === 'average' ? 'Gen/Sec' : 'Uptime'}`}
-                                    </div>
-                                </div>
-                            }
+                            header={null}
                             columns={
                                 <>
-                                    <div className="flex flex-wrap items-center justify-start gap-2 px-4 py-2" style={{ background: 'var(--bg-hover)' }}>
+                                    <div className="flex flex-wrap items-center justify-start gap-2 px-4 py-2">
                                         <PillToggleGroup
                                             value={activeBoonCategory}
                                             onChange={setActiveBoonCategory}
@@ -377,7 +368,7 @@ export const BoonOutputSection = ({
                                             inactiveClassName="text-[color:var(--text-secondary)]"
                                         />
                                     </div>
-                                    <div className="grid grid-cols-[0.4fr_1.5fr_1fr_0.9fr] text-xs uppercase tracking-wider px-4 py-2" style={{ color: 'var(--text-secondary)', background: 'var(--bg-hover)' }}>
+                                    <div className="grid grid-cols-[0.4fr_1.5fr_1fr_0.9fr] text-xs uppercase tracking-wider px-4 py-2" style={{ color: 'var(--text-muted)', borderBottom: '1px solid var(--border-subtle)' }}>
                                         <div className="text-center">#</div>
                                         <div>Player</div>
                                         <button

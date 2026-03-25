@@ -313,7 +313,7 @@ export const ConditionsSection = ({
             ) : (
                 <StatsTableLayout
                 expanded={expandedSection === 'conditions-outgoing'}
-                sidebarClassName={`px-3 pt-3 pb-2 flex flex-col min-h-0 ${expandedSection === 'conditions-outgoing' ? 'h-full flex-1' : 'self-start'}`}
+                sidebarClassName={`pr-3 flex flex-col min-h-0 overflow-y-auto ${expandedSection === 'conditions-outgoing' ? 'h-full flex-1' : ''}`}
                 contentClassName={`overflow-hidden ${expandedSection === 'conditions-outgoing' ? 'flex flex-col min-h-0' : ''}`}
                 sidebar={
                     <>
@@ -364,36 +364,22 @@ export const ConditionsSection = ({
                 content={
                     <StatsTableShell
                         expanded={expandedSection === 'conditions-outgoing'}
-                        header={
-                            <div className="flex flex-wrap items-start justify-between gap-3 px-4 py-3 bg-[var(--bg-hover)]">
-                                <div className="text-sm font-semibold text-[color:var(--text-primary)]">
-                                    {activeConditionName === 'all'
-                                        ? 'All Conditions'
-                                        : (
-                                                <InlineIconLabel
-                                                    name={activeConditionName}
-                                                    iconUrl={conditionSummary.find((entry: any) => entry.name === activeConditionName)?.icon}
-                                                    iconClassName="h-5 w-5"
-                                                />
-                                        )}
-                                </div>
-                                <div className="flex flex-col items-end gap-2 text-right ml-auto mt-2">
-                                    <div className="text-xs uppercase tracking-widest text-[color:var(--text-secondary)]">Squad Totals</div>
-                                    <PillToggleGroup
-                                        value={conditionDirection}
-                                        onChange={setConditionDirection}
-                                        options={[
-                                            { value: 'outgoing', label: 'Outgoing' },
-                                            { value: 'incoming', label: 'Incoming' }
-                                        ]}
-                                        activeClassName="bg-amber-500/20 text-amber-200 border border-amber-500/40"
-                                        inactiveClassName="border border-transparent text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]"
-                                    />
-                                </div>
-                            </div>
-                        }
+                        header={null}
                         columns={
-                            <div className={`grid ${conditionGridClass} text-xs uppercase tracking-wider text-[color:var(--text-secondary)] bg-[var(--bg-hover)] px-4 py-2`}>
+                            <>
+                            <div className="flex items-center justify-end gap-2 px-4 py-2">
+                                <PillToggleGroup
+                                    value={conditionDirection}
+                                    onChange={setConditionDirection}
+                                    options={[
+                                        { value: 'outgoing', label: 'Outgoing' },
+                                        { value: 'incoming', label: 'Incoming' }
+                                    ]}
+                                    activeClassName="bg-amber-500/20 text-amber-200 border border-amber-500/40"
+                                    inactiveClassName="border border-transparent text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]"
+                                />
+                            </div>
+                            <div className={`grid ${conditionGridClass} text-xs uppercase tracking-wider text-[color:var(--text-muted)] px-4 py-2`} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                                 <div className="text-center">#</div>
                                 <div>Player</div>
                                 <button
@@ -437,6 +423,7 @@ export const ConditionsSection = ({
                                     </button>
                                 ) : null}
                             </div>
+                            </>
                         }
                         rows={
                             <>

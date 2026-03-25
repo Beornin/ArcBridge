@@ -89,7 +89,7 @@ export const FightCompSection = ({
                     <div className="text-center text-[color:var(--text-muted)] italic py-6">No fight composition data available.</div>
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)] gap-4">
-                        <aside className="fight-comp-fight-nav bg-[var(--bg-card-inner)] border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] px-3 pt-3 pb-2 flex flex-col min-h-0 self-start">
+                        <aside className="fight-comp-fight-nav bg-[var(--bg-card-inner)] border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] pr-3 flex flex-col min-h-0 overflow-y-auto">
                             <div className="text-xs uppercase tracking-widest text-[color:var(--text-secondary)] mb-2">Fight Tabs</div>
                             <div className="space-y-1 pr-1 max-h-[320px] overflow-y-auto">
                                 {fights.map((fight) => {

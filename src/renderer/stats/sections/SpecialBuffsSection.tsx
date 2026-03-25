@@ -345,7 +345,7 @@ export const SpecialBuffsSection = ({
         ) : (
             <StatsTableLayout
                 expanded={expandedSection === 'special-buffs'}
-                sidebarClassName={`px-3 pt-3 pb-2 flex flex-col min-h-0 ${expandedSection === 'special-buffs' ? 'h-full flex-1' : 'self-start'}`}
+                sidebarClassName={`pr-3 flex flex-col min-h-0 overflow-y-auto ${expandedSection === 'special-buffs' ? 'h-full flex-1' : ''}`}
                 sidebarStyle={undefined}
                 contentClassName={`overflow-hidden ${expandedSection === 'special-buffs' ? 'flex flex-col min-h-0' : ''}`}
                 contentStyle={undefined}
@@ -399,18 +399,9 @@ export const SpecialBuffsSection = ({
                             <StatsTableShell
                                 expanded={expandedSection === 'special-buffs'}
                                 maxHeightClass="max-h-64"
-                                header={
-                                    <div className="flex items-center justify-between px-4 py-3" style={{ background: 'var(--bg-hover)' }}>
-                                        <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-                                            <InlineIconLabel name={activeSpecialTable.name} iconUrl={activeSpecialTable.icon} iconClassName="h-4 w-4" />
-                                        </div>
-                                        <div className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>
-                                            {viewMode === 'output' ? 'Output Totals' : 'Received Totals'}
-                                        </div>
-                                    </div>
-                                }
+                                header={null}
                                 columns={
-                                    <div className="grid grid-cols-[0.4fr_1.5fr_0.8fr_0.8fr_0.8fr] text-xs uppercase tracking-wider px-4 py-2" style={{ color: 'var(--text-secondary)', background: 'var(--bg-hover)' }}>
+                                    <div className="grid grid-cols-[0.4fr_1.5fr_0.8fr_0.8fr_0.8fr] text-xs uppercase tracking-wider px-4 py-2" style={{ color: 'var(--text-muted)', borderBottom: '1px solid var(--border-subtle)' }}>
                                         <div className="text-center">#</div>
                                         <div>Player</div>
                                         <button

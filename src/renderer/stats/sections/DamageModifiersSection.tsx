@@ -369,7 +369,7 @@ const CollapsedView = ({
     return (
         <StatsTableLayout
             expanded={isExpanded}
-            sidebarClassName={`px-3 pt-3 pb-2 flex flex-col min-h-0 ${expandedSection === config.sectionId ? 'h-full flex-1' : 'self-start'}`}
+            sidebarClassName={`pr-3 flex flex-col min-h-0 overflow-y-auto ${expandedSection === config.sectionId ? 'h-full flex-1' : ''}`}
             contentClassName={`overflow-hidden ${expandedSection === config.sectionId ? 'flex flex-col min-h-0' : ''}`}
             sidebar={
                 <>
@@ -416,7 +416,7 @@ const CollapsedView = ({
                         <StatsTableShell
                             expanded={isExpanded}
                             header={
-                                <div className="flex items-center gap-3 px-4 py-3 bg-[var(--bg-hover)]">
+                                <div className="flex items-center gap-3 px-4 py-3">
                                     {activeModInfo.icon && (
                                         <img src={activeModInfo.icon} alt="" className="w-6 h-6 object-contain flex-shrink-0" />
                                     )}
@@ -433,7 +433,7 @@ const CollapsedView = ({
                                 </div>
                             }
                             columns={
-                                <div className="grid grid-cols-[0.3fr_1.3fr_1fr_0.8fr_0.8fr_0.8fr] text-xs uppercase tracking-wider text-[color:var(--text-secondary)] bg-[var(--bg-hover)] px-4 py-2">
+                                <div className="grid grid-cols-[0.3fr_1.3fr_1fr_0.8fr_0.8fr_0.8fr] text-xs uppercase tracking-wider px-4 py-2" style={{ color: 'var(--text-muted)', borderBottom: '1px solid var(--border-subtle)' }}>
                                     <div className="text-center">#</div>
                                     <div>Player</div>
                                     <button

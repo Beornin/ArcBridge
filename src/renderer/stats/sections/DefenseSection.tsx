@@ -308,7 +308,7 @@ export const DefenseSection = ({
         ) : (
             <StatsTableLayout
                 expanded={expandedSection === 'defense-detailed'}
-                sidebarClassName={`px-3 pt-3 pb-2 flex flex-col min-h-0 ${expandedSection === 'defense-detailed' ? 'h-full flex-1' : 'self-start'}`}
+                sidebarClassName={`pr-3 flex flex-col min-h-0 overflow-y-auto ${expandedSection === 'defense-detailed' ? 'h-full flex-1' : ''}`}
                 sidebarStyle={undefined}
                 contentClassName={`overflow-hidden ${expandedSection === 'defense-detailed' ? 'flex flex-col min-h-0' : ''}`}
                 contentStyle={undefined}
@@ -374,15 +374,10 @@ export const DefenseSection = ({
                             return (
                                 <StatsTableShell
                                     expanded={expandedSection === 'defense-detailed'}
-                                    header={
-                                        <div className="flex items-center justify-between px-4 py-3" style={{ background: 'var(--bg-hover)' }}>
-                                            <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{metric.label}</div>
-                                            <div className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>Defensive</div>
-                                        </div>
-                                    }
+                                    header={null}
                                     columns={
                                         <>
-                                            <div className={`flex items-center px-4 py-2 ${isMinionDamageMetric(metric.id) ? 'justify-between' : 'justify-end'}`} style={{ background: 'var(--bg-hover)' }}>
+                                            <div className={`flex items-center px-4 py-2 ${isMinionDamageMetric(metric.id) ? 'justify-between' : 'justify-end'}`}>
                                                 {isMinionDamageMetric(metric.id) && (
                                                     <PillToggleGroup
                                                         value={minionDamageMode}
@@ -409,7 +404,7 @@ export const DefenseSection = ({
                                                     />
                                                 </div>
                                             </div>
-                                            <div className="grid grid-cols-[0.4fr_1.5fr_1fr_0.9fr] text-xs uppercase tracking-wider px-4 py-2" style={{ color: 'var(--text-secondary)', background: 'var(--bg-hover)' }}>
+                                            <div className="grid grid-cols-[0.4fr_1.5fr_1fr_0.9fr] text-xs uppercase tracking-wider px-4 py-2" style={{ color: 'var(--text-muted)', borderBottom: '1px solid var(--border-subtle)' }}>
                                                 <div className="text-center">#</div>
                                                 <div>Player</div>
                                                 <button

@@ -337,7 +337,7 @@ export const DamageMitigationSection = ({
             ) : (
                 <StatsTableLayout
                     expanded={expandedSection === 'defense-mitigation'}
-                    sidebarClassName={`px-3 pt-3 pb-2 flex flex-col min-h-0 ${expandedSection === 'defense-mitigation' ? 'h-full flex-1' : 'self-start'}`}
+                    sidebarClassName={`pr-3 flex flex-col min-h-0 overflow-y-auto ${expandedSection === 'defense-mitigation' ? 'h-full flex-1' : ''}`}
                     sidebarStyle={undefined}
                     contentClassName={`overflow-hidden ${expandedSection === 'defense-mitigation' ? 'flex flex-col min-h-0' : ''}`}
                     contentStyle={undefined}
@@ -405,15 +405,10 @@ export const DamageMitigationSection = ({
                                 return (
                                     <StatsTableShell
                                         expanded={expandedSection === 'defense-mitigation'}
-                                        header={
-                                            <div className="flex items-center justify-between px-4 py-3" style={{ background: 'var(--bg-hover)' }}>
-                                                <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{metric.label}</div>
-                                                <div className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>Mitigation</div>
-                                            </div>
-                                        }
+                                        header={null}
                                         columns={
                                             <>
-                                                <div className="px-4 py-2" style={{ background: 'var(--bg-hover)' }}>
+                                                <div className="px-4 py-2">
                                                     <div className="flex items-center gap-2">
                                                         <PillToggleGroup
                                                             value={damageMitigationScope}
@@ -440,7 +435,7 @@ export const DamageMitigationSection = ({
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="grid grid-cols-[0.4fr_1.6fr_1fr_0.9fr] text-xs uppercase tracking-wider px-4 py-2" style={{ color: 'var(--text-secondary)', background: 'var(--bg-hover)' }}>
+                                                <div className="grid grid-cols-[0.4fr_1.6fr_1fr_0.9fr] text-xs uppercase tracking-wider px-4 py-2" style={{ color: 'var(--text-muted)', borderBottom: '1px solid var(--border-subtle)' }}>
                                                     <div className="text-center">#</div>
                                                     <div>Player</div>
                                                     <button

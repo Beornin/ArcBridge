@@ -70,7 +70,7 @@ export const SigilRelicUptimeSection = ({
             ) : (
                 <StatsTableLayout
                     expanded={isExpanded}
-                    sidebarClassName={`px-3 pt-3 pb-2 flex flex-col min-h-0 ${isExpanded ? 'h-full flex-1' : 'self-start'}`}
+                    sidebarClassName={`pr-3 flex flex-col min-h-0 overflow-y-auto ${isExpanded ? 'h-full flex-1' : ''}`}
                     contentClassName={`overflow-hidden ${isExpanded ? 'flex flex-col min-h-0' : ''}`}
                     sidebar={
                         <>
@@ -117,16 +117,9 @@ export const SigilRelicUptimeSection = ({
                                 <StatsTableShell
                                     expanded={isExpanded}
                                     maxHeightClass="max-h-72"
-                                    header={
-                                        <div className="flex items-center justify-between px-4 py-3 bg-[var(--bg-hover)]">
-                                            <div className="text-sm font-semibold text-[color:var(--text-primary)]">
-                                                <InlineIconLabel name={activeSigilRelicTable.name} iconUrl={activeSigilRelicTable.icon} iconClassName="h-4 w-4" />
-                                            </div>
-                                            <div className="text-xs uppercase tracking-widest text-[color:var(--text-secondary)]">Uptime</div>
-                                        </div>
-                                    }
+                                    header={null}
                                     columns={
-                                        <div className="grid grid-cols-[0.4fr_1.6fr_1fr] text-xs uppercase tracking-wider text-[color:var(--text-secondary)] bg-[var(--bg-hover)] px-4 py-2">
+                                        <div className="grid grid-cols-[0.4fr_1.6fr_1fr] text-xs uppercase tracking-wider px-4 py-2" style={{ color: 'var(--text-muted)', borderBottom: '1px solid var(--border-subtle)' }}>
                                             <div className="text-center">#</div>
                                             <div>Player</div>
                                             <button
