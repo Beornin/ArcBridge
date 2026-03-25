@@ -8,7 +8,7 @@ interface GroupDef {
 
 const DEFAULT_PLACEHOLDER_HEIGHT = 400;
 
-export function useLazyGroups(groups: GroupDef[]) {
+export function useLazyGroups(_groups: GroupDef[]) {
     const activeNavGroup = useStatsStore((s) => s.activeNavGroup);
     const groupHeights = useStatsStore((s) => s.groupHeights);
     const setGroupHeight = useStatsStore((s) => s.setGroupHeight);

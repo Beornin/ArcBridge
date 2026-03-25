@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { STATS_TOC_GROUPS } from './hooks/useStatsNavigation';
+import { useStatsStore } from './statsStore';
 
 const EXPAND_DELAY_MS = 180;
 const CLOSE_HOLD_MS = 1250;
@@ -9,13 +10,14 @@ const GROUP_SWITCH_CLOSE_MS = 320;
 const GROUP_SWITCH_CONTENT_HOLD_MS = 520;
 
 export interface StatsNavSidebarProps {
-    onSectionVisibilityChange: (fn: (id: string) => boolean) => void;
+    onSectionVisibilityChange?: (fn: (id: string) => boolean) => void;
     onScrollToSection?: (id: string) => void;
 }
 
 export function StatsNavSidebar({ onSectionVisibilityChange, onScrollToSection }: StatsNavSidebarProps) {
     const [activeNavId, setActiveNavId] = useState('overview');
-    const [activeGroup, setActiveGroup] = useState('overview');
+    const activeGroup = useStatsStore((s) => s.activeNavGroup);
+    const setActiveGroup = useStatsStore((s) => s.setActiveNavGroup);
     const [openGroup, setOpenGroup] = useState('overview');
     const [isExpanded, setIsExpanded] = useState(false);
     const [isSubnavReady, setIsSubnavReady] = useState(false);
@@ -47,6 +49,7 @@ export function StatsNavSidebar({ onSectionVisibilityChange, onScrollToSection }
 
     // Push sectionVisibility up whenever activeGroupDef changes
     useEffect(() => {
+        if (!onSectionVisibilityChange) return;
         const sectionIds = Array.isArray((activeGroupDef as any)?.sectionIds)
             ? (activeGroupDef as any).sectionIds
             : ((activeGroupDef as any)?.items || []).map((item: any) => item.id);
