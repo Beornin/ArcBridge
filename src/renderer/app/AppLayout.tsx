@@ -486,9 +486,9 @@ export function AppLayout({ ctx }: { ctx: any }) {
                                     onMouseLeave={handleStatsNavMouseLeave}
                                 >
                                     <div className="h-full min-h-0 overflow-y-auto py-3 px-3 space-y-1.5">
-                                        <div className="px-2 h-5 flex items-center gap-2 opacity-0 transition-opacity duration-300 group-hover/statsnavpanel:opacity-100">
+                                        <div className="h-5 flex items-center justify-center group-hover/statsnavpanel:justify-start group-hover/statsnavpanel:pl-3 gap-0 group-hover/statsnavpanel:gap-2 transition-all duration-[980ms] ease-[cubic-bezier(0.16,1,0.3,1)]">
                                             <span
-                                                className="w-4 h-4 inline-block shrink-0"
+                                                className="w-3.5 h-3.5 inline-block shrink-0"
                                                 style={{
                                                     backgroundColor: 'var(--brand-primary)',
                                                     WebkitMaskImage: 'url(/svg/AxiBridge.svg)',
@@ -501,7 +501,7 @@ export function AppLayout({ ctx }: { ctx: any }) {
                                                     maskPosition: 'center',
                                                 }}
                                             />
-                                            <span className="text-[10px] uppercase tracking-[0.28em]" style={{ color: 'var(--text-secondary)' }}>Jump to</span>
+                                            <span className="text-[10px] uppercase tracking-[0.28em] opacity-0 transition-opacity duration-300 group-hover/statsnavpanel:opacity-100" style={{ color: 'var(--text-secondary)' }}>Jump to</span>
                                         </div>
                                         {STATS_TOC_GROUPS.map((group) => {
                                             const GroupIcon = group.icon as any;
