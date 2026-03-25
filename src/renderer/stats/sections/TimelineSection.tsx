@@ -21,7 +21,7 @@ export const TimelineSection = ({
             <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Squad vs Enemy Size</h3>
             <div className="ml-auto flex items-center gap-2">
                 <span className="text-[11px] uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>Friendly Count</span>
-                <div className="flex items-center gap-1 rounded-full p-1" style={{ border: '1px solid var(--border-default)', background: 'transparent' }}>
+                <div className="flex items-center gap-1 rounded-sm p-[1px]" style={{ border: '1px solid var(--border-default)', background: 'transparent' }}>
                     {([
                         { value: 'squad', label: 'Squad' },
                         { value: 'squadAllies', label: 'Squad + Allies' }
@@ -30,7 +30,7 @@ export const TimelineSection = ({
                             key={option.value}
                             type="button"
                             onClick={() => setTimelineFriendlyScope(option.value)}
-                            className={`px-2.5 py-1 rounded-full text-[11px] font-semibold transition-colors ${
+                            className={`px-2.5 py-1 rounded-sm text-[11px] font-semibold transition-colors ${
                                 timelineFriendlyScope === option.value
                                     ? 'bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]'
                                     : 'text-[color:var(--text-secondary)] border border-transparent'

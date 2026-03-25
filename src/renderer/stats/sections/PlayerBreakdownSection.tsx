@@ -156,7 +156,7 @@ export const PlayerBreakdownSection = ({
                                                     key={option.id}
                                                     type="button"
                                                     onClick={() => setViewMode(option.id)}
-                                                    className={`px-2.5 py-1 rounded-full text-[11px] font-semibold transition-colors ${
+                                                    className={`px-2.5 py-1 rounded-sm text-[11px] font-semibold transition-colors ${
                                                         isActive ? 'bg-sky-500/30 text-sky-100' : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'
                                                     }`}
                                                 >

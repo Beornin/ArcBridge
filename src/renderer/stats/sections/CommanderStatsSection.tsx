@@ -899,7 +899,7 @@ export const CommanderStatsSection = ({
                                                 <button
                                                     type="button"
                                                     onClick={() => setTimelineMode('incomingDamage')}
-                                                    className={`px-2.5 py-1 rounded-full text-[11px] font-semibold transition-colors ${timelineMode === 'incomingDamage'
+                                                    className={`px-2.5 py-1 rounded-sm text-[11px] font-semibold transition-colors ${timelineMode === 'incomingDamage'
                                                         ? 'bg-red-500/20 text-red-200 border border-red-500/40'
                                                         : 'border border-transparent text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}`}
                                                 >
@@ -908,7 +908,7 @@ export const CommanderStatsSection = ({
                                                 <button
                                                     type="button"
                                                     onClick={() => setTimelineMode('incomingBoons')}
-                                                    className={`px-2.5 py-1 rounded-full text-[11px] font-semibold transition-colors ${timelineMode === 'incomingBoons'
+                                                    className={`px-2.5 py-1 rounded-sm text-[11px] font-semibold transition-colors ${timelineMode === 'incomingBoons'
                                                         ? 'bg-cyan-500/20 text-cyan-200 border border-cyan-500/40'
                                                         : 'border border-transparent text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}`}
                                                 >

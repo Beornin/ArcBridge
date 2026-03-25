@@ -46,7 +46,7 @@ export const TopSkillsSection = ({
                 <div className="ml-auto flex items-center gap-2">
                     <span className="text-[11px] uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>{metricLabel}</span>
                     {showMetricToggle && (
-                        <div className="pill-toggle-group flex items-center gap-1 rounded-full p-1" style={{ border: '1px solid var(--border-default)' }}>
+                        <div className="pill-toggle-group flex items-center gap-1 rounded-sm p-[1px]" style={{ border: '1px solid var(--border-default)' }}>
                             {([
                                 { id: 'damage', label: 'Damage' },
                                 { id: 'downContribution', label: 'Down Contrib' }
@@ -57,7 +57,7 @@ export const TopSkillsSection = ({
                                         key={option.id}
                                         type="button"
                                         onClick={() => onTopSkillsMetricChange?.(option.id)}
-                                        className={`pill-toggle-option px-2.5 py-1 rounded-full text-[11px] font-semibold transition-colors ${
+                                        className={`pill-toggle-option px-2.5 py-1 rounded-sm text-[11px] font-semibold transition-colors ${
                                             isActive
                                                 ? 'pill-toggle-option--active bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]'
                                                 : 'text-[color:var(--text-secondary)]'
