@@ -280,7 +280,7 @@ export const SupportSection = ({
             </div>
         ) : (
             <>
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center justify-end gap-2 mb-2">
                 {activeSupportStat === 'condiCleanse' && (
                     <PillToggleGroup
                         value={cleanseScope}

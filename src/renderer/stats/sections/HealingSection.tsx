@@ -278,7 +278,7 @@ export const HealingSection = ({
                 const activeMetric = HEALING_METRICS.find((entry) => entry.id === activeHealingMetric) || HEALING_METRICS[0];
                 const isResUtility = activeMetric.baseField === 'resUtility';
                 return (
-                    <div className="flex items-center gap-2 mb-2 flex-wrap">
+                    <div className="flex items-center justify-end gap-2 mb-2 flex-wrap">
                         {isResUtility ? (
                             <PillToggleGroup
                                 value={activeResUtilitySkill}
