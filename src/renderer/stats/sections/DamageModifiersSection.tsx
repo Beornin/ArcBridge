@@ -415,6 +415,7 @@ const CollapsedView = ({
                     {effectiveActiveMod && activeModInfo ? (
                         <StatsTableShell
                             expanded={isExpanded}
+                            animationKey={effectiveActiveMod}
                             header={
                                 <div className="flex items-center gap-3 px-3 py-2">
                                     {activeModInfo.icon && (

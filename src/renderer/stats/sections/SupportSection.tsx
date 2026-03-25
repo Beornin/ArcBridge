@@ -379,6 +379,7 @@ export const SupportSection = ({
                             return (
                                 <StatsTableShell
                                     expanded={expandedSection === 'support-detailed'}
+                                    animationKey={activeSupportStat}
                                     header={null}
                                     columns={
                                         <>

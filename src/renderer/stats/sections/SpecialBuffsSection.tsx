@@ -398,6 +398,7 @@ export const SpecialBuffsSection = ({
                         ) : (
                             <StatsTableShell
                                 expanded={expandedSection === 'special-buffs'}
+                                animationKey={activeSpecialTab ?? undefined}
                                 maxHeightClass="max-h-64"
                                 header={null}
                                 columns={

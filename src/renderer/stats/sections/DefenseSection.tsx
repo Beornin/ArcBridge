@@ -402,6 +402,7 @@ export const DefenseSection = ({
                             return (
                                 <StatsTableShell
                                     expanded={expandedSection === 'defense-detailed'}
+                                    animationKey={activeDefenseStat}
                                     header={null}
                                     columns={
                                         <>

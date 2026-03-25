@@ -362,6 +362,7 @@ export const OffenseSection = ({
                             return (
                                 <StatsTableShell
                                     expanded={expandedSection === 'offense-detailed'}
+                                    animationKey={activeOffenseStat}
                                     header={null}
                                     columns={
                                         <>

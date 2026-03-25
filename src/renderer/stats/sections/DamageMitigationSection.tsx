@@ -433,6 +433,7 @@ export const DamageMitigationSection = ({
                                 return (
                                     <StatsTableShell
                                         expanded={expandedSection === 'defense-mitigation'}
+                                        animationKey={activeDamageMitigationStat}
                                         header={null}
                                         columns={
                                             <>

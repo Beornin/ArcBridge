@@ -368,6 +368,7 @@ export const BoonOutputSection = ({
                     ) : (
                         <StatsTableShell
                             expanded={expandedSection === 'boon-output'}
+                            animationKey={activeBoonTab ?? undefined}
                             maxHeightClass="max-h-64"
                             header={null}
                             columns={

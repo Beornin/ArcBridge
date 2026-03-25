@@ -116,6 +116,7 @@ export const SigilRelicUptimeSection = ({
                             ) : (
                                 <StatsTableShell
                                     expanded={isExpanded}
+                                    animationKey={activeSigilRelicTab ?? undefined}
                                     maxHeightClass="max-h-72"
                                     header={null}
                                     columns={

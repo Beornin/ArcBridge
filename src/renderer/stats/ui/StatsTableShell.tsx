@@ -6,6 +6,7 @@ type StatsTableShellProps = {
     rows: ReactNode;
     expanded?: boolean;
     maxHeightClass?: string;
+    animationKey?: string;
 };
 
 export const StatsTableShell = ({
@@ -13,14 +14,18 @@ export const StatsTableShell = ({
     columns,
     rows,
     expanded,
-    maxHeightClass = 'max-h-80'
+    maxHeightClass = 'max-h-80',
+    animationKey
 }: StatsTableShellProps) => (
     <>
         <div className="stats-table-shell__head-stack">
             <div className="stats-table-shell__header">{header}</div>
             <div className="stats-table-shell__columns">{columns}</div>
         </div>
-        <div className={`stats-table-shell__rows ${expanded ? 'flex-1 min-h-0 overflow-y-auto' : `${maxHeightClass} overflow-y-auto`}`}>
+        <div
+            key={animationKey}
+            className={`stats-table-shell__rows stats-content-animate ${expanded ? 'flex-1 min-h-0 overflow-y-auto' : `${maxHeightClass} overflow-y-auto`}`}
+        >
             {rows}
         </div>
     </>
