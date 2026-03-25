@@ -14,7 +14,7 @@ interface UseSettingsOptions {
 
 export function useSettings({ onAutoUpdateSettings }: UseSettingsOptions = {}) {
     const [logDirectory, setLogDirectory] = useState<string | null>(null);
-    const [notificationType, setNotificationType] = useState<'image' | 'image-beta' | 'embed'>('image');
+    const [notificationType, setNotificationType] = useState<'embed'>('embed');
     const [embedStatSettings, setEmbedStatSettings] = useState<IEmbedStatSettings>(DEFAULT_EMBED_STATS);
     const [mvpWeights, setMvpWeights] = useState<IMvpWeights>(DEFAULT_MVP_WEIGHTS);
     const [statsViewSettings, setStatsViewSettings] = useState<IStatsViewSettings>(DEFAULT_STATS_VIEW_SETTINGS);
@@ -53,9 +53,6 @@ export function useSettings({ onAutoUpdateSettings }: UseSettingsOptions = {}) {
             if (settings.logDirectory) {
                 setLogDirectory(settings.logDirectory);
                 window.electronAPI.startWatching(settings.logDirectory);
-            }
-            if (settings.discordNotificationType) {
-                setNotificationType(settings.discordNotificationType);
             }
             if (settings.webhooks) {
                 setWebhooks(settings.webhooks);

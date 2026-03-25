@@ -473,7 +473,6 @@ const processLogFile = async (filePath: string, options?: { retry?: boolean }) =
                 fightName: result.fightName
             });
 
-            const notificationType = store.get('discordNotificationType', 'image');
             const enemySplitSettings = {
                 image: false,
                 embed: false,
@@ -481,16 +480,12 @@ const processLogFile = async (filePath: string, options?: { retry?: boolean }) =
                 ...(store.get('discordEnemySplitSettings') as any || {})
             };
             const globalSplitEnemiesByTeam = Boolean(store.get('discordSplitEnemiesByTeam', false));
-            const splitEnemiesByTeam = globalSplitEnemiesByTeam || (notificationType === 'image-beta'
-                ? Boolean(enemySplitSettings.tiled)
-                : notificationType === 'embed'
-                    ? Boolean(enemySplitSettings.embed)
-                    : Boolean(enemySplitSettings.image));
+            const splitEnemiesByTeam = globalSplitEnemiesByTeam || Boolean(enemySplitSettings.embed);
             const selectedWebhookId = store.get('selectedWebhookId', null);
             const webhookUrl = store.get('discordWebhookUrl', null);
             const shouldSendDiscord = Boolean(selectedWebhookId) && typeof webhookUrl === 'string' && webhookUrl.length > 0;
             if (shouldSendDiscord) {
-                console.log(`[Main] Preparing Discord delivery. Configured type: ${notificationType}`);
+                console.log('[Main] Preparing Discord embed delivery.');
             }
 
             if (shouldSendDiscord) {
@@ -1018,7 +1013,7 @@ if (!gotTheLock) {
 
         // Removed get-logs and save-logs handlers
 
-        const applySettings = (settings: { logDirectory?: string | null, discordWebhookUrl?: string | null, discordNotificationType?: 'image' | 'image-beta' | 'embed', discordEnemySplitSettings?: { image?: boolean; embed?: boolean; tiled?: boolean }, discordSplitEnemiesByTeam?: boolean, webhooks?: any[], selectedWebhookId?: string | null, dpsReportToken?: string | null, closeBehavior?: 'minimize' | 'quit', embedStatSettings?: any, mvpWeights?: any, statsViewSettings?: any, disruptionMethod?: DisruptionMethod, colorPalette?: string, glassSurfaces?: boolean, githubRepoOwner?: string | null, githubRepoName?: string | null, githubBranch?: string | null, githubPagesBaseUrl?: string | null, githubToken?: string | null, githubLogoPath?: string | null, githubFavoriteRepos?: string[], walkthroughSeen?: boolean }) => {
+        const applySettings = (settings: { logDirectory?: string | null, discordWebhookUrl?: string | null, discordNotificationType?: 'embed', discordEnemySplitSettings?: { image?: boolean; embed?: boolean; tiled?: boolean }, discordSplitEnemiesByTeam?: boolean, webhooks?: any[], selectedWebhookId?: string | null, dpsReportToken?: string | null, closeBehavior?: 'minimize' | 'quit', embedStatSettings?: any, mvpWeights?: any, statsViewSettings?: any, disruptionMethod?: DisruptionMethod, colorPalette?: string, glassSurfaces?: boolean, githubRepoOwner?: string | null, githubRepoName?: string | null, githubBranch?: string | null, githubPagesBaseUrl?: string | null, githubToken?: string | null, githubLogoPath?: string | null, githubFavoriteRepos?: string[], walkthroughSeen?: boolean }) => {
             if (settings.logDirectory !== undefined) {
                 store.set('logDirectory', settings.logDirectory);
                 if (settings.logDirectory) watcher?.start(settings.logDirectory);

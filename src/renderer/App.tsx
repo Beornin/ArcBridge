@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { FolderOpen, UploadCloud, FileText, Settings, Image as ImageIcon, Layout, ChevronDown, Grid3X3, Trash2, FilePlus2 } from 'lucide-react';
+import { FolderOpen, UploadCloud, FileText, Settings, ChevronDown, Trash2, FilePlus2 } from 'lucide-react';
 import { ExpandableLogCard } from './ExpandableLogCard';
 import { useStatsAggregationWorker } from './stats/hooks/useStatsAggregationWorker';
 import { AppLayout } from './app/AppLayout';
@@ -538,50 +538,6 @@ function App() {
     const isDev = import.meta.env.DEV;
     const shellClassName = 'app-shell h-screen w-screen text-white overflow-hidden flex flex-col';
 
-    const notificationTypeButtons = (
-        <div className="grid grid-cols-3 gap-1.5">
-            <button
-                onClick={() => {
-                    setNotificationType('image');
-                    handleUpdateSettings({ discordNotificationType: 'image' });
-                }}
-                className="flex items-center justify-center gap-2 h-8 text-[11px] rounded-[4px] border transition-all"
-                style={notificationType === 'image'
-                    ? { background: 'var(--accent-bg)', borderColor: 'var(--accent-border)', color: 'var(--brand-primary)' }
-                    : { background: 'rgba(0,0,0,0.2)', borderColor: 'rgba(255,255,255,0.05)', color: 'var(--text-muted)' }}
-            >
-                <ImageIcon className="w-4 h-4" />
-                <span className="font-medium">Image</span>
-            </button>
-            <button
-                onClick={() => {
-                    setNotificationType('embed');
-                    handleUpdateSettings({ discordNotificationType: 'embed' });
-                }}
-                className="flex items-center justify-center gap-2 h-8 text-[11px] rounded-[4px] border transition-all"
-                style={notificationType === 'embed'
-                    ? { background: 'var(--accent-bg)', borderColor: 'var(--accent-border)', color: 'var(--brand-primary)' }
-                    : { background: 'rgba(0,0,0,0.2)', borderColor: 'rgba(255,255,255,0.05)', color: 'var(--text-muted)' }}
-            >
-                <Layout className="w-4 h-4" />
-                <span className="font-medium">Embed</span>
-            </button>
-            <button
-                onClick={() => {
-                    setNotificationType('image-beta');
-                    handleUpdateSettings({ discordNotificationType: 'image-beta' });
-                }}
-                className="flex items-center justify-center gap-2 h-8 text-[11px] rounded-[4px] border transition-all"
-                style={notificationType === 'image-beta'
-                    ? { background: 'var(--accent-bg)', borderColor: 'var(--accent-border)', color: 'var(--brand-primary)' }
-                    : { background: 'rgba(0,0,0,0.2)', borderColor: 'rgba(255,255,255,0.05)', color: 'var(--text-muted)' }}
-            >
-                <Grid3X3 className="w-4 h-4" />
-                <span className="font-medium">Tiled</span>
-            </button>
-        </div>
-    );
-
     const successCount = statusCounts.success || 0;
     const errorCount = statusCounts.error || 0;
     const uploadingCount = (statusCounts.queued || 0)
@@ -691,12 +647,6 @@ function App() {
                         <Settings className="w-3.5 h-3.5" />
                     </button>
                 </div>
-            </div>
-
-            {/* Notification Type card */}
-            <div className="rounded-[4px] border p-3" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-default)', boxShadow: 'var(--shadow-card)' }}>
-                <div className="text-[10px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-muted)' }}>Notification Type</div>
-                {notificationTypeButtons}
             </div>
 
             {/* Session card */}

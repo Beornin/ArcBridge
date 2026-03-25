@@ -137,7 +137,7 @@ export function registerSettingsHandlers(opts: SettingsHandlerOptions) {
         return {
             logDirectory: store.get('logDirectory', null),
             discordWebhookUrl: store.get('discordWebhookUrl', null),
-            discordNotificationType: store.get('discordNotificationType', 'image'),
+            discordNotificationType: 'embed' as const,
             discordEnemySplitSettings: { ...DEFAULT_DISCORD_ENEMY_SPLIT_SETTINGS, ...(store.get('discordEnemySplitSettings') as any || {}) },
             discordSplitEnemiesByTeam: store.get('discordSplitEnemiesByTeam', (() => {
                 const perType = { ...DEFAULT_DISCORD_ENEMY_SPLIT_SETTINGS, ...(store.get('discordEnemySplitSettings') as any || {}) };
@@ -190,7 +190,7 @@ export function registerSettingsHandlers(opts: SettingsHandlerOptions) {
         const settings = {
             logDirectory: store.get('logDirectory', null),
             discordWebhookUrl: store.get('discordWebhookUrl', null),
-            discordNotificationType: store.get('discordNotificationType', 'image'),
+            discordNotificationType: 'embed' as const,
             discordEnemySplitSettings: { ...DEFAULT_DISCORD_ENEMY_SPLIT_SETTINGS, ...(store.get('discordEnemySplitSettings') as any || {}) },
             discordSplitEnemiesByTeam: store.get('discordSplitEnemiesByTeam', (() => {
                 const perType = { ...DEFAULT_DISCORD_ENEMY_SPLIT_SETTINGS, ...(store.get('discordEnemySplitSettings') as any || {}) };

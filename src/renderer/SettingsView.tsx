@@ -62,8 +62,7 @@ const SETTINGS_SECTIONS = [
 const IMPORT_SETTING_META: Array<{ key: string; label: string; description: string; section: string }> = [
     { key: 'logDirectory', label: 'Log Directory', description: 'Path to the ArcDPS log folder.', section: 'Logs & Uploads' },
     { key: 'dpsReportToken', label: 'dps.report Token', description: 'User token for uploads.', section: 'Logs & Uploads' },
-    { key: 'discordNotificationType', label: 'Discord Post Type', description: 'Image vs embed post format.', section: 'Discord' },
-    { key: 'discordEnemySplitSettings', label: 'Discord Team Split', description: 'Split enemy sections by Team ID.', section: 'Discord' },
+{ key: 'discordEnemySplitSettings', label: 'Discord Team Split', description: 'Split enemy sections by Team ID.', section: 'Discord' },
     { key: 'discordSplitEnemiesByTeam', label: 'Split Enemies by Team', description: 'Single toggle for all Discord notification types.', section: 'Discord' },
     { key: 'discordWebhookUrl', label: 'Discord Webhook URL', description: 'Legacy single webhook URL.', section: 'Discord' },
     { key: 'webhooks', label: 'Webhook List', description: 'Saved webhook entries.', section: 'Discord' },

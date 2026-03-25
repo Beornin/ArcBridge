@@ -19,7 +19,7 @@ interface UseDevDatasetsOptions {
     logs: ILogData[];
     setLogs: Dispatch<SetStateAction<ILogData[]>>;
     setExpandedLogId: Dispatch<SetStateAction<string | null>>;
-    setNotificationType: Dispatch<SetStateAction<'image' | 'image-beta' | 'embed'>>;
+    setNotificationType: Dispatch<SetStateAction<'embed'>>;
     setEmbedStatSettings: Dispatch<SetStateAction<IEmbedStatSettings>>;
     setMvpWeights: Dispatch<SetStateAction<IMvpWeights>>;
     setStatsViewSettings: Dispatch<SetStateAction<IStatsViewSettings>>;
@@ -165,7 +165,7 @@ export function useDevDatasets({
         if (state.expandedLogId === null || typeof state.expandedLogId === 'string') {
             setExpandedLogId(state.expandedLogId ?? null);
         }
-        if (state.notificationType === 'image' || state.notificationType === 'image-beta' || state.notificationType === 'embed') {
+        if (state.notificationType === 'embed') {
             setNotificationType(state.notificationType);
         }
         if (state.embedStatSettings && typeof state.embedStatSettings === 'object') {

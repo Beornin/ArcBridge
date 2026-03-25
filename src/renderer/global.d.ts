@@ -112,7 +112,7 @@ export interface IDevDatasetSnapshot {
     state: {
         view?: 'dashboard' | 'stats' | 'history' | 'settings';
         expandedLogId?: string | null;
-        notificationType?: 'image' | 'image-beta' | 'embed';
+        notificationType?: 'embed';
         embedStatSettings?: Partial<IEmbedStatSettings>;
         mvpWeights?: Partial<IMvpWeights>;
         statsViewSettings?: Partial<IStatsViewSettings>;
@@ -267,7 +267,7 @@ export interface IElectronAPI {
     getSettings: () => Promise<{
         logDirectory: string | null;
         discordWebhookUrl: string | null;
-        discordNotificationType: 'image' | 'image-beta' | 'embed';
+        discordNotificationType: 'embed';
         discordEnemySplitSettings: IDiscordEnemySplitSettings;
         discordSplitEnemiesByTeam?: boolean;
         webhooks: IWebhook[];
@@ -302,7 +302,7 @@ export interface IElectronAPI {
     saveSettings: (settings: {
         logDirectory?: string | null;
         discordWebhookUrl?: string | null;
-        discordNotificationType?: 'image' | 'image-beta' | 'embed';
+        discordNotificationType?: 'embed';
         discordEnemySplitSettings?: IDiscordEnemySplitSettings;
         discordSplitEnemiesByTeam?: boolean;
         webhooks?: IWebhook[];
