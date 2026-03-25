@@ -758,7 +758,7 @@ body:not(.web-report) .modal-pane .dense-table.fight-breakdown-dense .dense-tabl
 
 /* Content transition when switching metric tabs (keyed via animationKey) */
 .stats-content-animate {
-    animation: stats-content-enter 250ms ease-out;
+    animation: stats-content-enter 350ms ease-out;
 }
 
 @keyframes stats-content-enter {

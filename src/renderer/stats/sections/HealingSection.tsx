@@ -375,7 +375,7 @@ export const HealingSection = ({
                             return (
                                 <StatsTableShell
                                     expanded={expandedSection === 'healing-stats'}
-                                    animationKey={activeHealingMetric}
+                                    animationKey={`${activeHealingMetric}-${healingCategory}`}
                                     header={null}
                                     columns={
                                         <>

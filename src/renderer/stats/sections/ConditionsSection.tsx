@@ -379,7 +379,7 @@ export const ConditionsSection = ({
                 content={
                     <StatsTableShell
                         expanded={expandedSection === 'conditions-outgoing'}
-                        animationKey={activeConditionName}
+                        animationKey={`${activeConditionName}-${conditionDirection}`}
                         header={null}
                         columns={
                             <>
