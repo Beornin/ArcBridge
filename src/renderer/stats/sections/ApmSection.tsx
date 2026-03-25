@@ -112,8 +112,8 @@ export const ApmSection = ({
                         : 'Upload or highlight logs with rotation data to enable the APM table.'}
                 </div>
             ) : (
-                <div className={`grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-4 ${expandedSection === 'apm-stats' ? 'flex-1 min-h-0 h-full' : ''}`}>
-                    <div className={`px-3 pt-3 pb-2 flex flex-col min-h-0 ${expandedSection === 'apm-stats' ? 'h-full' : ''}`}>
+                <div className={`grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-0 ${expandedSection === 'apm-stats' ? 'flex-1 min-h-0 h-full' : ''}`}>
+                    <div className={`pr-3 flex flex-col min-h-0 ${expandedSection === 'apm-stats' ? 'h-full' : ''}`} style={{ borderRight: '1px solid var(--border-subtle)' }}>
                         <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>Elite Specs</div>
                         <div className="mb-2">
                             <input
@@ -230,7 +230,7 @@ export const ApmSection = ({
                             ))}
                         </div>
                     </div>
-                    <div className={`rounded-[var(--radius-md)] overflow-hidden stats-share-table ${expandedSection === 'apm-stats' ? 'flex flex-col min-h-0' : ''}`}>
+                    <div className={`pl-3 overflow-hidden stats-share-table ${expandedSection === 'apm-stats' ? 'flex flex-col min-h-0' : ''}`}>
                         {!activeApmSpecTable ? (
                             <div className="rounded-[var(--radius-md)] border border-dashed border-[color:var(--border-hover)] px-4 py-6 text-center text-xs text-[color:var(--text-secondary)]">
                                 Select an elite spec to view APM details
@@ -446,7 +446,7 @@ export const ApmSection = ({
                                 ) : (
                                     <>
                                         <div className="stats-table-shell__head-stack">
-                                            <div className="flex items-center justify-between gap-2 px-4 py-3" style={{ background: 'var(--bg-hover)' }}>
+                                            <div className="flex items-center justify-between gap-2 px-4 py-3">
                                                 <div className="min-w-0 text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
                                                     <div className="flex items-center gap-2 min-w-0">
                                                         {renderProfessionIcon(activeApmSpecTable.profession, undefined, 'w-4 h-4')}

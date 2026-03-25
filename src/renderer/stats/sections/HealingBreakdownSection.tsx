@@ -163,8 +163,8 @@ export const HealingBreakdownSection = ({
                     })()}
                 </div>
             ) : (
-                <div className="grid gap-4 lg:grid-cols-[280px_1fr] items-stretch">
-                    <div className="px-3 pt-3 pb-2 flex flex-col min-h-0 h-[420px]">
+                <div className="grid lg:grid-cols-[220px_1fr] gap-0">
+                    <div className="pr-3 flex flex-col min-h-0 overflow-y-auto" style={{ borderRight: '1px solid var(--border-subtle)' }}>
                         <div className="text-xs uppercase tracking-widest text-[color:var(--text-secondary)] mb-3">
                             Squad Players
                         </div>
@@ -190,9 +190,9 @@ export const HealingBreakdownSection = ({
                                             key={player.key}
                                             type="button"
                                             onClick={() => setSelectedPlayerKey(player.key)}
-                                            className={`w-full text-left px-3 py-2 rounded-[var(--radius-md)] text-xs font-semibold border transition-colors ${isSelected
-                                                ? 'bg-emerald-500/20 text-emerald-200 border-emerald-500/40'
-                                                : 'bg-[var(--bg-hover)] text-[color:var(--text-secondary)] border-[color:var(--border-default)] hover:text-[color:var(--text-primary)]'
+                                            className={`w-full text-left px-3 py-2 rounded-[var(--radius-md)] text-xs transition-colors ${isSelected
+                                                ? 'bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] font-semibold'
+                                                : 'text-[color:var(--text-secondary)] hover:bg-[var(--bg-hover)]'
                                                 }`}
                                         >
                                             <div className="flex items-center justify-between gap-2">
@@ -202,7 +202,7 @@ export const HealingBreakdownSection = ({
                                                         <div className="truncate min-w-0">{player.displayName}</div>
                                                     </div>
                                                 </div>
-                                                <div className="text-xs font-mono text-emerald-200 shrink-0">
+                                                <div className="text-xs font-mono shrink-0" style={{ color: 'var(--text-secondary)' }}>
                                                     {formatWithCommas(getPlayerTotal(player), 0)}
                                                 </div>
                                             </div>
@@ -213,7 +213,7 @@ export const HealingBreakdownSection = ({
                         </div>
                     </div>
 
-                    <div className="space-y-2 flex flex-col h-[420px]">
+                    <div className="pl-3 flex flex-col">
                         <div className="overflow-hidden stats-share-table flex-1 min-h-0 flex flex-col">
                             {!selectedPlayer ? (
                                 <div className="h-full flex items-center justify-center text-xs text-[color:var(--text-muted)]">
@@ -226,7 +226,7 @@ export const HealingBreakdownSection = ({
                                 return (
                                     <div className="h-full flex flex-col">
                                         <div className="stats-table-shell__head-stack">
-                                            <div className="flex items-center justify-between px-4 py-3 bg-[var(--bg-hover)]">
+                                            <div className="flex items-center justify-between px-4 py-3">
                                                 <div className="min-w-0 text-sm text-[color:var(--text-primary)]">
                                                     <div className="flex items-center gap-2 min-w-0">
                                                         <span className="text-[10px] uppercase tracking-[0.25em] text-[color:var(--text-secondary)] shrink-0">Skill Totals /</span>

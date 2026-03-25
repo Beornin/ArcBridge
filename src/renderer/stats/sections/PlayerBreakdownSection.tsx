@@ -139,7 +139,7 @@ export const PlayerBreakdownSection = ({
                     </div>
                 ) : (
                     <div className={`grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-0 ${expandedSection === 'player-breakdown' ? 'flex-1 min-h-0 h-full' : ''}`}>
-                        <div className={`pr-3 flex flex-col min-h-0 overflow-y-auto ${expandedSection === 'player-breakdown' ? 'h-full' : ''}" style={{ borderRight: '1px solid var(--border-subtle)' }}`}>
+                        <div className={`pr-3 flex flex-col min-h-0 overflow-y-auto ${expandedSection === 'player-breakdown' ? 'h-full' : ''}`} style={{ borderRight: '1px solid var(--border-subtle)' }}>
                             <div className="flex items-center justify-between gap-2 mb-3">
                                 <div className="text-xs uppercase tracking-widest text-[color:var(--text-secondary)]">
                                     {(isExpanded ? 'Squad Classes' : viewMode === 'player' ? 'Squad Players' : 'Squad Classes')}
@@ -196,10 +196,10 @@ export const PlayerBreakdownSection = ({
                                                         : (expandedPlayerKey === player.key ? null : player.key)
                                                 );
                                             }}
-                                            className={`w-full text-left px-3 py-1.5 rounded-[var(--radius-md)] text-xs font-semibold transition-colors ${
+                                            className={`w-full text-left px-3 py-1.5 rounded-[var(--radius-md)] text-xs transition-colors ${
                                                 activePlayerKey === player.key
-                                                    ? 'bg-sky-500/20 text-sky-200'
-                                                    : 'hover:bg-[var(--bg-hover)] hover:text-[color:var(--text-primary)]'
+                                                    ? 'bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] font-semibold'
+                                                    : 'hover:bg-[var(--bg-hover)]'
                                             }`}
                                             style={activePlayerKey !== player.key ? { color: 'var(--text-secondary)' } : undefined}
                                             title={player.displayName}
@@ -243,8 +243,8 @@ export const PlayerBreakdownSection = ({
                                                                 }}
                                                                 className={`w-full min-h-[30px] text-left px-2 py-1.5 rounded-md text-[11px] transition-colors ${
                                                                     activePlayerKey === player.key && activePlayerSkillId === skill.id
-                                                                        ? 'bg-sky-500/20 text-sky-200 font-semibold'
-                                                                        : 'hover:bg-[var(--bg-hover)] hover:text-[color:var(--text-primary)]'
+                                                                        ? 'bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] font-semibold'
+                                                                        : 'hover:bg-[var(--bg-hover)]'
                                                                 }`}
                                                                 style={!(activePlayerKey === player.key && activePlayerSkillId === skill.id) ? { color: 'var(--text-secondary)' } : undefined}
                                                                 title={skill.name}
@@ -285,10 +285,10 @@ export const PlayerBreakdownSection = ({
                                                             : (expandedClassKey === bucket.profession ? null : bucket.profession)
                                                     );
                                                 }}
-                                                className={`w-full text-left px-3 py-1.5 rounded-[var(--radius-md)] text-xs font-semibold transition-colors ${
+                                                className={`w-full text-left px-3 py-1.5 rounded-[var(--radius-md)] text-xs transition-colors ${
                                                     activeClassKey === bucket.profession
-                                                        ? 'bg-sky-500/20 text-sky-200'
-                                                        : 'hover:bg-[var(--bg-hover)] hover:text-[color:var(--text-primary)]'
+                                                        ? 'bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] font-semibold'
+                                                        : 'hover:bg-[var(--bg-hover)]'
                                                 }`}
                                                 style={activeClassKey !== bucket.profession ? { color: 'var(--text-secondary)' } : undefined}
                                             >
@@ -331,8 +331,8 @@ export const PlayerBreakdownSection = ({
                                                                 }}
                                                                 className={`w-full min-h-[30px] text-left px-2 py-1.5 rounded-md text-[11px] transition-colors ${
                                                                     activeClassKey === bucket.profession && activeClassSkillId === skill.id
-                                                                        ? 'bg-sky-500/20 text-sky-200 font-semibold'
-                                                                        : 'hover:bg-[var(--bg-hover)] hover:text-[color:var(--text-primary)]'
+                                                                        ? 'bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] font-semibold'
+                                                                        : 'hover:bg-[var(--bg-hover)]'
                                                                 }`}
                                                                 style={!(activeClassKey === bucket.profession && activeClassSkillId === skill.id) ? { color: 'var(--text-secondary)' } : undefined}
                                                                 title={skill.name}
@@ -549,7 +549,7 @@ export const PlayerBreakdownSection = ({
                                         })() : (
                                             <>
                                                 <div className="stats-table-shell__head-stack">
-                                                    <div className="flex flex-wrap items-start justify-between gap-3 px-4 py-3 bg-[var(--bg-hover)]">
+                                                    <div className="flex flex-wrap items-start justify-between gap-3 px-4 py-3">
                                                         <div className="flex flex-col gap-2 min-w-0">
                                                             <div className="flex items-center gap-2 min-w-0 flex-wrap">
                                                                 {renderProfessionIcon(activePlayerBreakdown.profession, activePlayerBreakdown.professionList, 'w-4 h-4')}
@@ -789,7 +789,7 @@ export const PlayerBreakdownSection = ({
                                         })() : (
                                             <>
                                                 <div className="stats-table-shell__head-stack">
-                                                    <div className="flex flex-wrap items-start justify-between gap-3 px-4 py-3 bg-[var(--bg-hover)]">
+                                                    <div className="flex flex-wrap items-start justify-between gap-3 px-4 py-3">
                                                         <div className="flex flex-col gap-2 min-w-0">
                                                             <div className="flex items-center gap-2 min-w-0 flex-wrap">
                                                                 {renderProfessionIcon(activeClassBreakdown.profession, undefined, 'w-4 h-4')}
