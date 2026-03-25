@@ -86,16 +86,43 @@ export const DefenseSection = ({
             <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>
                 Defense Detailed
             </h3>
-            <button
-                type="button"
-                onClick={() => (expandedSection === 'defense-detailed' ? closeExpandedSection() : openExpandedSection('defense-detailed'))}
-                className="ml-auto flex items-center justify-center w-[26px] h-[26px]"
-                style={{ background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}
-                aria-label={expandedSection === 'defense-detailed' ? 'Close Defense Detailed' : 'Expand Defense Detailed'}
-                title={expandedSection === 'defense-detailed' ? 'Close' : 'Expand'}
-            >
-                {expandedSection === 'defense-detailed' ? <X className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} /> : <Maximize2 className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} />}
-            </button>
+            <div className="ml-auto flex items-center gap-2">
+                {!isExpanded && isMinionDamageMetric(activeDefenseStat) && (
+                    <PillToggleGroup
+                        value={minionDamageMode}
+                        onChange={(value) => setMinionDamageMode(value as 'combined' | 'separate')}
+                        options={[
+                            { value: 'combined', label: 'Combined' },
+                            { value: 'separate', label: 'Separate' }
+                        ]}
+                        activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
+                        inactiveClassName="text-[color:var(--text-secondary)]"
+                    />
+                )}
+                {!isExpanded && (
+                    <PillToggleGroup
+                        value={defenseViewMode}
+                        onChange={setDefenseViewMode}
+                        options={[
+                            { value: 'total', label: 'Total' },
+                            { value: 'per1s', label: 'Stat/1s' },
+                            { value: 'per60s', label: 'Stat/60s' }
+                        ]}
+                        activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
+                        inactiveClassName="text-[color:var(--text-secondary)]"
+                    />
+                )}
+                <button
+                    type="button"
+                    onClick={() => (expandedSection === 'defense-detailed' ? closeExpandedSection() : openExpandedSection('defense-detailed'))}
+                    className="flex items-center justify-center w-[26px] h-[26px]"
+                    style={{ background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}
+                    aria-label={expandedSection === 'defense-detailed' ? 'Close Defense Detailed' : 'Expand Defense Detailed'}
+                    title={expandedSection === 'defense-detailed' ? 'Close' : 'Expand'}
+                >
+                    {expandedSection === 'defense-detailed' ? <X className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} /> : <Maximize2 className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} />}
+                </button>
+            </div>
         </div>
         {stats.defensePlayers.length === 0 ? (
             <div className="text-center italic py-8" style={{ color: 'var(--text-muted)' }}>No defensive stats available</div>
@@ -307,31 +334,6 @@ export const DefenseSection = ({
             </div>
         ) : (
             <>
-            <div className="flex items-center justify-end gap-2 mb-2">
-                {isMinionDamageMetric(activeDefenseStat) && (
-                    <PillToggleGroup
-                        value={minionDamageMode}
-                        onChange={(value) => setMinionDamageMode(value as 'combined' | 'separate')}
-                        options={[
-                            { value: 'combined', label: 'Combined' },
-                            { value: 'separate', label: 'Separate' }
-                        ]}
-                        activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
-                        inactiveClassName="text-[color:var(--text-secondary)]"
-                    />
-                )}
-                <PillToggleGroup
-                    value={defenseViewMode}
-                    onChange={setDefenseViewMode}
-                    options={[
-                        { value: 'total', label: 'Total' },
-                        { value: 'per1s', label: 'Stat/1s' },
-                        { value: 'per60s', label: 'Stat/60s' }
-                    ]}
-                    activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
-                    inactiveClassName="text-[color:var(--text-secondary)]"
-                />
-            </div>
             <StatsTableLayout
                 expanded={expandedSection === 'defense-detailed'}
                 sidebarClassName={`pr-3 flex flex-col min-h-0 overflow-y-auto ${expandedSection === 'defense-detailed' ? 'h-full flex-1' : ''}`}

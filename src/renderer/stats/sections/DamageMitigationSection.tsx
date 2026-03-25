@@ -81,21 +81,48 @@ export const DamageMitigationSection = ({
             }`}
             style={expandedSection === 'defense-mitigation' ? { background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-card)' } : undefined}
         >
-            <div className="flex items-center justify-end gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-3.5">
                 <span className="flex shrink-0" style={{ color: 'var(--section-mitigation)' }}><Gw2DamMitIcon className="w-4 h-4" /></span>
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>
                     Defense Mitigation
                 </h3>
-                <button
-                    type="button"
-                    onClick={() => (expandedSection === 'defense-mitigation' ? closeExpandedSection() : openExpandedSection('defense-mitigation'))}
-                    className="ml-auto flex items-center justify-center w-[26px] h-[26px]"
-                    style={{ background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}
-                    aria-label={expandedSection === 'defense-mitigation' ? 'Close Damage Mitigation' : 'Expand Damage Mitigation'}
-                    title={expandedSection === 'defense-mitigation' ? 'Close' : 'Expand'}
-                >
-                    {expandedSection === 'defense-mitigation' ? <X className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} /> : <Maximize2 className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} />}
-                </button>
+                <div className="ml-auto flex items-center gap-2">
+                    {!isExpanded && (
+                        <PillToggleGroup
+                            value={damageMitigationScope}
+                            onChange={setDamageMitigationScope}
+                            options={[
+                                { value: 'player', label: 'Player' },
+                                { value: 'minions', label: 'Minions' }
+                            ]}
+                            activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
+                            inactiveClassName="text-[color:var(--text-secondary)]"
+                        />
+                    )}
+                    {!isExpanded && (
+                        <PillToggleGroup
+                            value={damageMitigationViewMode}
+                            onChange={setDamageMitigationViewMode}
+                            options={[
+                                { value: 'total', label: 'Total' },
+                                { value: 'per1s', label: 'Stat/1s' },
+                                { value: 'per60s', label: 'Stat/60s' }
+                            ]}
+                            activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
+                            inactiveClassName="text-[color:var(--text-secondary)]"
+                        />
+                    )}
+                    <button
+                        type="button"
+                        onClick={() => (expandedSection === 'defense-mitigation' ? closeExpandedSection() : openExpandedSection('defense-mitigation'))}
+                        className="flex items-center justify-center w-[26px] h-[26px]"
+                        style={{ background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}
+                        aria-label={expandedSection === 'defense-mitigation' ? 'Close Damage Mitigation' : 'Expand Damage Mitigation'}
+                        title={expandedSection === 'defense-mitigation' ? 'Close' : 'Expand'}
+                    >
+                        {expandedSection === 'defense-mitigation' ? <X className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} /> : <Maximize2 className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} />}
+                    </button>
+                </div>
             </div>
             <div className="text-xs text-amber-200/80 italic mb-3">
                 Damage mitigation is an estimate based on enemy skill damage averages and avoidance events (block/evade/miss/invuln/interrupted). Use it for relative comparison rather than exact prevention totals.
@@ -336,29 +363,6 @@ export const DamageMitigationSection = ({
                 </div>
             ) : (
                 <>
-                <div className="flex items-center justify-end gap-2 mb-2">
-                    <PillToggleGroup
-                        value={damageMitigationScope}
-                        onChange={setDamageMitigationScope}
-                        options={[
-                            { value: 'player', label: 'Player' },
-                            { value: 'minions', label: 'Minions' }
-                        ]}
-                        activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
-                        inactiveClassName="text-[color:var(--text-secondary)]"
-                    />
-                    <PillToggleGroup
-                        value={damageMitigationViewMode}
-                        onChange={setDamageMitigationViewMode}
-                        options={[
-                            { value: 'total', label: 'Total' },
-                            { value: 'per1s', label: 'Stat/1s' },
-                            { value: 'per60s', label: 'Stat/60s' }
-                        ]}
-                        activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
-                        inactiveClassName="text-[color:var(--text-secondary)]"
-                    />
-                </div>
                 <StatsTableLayout
                     expanded={expandedSection === 'defense-mitigation'}
                     sidebarClassName={`pr-3 flex flex-col min-h-0 overflow-y-auto ${expandedSection === 'defense-mitigation' ? 'h-full flex-1' : ''}`}

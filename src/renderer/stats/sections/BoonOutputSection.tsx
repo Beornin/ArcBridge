@@ -82,16 +82,45 @@ export const BoonOutputSection = ({
             <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>
                 Boon Output
             </h3>
-            <button
-                type="button"
-                onClick={() => (expandedSection === 'boon-output' ? closeExpandedSection() : openExpandedSection('boon-output'))}
-                className="ml-auto flex items-center justify-center w-[26px] h-[26px]"
-                style={{ background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}
-                aria-label={expandedSection === 'boon-output' ? 'Close Boon Output' : 'Expand Boon Output'}
-                title={expandedSection === 'boon-output' ? 'Close' : 'Expand'}
-            >
-                {expandedSection === 'boon-output' ? <X className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} /> : <Maximize2 className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} />}
-            </button>
+            <div className="ml-auto flex items-center gap-2">
+                {!isExpanded && (
+                    <PillToggleGroup
+                        value={activeBoonCategory}
+                        onChange={setActiveBoonCategory}
+                        options={[
+                            { value: 'selfBuffs', label: 'Self' },
+                            { value: 'groupBuffs', label: 'Group' },
+                            { value: 'squadBuffs', label: 'Squad' },
+                            { value: 'totalBuffs', label: 'Total' }
+                        ]}
+                        activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
+                        inactiveClassName="text-[color:var(--text-secondary)]"
+                    />
+                )}
+                {!isExpanded && (
+                    <PillToggleGroup
+                        value={activeBoonMetric}
+                        onChange={setActiveBoonMetric}
+                        options={[
+                            { value: 'total', label: 'Total Gen' },
+                            { value: 'average', label: 'Gen/Sec' },
+                            { value: 'uptime', label: 'Uptime' }
+                        ]}
+                        activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
+                        inactiveClassName="text-[color:var(--text-secondary)]"
+                    />
+                )}
+                <button
+                    type="button"
+                    onClick={() => (expandedSection === 'boon-output' ? closeExpandedSection() : openExpandedSection('boon-output'))}
+                    className="flex items-center justify-center w-[26px] h-[26px]"
+                    style={{ background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}
+                    aria-label={expandedSection === 'boon-output' ? 'Close Boon Output' : 'Expand Boon Output'}
+                    title={expandedSection === 'boon-output' ? 'Close' : 'Expand'}
+                >
+                    {expandedSection === 'boon-output' ? <X className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} /> : <Maximize2 className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} />}
+                </button>
+            </div>
         </div>
         {stats.boonTables.length === 0 ? (
             <div className="text-center italic py-8" style={{ color: 'var(--text-muted)' }}>No boon data available</div>
@@ -296,31 +325,6 @@ export const BoonOutputSection = ({
             </div>
         ) : (
             <>
-            <div className="flex items-center justify-end gap-2 mb-2 flex-wrap">
-                <PillToggleGroup
-                    value={activeBoonCategory}
-                    onChange={setActiveBoonCategory}
-                    options={[
-                        { value: 'selfBuffs', label: 'Self' },
-                        { value: 'groupBuffs', label: 'Group' },
-                        { value: 'squadBuffs', label: 'Squad' },
-                        { value: 'totalBuffs', label: 'Total' }
-                    ]}
-                    activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
-                    inactiveClassName="text-[color:var(--text-secondary)]"
-                />
-                <PillToggleGroup
-                    value={activeBoonMetric}
-                    onChange={setActiveBoonMetric}
-                    options={[
-                        { value: 'total', label: 'Total Gen' },
-                        { value: 'average', label: 'Gen/Sec' },
-                        { value: 'uptime', label: 'Uptime' }
-                    ]}
-                    activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
-                    inactiveClassName="text-[color:var(--text-secondary)]"
-                />
-            </div>
             <StatsTableLayout
                 expanded={expandedSection === 'boon-output'}
                 sidebarClassName={`pr-3 flex flex-col min-h-0 overflow-y-auto ${expandedSection === 'boon-output' ? 'h-full flex-1' : ''}`}

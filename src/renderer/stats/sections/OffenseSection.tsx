@@ -61,16 +61,31 @@ export const OffenseSection = ({
             <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>
                 Offense Detailed
             </h3>
-            <button
-                type="button"
-                onClick={() => (expandedSection === 'offense-detailed' ? closeExpandedSection() : openExpandedSection('offense-detailed'))}
-                className="ml-auto flex items-center justify-center w-[26px] h-[26px]"
-                style={{ background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}
-                aria-label={expandedSection === 'offense-detailed' ? 'Close Offense Detailed' : 'Expand Offense Detailed'}
-                title={expandedSection === 'offense-detailed' ? 'Close' : 'Expand'}
-            >
-                {expandedSection === 'offense-detailed' ? <X className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} /> : <Maximize2 className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} />}
-            </button>
+            <div className="ml-auto flex items-center gap-2">
+                {!isExpanded && (
+                    <PillToggleGroup
+                        value={offenseViewMode}
+                        onChange={setOffenseViewMode}
+                        options={[
+                            { value: 'total', label: 'Total' },
+                            { value: 'per1s', label: 'Stat/1s' },
+                            { value: 'per60s', label: 'Stat/60s' }
+                        ]}
+                        activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
+                        inactiveClassName="text-[color:var(--text-secondary)]"
+                    />
+                )}
+                <button
+                    type="button"
+                    onClick={() => (expandedSection === 'offense-detailed' ? closeExpandedSection() : openExpandedSection('offense-detailed'))}
+                    className="flex items-center justify-center w-[26px] h-[26px]"
+                    style={{ background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}
+                    aria-label={expandedSection === 'offense-detailed' ? 'Close Offense Detailed' : 'Expand Offense Detailed'}
+                    title={expandedSection === 'offense-detailed' ? 'Close' : 'Expand'}
+                >
+                    {expandedSection === 'offense-detailed' ? <X className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} /> : <Maximize2 className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} />}
+                </button>
+            </div>
         </div>
         {stats.offensePlayers.length === 0 ? (
             <div className="text-center italic py-8" style={{ color: 'var(--text-muted)' }}>No offensive stats available</div>
@@ -265,19 +280,6 @@ export const OffenseSection = ({
             </div>
         ) : (
             <>
-            <div className="flex items-center justify-end gap-2 mb-2">
-                <PillToggleGroup
-                    value={offenseViewMode}
-                    onChange={setOffenseViewMode}
-                    options={[
-                        { value: 'total', label: 'Total' },
-                        { value: 'per1s', label: 'Stat/1s' },
-                        { value: 'per60s', label: 'Stat/60s' }
-                    ]}
-                    activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
-                    inactiveClassName="text-[color:var(--text-secondary)]"
-                />
-            </div>
             <StatsTableLayout
                 expanded={expandedSection === 'offense-detailed'}
                 sidebarClassName={`pr-3 flex flex-col min-h-0 overflow-y-auto ${expandedSection === 'offense-detailed' ? 'h-full flex-1' : ''}`}

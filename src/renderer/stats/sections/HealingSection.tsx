@@ -60,16 +60,53 @@ export const HealingSection = ({
             <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>
                 Healing Stats
             </h3>
-            <button
-                type="button"
-                onClick={() => (expandedSection === 'healing-stats' ? closeExpandedSection() : openExpandedSection('healing-stats'))}
-                className="ml-auto flex items-center justify-center w-[26px] h-[26px]"
-                style={{ background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}
-                aria-label={expandedSection === 'healing-stats' ? 'Close Healing Stats' : 'Expand Healing Stats'}
-                title={expandedSection === 'healing-stats' ? 'Close' : 'Expand'}
-            >
-                {expandedSection === 'healing-stats' ? <X className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} /> : <Maximize2 className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} />}
-            </button>
+            <div className="ml-auto flex items-center gap-2">
+                {!isExpanded && (() => {
+                    const activeMetric = HEALING_METRICS.find((entry) => entry.id === activeHealingMetric) || HEALING_METRICS[0];
+                    const isResUtility = activeMetric.baseField === 'resUtility';
+                    return isResUtility ? (
+                        <PillToggleGroup
+                            value={activeResUtilitySkill}
+                            onChange={setActiveResUtilitySkill}
+                            options={[
+                                { value: 'all', label: 'All' },
+                                ...(skillUsageData.resUtilitySkills || []).map((skill) => ({
+                                    value: skill.id,
+                                    label: skill.name
+                                }))
+                            ]}
+                            className="flex-wrap"
+                            activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
+                            inactiveClassName="text-[color:var(--text-secondary)]"
+                        />
+                    ) : (
+                        <PillToggleGroup
+                            value={healingCategory}
+                            onChange={setHealingCategory}
+                            options={[
+                                { value: 'total', label: 'Total' },
+                                { value: 'squad', label: 'Squad' },
+                                { value: 'group', label: 'Group' },
+                                { value: 'self', label: 'Self' },
+                                { value: 'offSquad', label: 'OffSquad' }
+                            ]}
+                            className="flex-wrap"
+                            activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
+                            inactiveClassName="text-[color:var(--text-secondary)]"
+                        />
+                    );
+                })()}
+                <button
+                    type="button"
+                    onClick={() => (expandedSection === 'healing-stats' ? closeExpandedSection() : openExpandedSection('healing-stats'))}
+                    className="flex items-center justify-center w-[26px] h-[26px]"
+                    style={{ background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}
+                    aria-label={expandedSection === 'healing-stats' ? 'Close Healing Stats' : 'Expand Healing Stats'}
+                    title={expandedSection === 'healing-stats' ? 'Close' : 'Expand'}
+                >
+                    {expandedSection === 'healing-stats' ? <X className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} /> : <Maximize2 className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} />}
+                </button>
+            </div>
         </div>
         {stats.healingPlayers.length === 0 ? (
             <div className="text-center italic py-8" style={{ color: 'var(--text-muted)' }}>No healing stats available</div>
@@ -274,45 +311,6 @@ export const HealingSection = ({
             </div>
         ) : (
             <>
-            {(() => {
-                const activeMetric = HEALING_METRICS.find((entry) => entry.id === activeHealingMetric) || HEALING_METRICS[0];
-                const isResUtility = activeMetric.baseField === 'resUtility';
-                return (
-                    <div className="flex items-center justify-end gap-2 mb-2 flex-wrap">
-                        {isResUtility ? (
-                            <PillToggleGroup
-                                value={activeResUtilitySkill}
-                                onChange={setActiveResUtilitySkill}
-                                options={[
-                                    { value: 'all', label: 'All' },
-                                    ...(skillUsageData.resUtilitySkills || []).map((skill) => ({
-                                        value: skill.id,
-                                        label: skill.name
-                                    }))
-                                ]}
-                                className="flex-wrap"
-                                activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
-                                inactiveClassName="text-[color:var(--text-secondary)]"
-                            />
-                        ) : (
-                            <PillToggleGroup
-                                value={healingCategory}
-                                onChange={setHealingCategory}
-                                options={[
-                                    { value: 'total', label: 'Total' },
-                                    { value: 'squad', label: 'Squad' },
-                                    { value: 'group', label: 'Group' },
-                                    { value: 'self', label: 'Self' },
-                                    { value: 'offSquad', label: 'OffSquad' }
-                                ]}
-                                className="flex-wrap"
-                                activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
-                                inactiveClassName="text-[color:var(--text-secondary)]"
-                            />
-                        )}
-                    </div>
-                );
-            })()}
             <StatsTableLayout
                 expanded={expandedSection === 'healing-stats'}
                 sidebarClassName={`pr-3 flex flex-col min-h-0 overflow-y-auto ${expandedSection === 'healing-stats' ? 'h-full flex-1' : ''}`}

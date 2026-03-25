@@ -94,16 +94,30 @@ export const ConditionsSection = ({
         <div className="flex items-center gap-2 mb-3.5">
             <Skull className="w-4 h-4 shrink-0" style={{ color: 'var(--section-offense)' }} />
             <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Conditions</h3>
-            <button
-                type="button"
-                onClick={() => (expandedSection === 'conditions-outgoing' ? closeExpandedSection() : openExpandedSection('conditions-outgoing'))}
-                className="ml-auto flex items-center justify-center w-[26px] h-[26px]"
-                style={{ background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}
-                aria-label={expandedSection === 'conditions-outgoing' ? 'Close Outgoing Conditions' : 'Expand Outgoing Conditions'}
-                title={expandedSection === 'conditions-outgoing' ? 'Close' : 'Expand'}
-            >
-                {expandedSection === 'conditions-outgoing' ? <X className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} /> : <Maximize2 className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} />}
-            </button>
+            <div className="ml-auto flex items-center gap-2">
+                {!isExpanded && (
+                    <PillToggleGroup
+                        value={conditionDirection}
+                        onChange={setConditionDirection}
+                        options={[
+                            { value: 'outgoing', label: 'Outgoing' },
+                            { value: 'incoming', label: 'Incoming' }
+                        ]}
+                        activeClassName="bg-amber-500/20 text-amber-200 border border-amber-500/40"
+                        inactiveClassName="border border-transparent text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]"
+                    />
+                )}
+                <button
+                    type="button"
+                    onClick={() => (expandedSection === 'conditions-outgoing' ? closeExpandedSection() : openExpandedSection('conditions-outgoing'))}
+                    className="flex items-center justify-center w-[26px] h-[26px]"
+                    style={{ background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}
+                    aria-label={expandedSection === 'conditions-outgoing' ? 'Close Outgoing Conditions' : 'Expand Outgoing Conditions'}
+                    title={expandedSection === 'conditions-outgoing' ? 'Close' : 'Expand'}
+                >
+                    {expandedSection === 'conditions-outgoing' ? <X className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} /> : <Maximize2 className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} />}
+                </button>
+            </div>
         </div>
         {conditionSummary && conditionSummary.length > 0 ? (
             isExpanded ? (
@@ -312,18 +326,6 @@ export const ConditionsSection = ({
                 </div>
             ) : (
                 <>
-                <div className="flex items-center justify-end gap-2 mb-2">
-                    <PillToggleGroup
-                        value={conditionDirection}
-                        onChange={setConditionDirection}
-                        options={[
-                            { value: 'outgoing', label: 'Outgoing' },
-                            { value: 'incoming', label: 'Incoming' }
-                        ]}
-                        activeClassName="bg-amber-500/20 text-amber-200 border border-amber-500/40"
-                        inactiveClassName="border border-transparent text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]"
-                    />
-                </div>
                 <StatsTableLayout
                 expanded={expandedSection === 'conditions-outgoing'}
                 sidebarClassName={`pr-3 flex flex-col min-h-0 overflow-y-auto ${expandedSection === 'conditions-outgoing' ? 'h-full flex-1' : ''}`}
