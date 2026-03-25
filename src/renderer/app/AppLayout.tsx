@@ -307,8 +307,9 @@ export function AppLayout({ ctx }: { ctx: any }) {
                 {statsViewMounted && (
                     <div className="flex flex-1 min-h-0 relative" style={view !== 'stats' ? { display: 'none' } : undefined}>
                         <div key={`stats-fade-${view}`} className="stats-view-fade-in" />
-                        <div key={`stats-enter-${view}`} className="flex-1 min-h-0 flex gap-3 stats-view-entering">
+                        <div className="flex-1 min-h-0 flex gap-3">
                             <StatsNavSidebar onSectionVisibilityChange={handleStatsSectionVisibilityChange} />
+                            <div key={`stats-enter-${view}`} className="flex-1 min-h-0 flex flex-col stats-view-entering">
                             <StatsErrorBoundary>
                                 <StatsView
                                     logs={logsForStats}
@@ -329,6 +330,7 @@ export function AppLayout({ ctx }: { ctx: any }) {
                                     sectionVisibility={statsSectionVisibility || undefined}
                                 />
                             </StatsErrorBoundary>
+                            </div>
                         </div>
                     </div>
                 )}
