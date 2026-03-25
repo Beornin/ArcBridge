@@ -758,12 +758,12 @@ body:not(.web-report) .modal-pane .dense-table.fight-breakdown-dense .dense-tabl
 
 /* Group container entrance animation on nav switch */
 .stats-group-enter {
-    animation: stats-group-enter 300ms ease-out;
+    animation: stats-group-enter 200ms ease-out;
 }
 
 @keyframes stats-group-enter {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 /* Content transition when switching metric tabs (keyed via animationKey) */
