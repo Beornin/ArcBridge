@@ -58,7 +58,7 @@ const LeaderCard = ({ icon: Icon, title, data, color, unit = '', onClick, active
                 <div className="text-xs text-[color:var(--text-secondary)] truncate">{data?.count ? `${data.count} logs` : '-'}</div>
             </div>
             {active && (
-                <div className="mt-3 stats-share-exclude">
+                <div className="mt-3">
                     <div className="text-xs font-semibold text-[color:var(--text-primary)] mb-2">{title}</div>
                     {rows?.length ? (
                         <div className="max-h-56 overflow-y-auto pr-1 space-y-1">

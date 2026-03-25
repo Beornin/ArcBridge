@@ -18,29 +18,18 @@ interface ExpandableLogCardProps {
     onRemove?: () => void;
     layoutEnabled?: boolean;
     motionEnabled?: boolean;
-    screenshotMode?: boolean;
     embedStatSettings?: IEmbedStatSettings;
     disruptionMethod?: DisruptionMethod;
     useClassIcons?: boolean;
-    screenshotSection?: {
-        type: 'summary' | 'toplists' | 'tile';
-        start?: number;
-        count?: number;
-        showHeader?: boolean;
-        tileKind?: 'summary' | 'incoming' | 'toplist';
-        tileId?: 'squad' | 'enemy' | 'squad-classes' | 'enemy-classes' | 'enemy-team' | 'enemy-team-classes' | 'incoming-attacks' | 'incoming-cc' | 'incoming-strips' | 'incoming-blank';
-        teamId?: number;
-        tileIndex?: number;
-    };
 }
 
 const ExpandableLogCardBase = forwardRef<HTMLDivElement, ExpandableLogCardProps>(
-    ({ log, isExpanded, onToggle, onCancel, onRemove, layoutEnabled = true, motionEnabled = true, screenshotMode, embedStatSettings, disruptionMethod, screenshotSection, useClassIcons }, ref) => {
+    ({ log, isExpanded, onToggle, onCancel, onRemove, layoutEnabled = true, motionEnabled = true, embedStatSettings, disruptionMethod, useClassIcons }, ref) => {
     const { details: cachedDetails } = useLogDetails(
-        (isExpanded || screenshotMode || Boolean(screenshotSection)) ? log.id : undefined
+        isExpanded ? log.id : undefined
     );
     const details = cachedDetails || {};
-    const shouldComputeDetails = isExpanded || screenshotMode || Boolean(screenshotSection);
+    const shouldComputeDetails = isExpanded;
     const allPlayers: Player[] = Array.isArray(details.players) ? details.players : [];
     const allTargets = Array.isArray(details.targets) ? details.targets : [];
     let squadPlayerCount = 0;
@@ -553,7 +542,7 @@ const ExpandableLogCardBase = forwardRef<HTMLDivElement, ExpandableLogCardProps>
     const maxTopRows = clampTopRows(settings.maxTopListRows ?? 5);
     const classDisplay = settings.classDisplay ?? 'off';
     const showClassIcons = classDisplay === 'emoji' && useClassIcons;
-    const alwaysShowDetailedClassInfo = !screenshotMode;
+    const alwaysShowDetailedClassInfo = true;
     // Unified theme always uses the top dashboard layout; compact class names are not needed.
     const useCompactClassNamesInDetails = false;
     const getClassToken = (p: any) => {
@@ -823,16 +812,7 @@ const ExpandableLogCardBase = forwardRef<HTMLDivElement, ExpandableLogCardProps>
     ];
 
     const visibleTopLists = topListItems.filter(item => item.enabled);
-    const showSummarySection = settings.showSquadSummary || settings.showEnemySummary;
-    const showIncomingSection = settings.showIncomingStats;
     const showClassSummary = settings.showClassSummary;
-    const showHeader = screenshotSection?.showHeader ?? true;
-    const topListSliceStart = screenshotSection?.start || 0;
-    const topListSliceCount = screenshotSection?.count || visibleTopLists.length;
-    const topListSlice = visibleTopLists.slice(topListSliceStart, topListSliceStart + topListSliceCount);
-    const tileTopList = screenshotSection?.tileKind === 'toplist' && screenshotSection.tileIndex !== undefined
-        ? visibleTopLists[screenshotSection.tileIndex]
-        : undefined;
     const enemySummaryColumnCount = splitEnemiesByTeam && enemyTeamSummaryStats.length > 0
         ? enemyTeamSummaryStats.length
         : (settings.showEnemySummary ? 1 : 0);
@@ -841,254 +821,6 @@ const ExpandableLogCardBase = forwardRef<HTMLDivElement, ExpandableLogCardProps>
         ? enemyTeamClassSummaries.length
         : (settings.showEnemySummary ? 1 : 0);
     const classColumnCount = Math.max(1, (settings.showSquadSummary ? 1 : 0) + enemyClassColumnCount);
-
-    const renderSquadSummary = (compact?: boolean, fullHeight?: boolean) => (
-        <div className={`rounded-[4px] ${compact ? 'p-3' : 'p-4'} shadow-lg ${fullHeight ? 'h-full' : ''}`} style={{ background: 'var(--bg-card-inner)', border: '1px solid var(--border-default)' }}>
-            <h5 className={`font-black text-green-400 mb-3 uppercase tracking-widest ${fullHeight ? 'text-base' : 'text-xs'} border-b border-green-400/20 pb-2`}>Squad Summary</h5>
-            <div className={`font-mono text-gray-200 space-y-2 text-left ${fullHeight ? 'text-lg' : 'text-sm'}`}>
-                <div className="flex justify-between"><span>Count:</span> <span className="text-white font-bold">{squadDisplayCount} {nonSquadDisplayCount > 0 ? `(+${nonSquadDisplayCount})` : ''}</span></div>
-                <div className="flex justify-between"><span>DMG:</span> <span className="text-white font-bold">{squadDmg.toLocaleString()}</span></div>
-                <div className="flex justify-between"><span>DPS:</span> <span className="text-white font-bold">{Math.round(squadDps).toLocaleString()}</span></div>
-                <div className="flex justify-between"><span>Downs:</span> <span className="text-white font-bold">{squadDowns}</span></div>
-                <div className="flex justify-between"><span>Deaths:</span> <span className="text-white font-bold">{squadDeaths}</span></div>
-            </div>
-        </div>
-    );
-
-    const renderEnemySummary = (compact?: boolean, fullHeight?: boolean) => (
-        <div className={`rounded-[4px] ${compact ? 'p-3' : 'p-4'} shadow-lg ${fullHeight ? 'h-full' : ''}`} style={{ background: 'var(--bg-card-inner)', border: '1px solid var(--border-default)' }}>
-            <h5 className={`font-black text-red-400 mb-3 uppercase tracking-widest ${fullHeight ? 'text-base' : 'text-xs'} border-b border-red-400/20 pb-2`}>Enemy Summary</h5>
-            <div className={`font-mono text-gray-200 space-y-2 text-left ${fullHeight ? 'text-lg' : 'text-sm'}`}>
-                <div className="flex justify-between"><span>Count:</span> <span className="text-white font-bold">{enemyCount}</span></div>
-                <div className="flex justify-between"><span>DMG:</span> <span className="text-white font-bold">{totalDmgTaken.toLocaleString()}</span></div>
-                <div className="flex justify-between"><span>DPS:</span> <span className="text-white font-bold">{enemyDps.toLocaleString()}</span></div>
-                <div className="flex justify-between"><span>Downs:</span> <span className="text-white font-bold">{enemyDowns}</span></div>
-                <div className="flex justify-between"><span>Kills:</span> <span className="text-white font-bold">{enemyDeaths}</span></div>
-            </div>
-        </div>
-    );
-
-    const renderTeamSummary = (team: TeamSummaryStats, compact?: boolean, fullHeight?: boolean) => (
-        <div className={`rounded-[4px] ${compact ? 'p-3' : 'p-4'} shadow-lg ${fullHeight ? 'h-full' : ''}`} style={{ background: 'var(--bg-card-inner)', border: '1px solid var(--border-default)' }}>
-            <h5 className={`font-black text-red-400 mb-3 uppercase tracking-widest ${fullHeight ? 'text-base' : 'text-xs'} border-b border-red-400/20 pb-2`}>{`Team ${team.teamId}`}</h5>
-            <div className={`font-mono text-gray-200 space-y-2 text-left ${fullHeight ? 'text-lg' : 'text-sm'}`}>
-                <div className="flex justify-between"><span>Count:</span> <span className="text-white font-bold">{team.count}</span></div>
-                <div className="flex justify-between"><span>DMG:</span> <span className="text-white font-bold">{team.dmg.toLocaleString()}</span></div>
-                <div className="flex justify-between"><span>DPS:</span> <span className="text-white font-bold">{team.dps.toLocaleString()}</span></div>
-                <div className="flex justify-between"><span>Downs:</span> <span className="text-white font-bold">{team.downs}</span></div>
-                <div className="flex justify-between"><span>Kills:</span> <span className="text-white font-bold">{team.kills}</span></div>
-            </div>
-        </div>
-    );
-
-    const renderIncoming = (type: 'attacks' | 'cc' | 'strips', fullHeight?: boolean) => {
-        const label = type === 'attacks' ? 'Incoming Attack' : type === 'cc' ? 'Incoming CC' : 'Incoming Strips';
-        const miss = type === 'attacks' ? totalMiss : type === 'cc' ? totalCCMissed : totalStripsMissed;
-        const block = type === 'attacks' ? totalBlock : type === 'cc' ? totalCCBlocked : totalStripsBlocked;
-        const total = type === 'attacks' ? totalMiss + totalBlock + totalEvade + totalDodge : type === 'cc' ? totalCCTaken : totalStripsTaken;
-        const color = type === 'attacks' ? 'text-blue-400' : type === 'cc' ? 'text-purple-400' : 'text-orange-400';
-        return (
-            <div className={`rounded-[4px] p-4 ${fullHeight ? 'h-full overflow-hidden' : ''}`} style={{ background: 'var(--bg-card-inner)', border: '1px solid var(--border-default)' }}>
-                <h5 className={`font-bold ${color} mb-1 uppercase tracking-tight leading-none ${fullHeight ? 'text-[9px]' : 'text-[10px]'}`}>{label}</h5>
-                <div className={`font-mono text-gray-300 text-left space-y-0.5 ${fullHeight ? 'text-[9px]' : 'text-xs'}`}>
-                    <div className="flex justify-between text-gray-500"><span>Miss:</span> <span>{miss}</span></div>
-                    <div className="flex justify-between text-gray-500"><span>Block:</span> <span>{block}</span></div>
-                    <div className="flex justify-between text-white font-bold pt-0.5 border-t border-white/5"><span>Total:</span> <span>{total}</span></div>
-                </div>
-            </div>
-        );
-    };
-
-    if (screenshotMode) {
-        if (screenshotSection?.type === 'tile') {
-            if (screenshotSection.tileKind === 'toplist' && !tileTopList) {
-                return null;
-            }
-            const tileContent = (() => {
-                if (screenshotSection.tileKind === 'summary') {
-                    if (screenshotSection.tileId === 'squad') return renderSquadSummary(true, true);
-                    if (screenshotSection.tileId === 'enemy') return renderEnemySummary(true, true);
-                    if (screenshotSection.tileId === 'enemy-team' && typeof screenshotSection.teamId === 'number') {
-                        const team = enemyTeamSummaryStats.find((entry) => entry.teamId === screenshotSection.teamId);
-                        return team ? renderTeamSummary(team, true, true) : null;
-                    }
-                    if (screenshotSection.tileId === 'squad-classes' && showClassSummary) return renderClassSummary('Squad Classes', squadClassCounts, 'text-green-400', true, true);
-                    if (screenshotSection.tileId === 'enemy-classes' && showClassSummary) return renderClassSummary('Enemy Classes', enemyClassCounts, 'text-red-400', true, true);
-                    if (screenshotSection.tileId === 'enemy-team-classes' && showClassSummary && typeof screenshotSection.teamId === 'number') {
-                        const team = enemyTeamClassSummaries.find((entry) => entry.teamId === screenshotSection.teamId);
-                        return team ? renderClassSummary(`Team ${team.teamId} Classes`, team.classes, 'text-red-400', true, true) : null;
-                    }
-                }
-                if (screenshotSection.tileKind === 'incoming') {
-                    if (screenshotSection.tileId === 'incoming-attacks') return renderIncoming('attacks', true);
-                    if (screenshotSection.tileId === 'incoming-cc') return renderIncoming('cc', true);
-                    if (screenshotSection.tileId === 'incoming-strips') return renderIncoming('strips', true);
-                    if (screenshotSection.tileId === 'incoming-blank') {
-                        return (
-                            <div
-                                className="w-full h-full bg-transparent flex items-center justify-center p-0 m-0"
-                            >
-                                &nbsp;
-                            </div>
-                        );
-                    }
-                }
-                if (screenshotSection.tileKind === 'toplist' && tileTopList) {
-                    return (
-                        <TopList
-                            title={tileTopList.title}
-                            sortFn={tileTopList.sortFn}
-                            valFn={tileTopList.valFn}
-                            fmtVal={tileTopList.fmtVal}
-                            fullHeight={true}
-                        />
-                    );
-                }
-                return null;
-            })();
-            if (!tileContent) return null;
-            const tileSizeClass = screenshotSection.tileKind === 'incoming'
-                ? 'w-[180px] h-[140px]'
-                : 'w-[360px] h-[360px]';
-            return (
-                <div
-                    data-screenshot-id={log.id || log.filePath}
-                    data-screenshot-group={screenshotSection.tileKind === 'incoming' ? 'incoming' : 'default'}
-                    data-screenshot-transparent={screenshotSection.tileId === 'incoming-blank' ? 'true' : undefined}
-                    className={`bg-transparent ${tileSizeClass} p-0 m-0`}
-                    style={{
-                        width: screenshotSection.tileKind === 'incoming' ? '180px' : '360px',
-                        height: screenshotSection.tileKind === 'incoming' ? '140px' : '360px',
-                        minWidth: screenshotSection.tileKind === 'incoming' ? '180px' : '360px',
-                        minHeight: screenshotSection.tileKind === 'incoming' ? '140px' : '360px'
-                    }}
-                >
-                    <div className="w-full h-full">
-                        {tileContent}
-                    </div>
-                </div>
-            );
-        }
-        if (screenshotSection?.type === 'summary' && !showSummarySection && !showIncomingSection) {
-            return null;
-        }
-        if (screenshotSection?.type === 'toplists' && topListSlice.length === 0) {
-            return null;
-        }
-        return (
-            <div
-                id={!screenshotSection ? `log-screenshot-${log.id || log.filePath}` : undefined}
-                data-screenshot-id={screenshotSection ? (log.id || log.filePath) : undefined}
-                className="rounded-[4px] overflow-hidden w-[1200px] p-0 m-0"
-                style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-card)' }}
-            >
-                {showHeader && (
-                    <div className="p-6 flex items-center gap-6" style={{ borderBottom: '1px solid var(--border-default)' }}>
-                        <div className={`w-14 h-14 rounded-[4px] flex items-center justify-center border-2 ${hasError ? 'bg-red-500/20 border-red-500/30 text-red-400' : 'bg-green-500/20 border-green-500/30 text-green-400'}`}>
-                            <span className="font-bold text-lg uppercase">{hasError ? 'ERR' : 'LOG'}</span>
-                        </div>
-                        <div className="flex-1 min-w-0 text-left">
-                            <div className="flex justify-between items-start">
-                                <h4 className="text-2xl font-black text-white truncate leading-tight">{details.fightName || log.fightName || log.filePath.split(/[\\\/]/).pop()}</h4>
-                                {encounterDurationLabel && <span className="text-lg font-mono font-bold" style={{ color: 'var(--brand-primary)' }}>{encounterDurationLabel}</span>}
-                            </div>
-                            <div className="flex items-center gap-4 mt-2 text-sm font-medium text-gray-400">
-                                <span className="bg-white/5 px-2 py-0.5 rounded-md border border-white/10">{playerCount} Players {nonSquadDisplayCount > 0 ? `(${squadDisplayCount} Squad + ${nonSquadDisplayCount} Others)` : ''}</span>
-                                <span className="text-gray-600">•</span>
-                                <span>{formattedTime()}</span>
-                            </div>
-                        </div>
-                    </div>
-                )}
-                <div className="p-6 space-y-6" style={{ background: 'var(--bg-card-inner)' }}>
-                    {(screenshotSection?.type !== 'toplists' && showSummarySection) && (
-                        <div
-                            className="grid gap-4 text-base items-start"
-                            style={{ gridTemplateColumns: `repeat(${summaryColumnCount}, minmax(0, 1fr))` }}
-                        >
-                            {settings.showSquadSummary && (
-                                <div className="rounded-[4px] p-4 shadow-lg" style={{ background: 'var(--bg-card-inner)', border: '1px solid var(--border-default)' }}>
-                                    <h5 className="font-black text-green-400 mb-3 uppercase tracking-widest text-xs border-b border-green-400/20 pb-2">Squad Summary</h5>
-                                    <div className="font-mono text-gray-200 space-y-2 text-left text-sm">
-                                        <div className="flex justify-between"><span>Count:</span> <span className="text-white font-bold">{squadDisplayCount} {nonSquadDisplayCount > 0 ? `(+${nonSquadDisplayCount})` : ''}</span></div>
-                                        <div className="flex justify-between"><span>DMG:</span> <span className="text-white font-bold">{squadDmg.toLocaleString()}</span></div>
-                                        <div className="flex justify-between"><span>DPS:</span> <span className="text-white font-bold">{Math.round(squadDps).toLocaleString()}</span></div>
-                                        <div className="flex justify-between"><span>Downs:</span> <span className="text-white font-bold">{squadDowns}</span></div>
-                                        <div className="flex justify-between"><span>Deaths:</span> <span className="text-white font-bold">{squadDeaths}</span></div>
-                                    </div>
-                                </div>
-                            )}
-                            {settings.showEnemySummary && (!splitEnemiesByTeam || enemyTeamSummaryStats.length === 0) && renderEnemySummary()}
-                            {settings.showEnemySummary && splitEnemiesByTeam && enemyTeamSummaryStats.map((team) => (
-                                <div key={`team-summary-${team.teamId}`}>
-                                    {renderTeamSummary(team)}
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                    {(screenshotSection?.type !== 'toplists' && showSummarySection && showClassSummary) && (
-                        <div
-                            className="grid gap-4 text-base items-start"
-                            style={{ gridTemplateColumns: `repeat(${classColumnCount}, minmax(0, 1fr))` }}
-                        >
-                            {settings.showSquadSummary && (
-                                renderClassSummary('Squad Classes', squadClassCounts, 'text-green-400')
-                            )}
-                            {settings.showEnemySummary && (!splitEnemiesByTeam || enemyTeamClassSummaries.length === 0) && (
-                                renderClassSummary('Enemy Classes', enemyClassCounts, 'text-red-400')
-                            )}
-                            {settings.showEnemySummary && splitEnemiesByTeam && enemyTeamClassSummaries.map((team) => (
-                                <div key={`team-classes-${team.teamId}`}>
-                                    {renderClassSummary(`Team ${team.teamId} Classes`, team.classes, 'text-red-400')}
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                    {(screenshotSection?.type !== 'toplists' && showIncomingSection) && (
-                        <div className="grid grid-cols-3 gap-3">
-                            <div className="rounded-[4px] p-4" style={{ background: 'var(--bg-card-inner)', border: '1px solid var(--border-default)' }}>
-                                <h5 className="font-bold text-blue-400 mb-2 uppercase tracking-tight text-[10px]">Incoming Attack</h5>
-                                <div className="font-mono text-xs text-gray-300 text-left space-y-1">
-                                    <div className="flex justify-between text-gray-500"><span>Miss:</span> <span className="text-blue-200">{totalMiss}</span></div>
-                                    <div className="flex justify-between text-gray-500"><span>Block:</span> <span className="text-blue-200">{totalBlock}</span></div>
-                                    <div className="flex justify-between text-white font-bold pt-1 border-t border-white/5"><span>Total:</span> <span>{totalMiss + totalBlock + totalEvade + totalDodge}</span></div>
-                                </div>
-                            </div>
-                            <div className="rounded-[4px] p-4" style={{ background: 'var(--bg-card-inner)', border: '1px solid var(--border-default)' }}>
-                                <h5 className="font-bold text-purple-400 mb-2 uppercase tracking-tight text-[10px]">Incoming CC</h5>
-                                <div className="font-mono text-xs text-gray-300 text-left space-y-1">
-                                    <div className="flex justify-between text-gray-500"><span>Miss:</span> <span className="text-purple-200">{totalCCMissed}</span></div>
-                                    <div className="flex justify-between text-gray-500"><span>Block:</span> <span className="text-purple-200">{totalCCBlocked}</span></div>
-                                    <div className="flex justify-between text-white font-bold pt-1 border-t border-white/5"><span>Total:</span> <span>{totalCCTaken}</span></div>
-                                </div>
-                            </div>
-                            <div className="rounded-[4px] p-4" style={{ background: 'var(--bg-card-inner)', border: '1px solid var(--border-default)' }}>
-                                <h5 className="font-bold text-orange-400 mb-2 uppercase tracking-tight text-[10px]">Incoming Strips</h5>
-                                <div className="font-mono text-xs text-gray-300 text-left space-y-1">
-                                    <div className="flex justify-between text-gray-500"><span>Miss:</span> <span className="text-orange-200">{totalStripsMissed}</span></div>
-                                    <div className="flex justify-between text-gray-500"><span>Block:</span> <span className="text-orange-200">{totalStripsBlocked}</span></div>
-                                    <div className="flex justify-between text-white font-bold pt-1 border-t border-white/5"><span>Total:</span> <span>{totalStripsTaken}</span></div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                    {(screenshotSection?.type !== 'summary' && topListSlice.length > 0) && (
-                        <div className="grid grid-cols-2 gap-4">
-                            {topListSlice.map(item => (
-                                <TopList
-                                    key={item.title}
-                                    title={item.title}
-                                    sortFn={item.sortFn}
-                                    valFn={item.valFn}
-                                    fmtVal={item.fmtVal}
-                                />
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </div>
-        );
-    }
 
     const Container: any = motionEnabled ? motion.div : 'div';
     const motionProps = motionEnabled
@@ -1352,10 +1084,8 @@ const areEqual = (prev: ExpandableLogCardProps, next: ExpandableLogCardProps) =>
         && prev.isExpanded === next.isExpanded
         && prev.layoutEnabled === next.layoutEnabled
         && prev.motionEnabled === next.motionEnabled
-        && prev.screenshotMode === next.screenshotMode
         && prev.embedStatSettings === next.embedStatSettings
         && prev.disruptionMethod === next.disruptionMethod
-        && prev.screenshotSection === next.screenshotSection
         && prev.useClassIcons === next.useClassIcons;
 };
 

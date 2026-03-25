@@ -77,7 +77,7 @@ export const SkillUsageSection = ({
     const hasAllPlayersSelected = allPlayerKeys.length > 0 && allPlayerKeys.every((key) => selectedPlayers.includes(key));
     return (
     <div
-        className={`stats-share-exclude ${expandedSection === 'skill-usage' ? `fixed inset-0 z-50 overflow-y-auto h-screen modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}` : ''}`}
+        className={`${expandedSection === 'skill-usage' ? `fixed inset-0 z-50 overflow-y-auto h-screen modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}` : ''}`}
         style={expandedSection === 'skill-usage' ? { background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-card)' } : undefined}
     >
         <div className="flex items-center gap-2 mb-3.5">

@@ -48,7 +48,7 @@ export const SigilRelicUptimeSection = ({
 
     return (
         <div
-            className={`stats-share-exclude ${expandedSection === 'sigil-relic-uptime' ? `fixed inset-0 z-50 overflow-y-auto h-screen modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}` : ''}`}
+            className={`${expandedSection === 'sigil-relic-uptime' ? `fixed inset-0 z-50 overflow-y-auto h-screen modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}` : ''}`}
             style={expandedSection === 'sigil-relic-uptime' ? { background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-card)' } : undefined}
         >
             <div className="flex items-center gap-2 mb-3.5">

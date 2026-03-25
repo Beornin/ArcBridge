@@ -88,7 +88,7 @@ export const ConditionsSection = ({
 
     return (
     <div
-        className={`stats-share-exclude ${expandedSection === 'conditions-outgoing' ? `fixed inset-0 z-50 overflow-y-auto h-screen modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}` : ''}`}
+        className={`${expandedSection === 'conditions-outgoing' ? `fixed inset-0 z-50 overflow-y-auto h-screen modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}` : ''}`}
         style={expandedSection === 'conditions-outgoing' ? { background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-card)' } : undefined}
     >
         <div className="flex items-center gap-2 mb-3.5">

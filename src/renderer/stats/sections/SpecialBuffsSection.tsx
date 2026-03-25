@@ -108,7 +108,7 @@ export const SpecialBuffsSection = ({
 
     return (
         <div
-            className={`stats-share-exclude ${expandedSection === 'special-buffs'
+            className={`${expandedSection === 'special-buffs'
                 ? `fixed inset-0 z-50 overflow-y-auto h-screen modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}`
                 : ''
             }`}

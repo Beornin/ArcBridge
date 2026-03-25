@@ -116,7 +116,7 @@ export const PlayerBreakdownSection = ({
 
     return (
         <div
-            className={`stats-share-exclude ${expandedSection === 'player-breakdown' ? `fixed inset-0 z-50 overflow-y-auto h-screen modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}` : ''}`}
+            className={`${expandedSection === 'player-breakdown' ? `fixed inset-0 z-50 overflow-y-auto h-screen modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}` : ''}`}
             style={expandedSection === 'player-breakdown' ? { background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-card)' } : undefined}
         >
             <div className="flex items-center gap-2 mb-3.5">

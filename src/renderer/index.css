@@ -136,8 +136,7 @@ body.glass-surfaces .app-modal-card {
 }
 
 /* Dropdowns and tooltips in glass mode */
-body.glass-surfaces .app-dropdown,
-body.glass-surfaces .stats-share-tooltip {
+body.glass-surfaces .app-dropdown {
   background: rgba(15, 18, 25, 0.85) !important;
   backdrop-filter: blur(16px);
 }
@@ -876,38 +875,6 @@ body:not(.web-report) .modal-pane .dense-table.fight-breakdown-dense .dense-tabl
     mask-repeat: no-repeat;
 }
 
-.stats-share-mode * {
-    scrollbar-width: none;
-}
-
-.stats-share-mode *::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-    display: none;
-}
-
-.stats-share-mode table {
-    display: none;
-}
-
-.stats-share-mode #top-skills-outgoing .max-h-80,
-.stats-share-mode #top-skills-incoming .max-h-80 {
-    max-height: none;
-    overflow: visible;
-}
-
-.stats-share-mode #top-skills-outgoing .max-h-80>div:nth-child(n + 6),
-.stats-share-mode #top-skills-incoming .max-h-80>div:nth-child(n + 6) {
-    display: none;
-}
-
-.stats-share-mode .stats-share-table {
-    display: none;
-}
-
-.stats-share-mode #player-breakdown {
-    display: none;
-}
 
 /* Stats dashboard nav entries should stay flat across themes. */
 .stats-nav-entry,
