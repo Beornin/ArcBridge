@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useStatsStore, hashAggregationSettings } from './stats/statsStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FolderOpen, UploadCloud, FileText, Settings, ChevronDown, Trash2, FilePlus2 } from 'lucide-react';
 import { ExpandableLogCard } from './ExpandableLogCard';
@@ -229,6 +230,22 @@ function App() {
         detailsCache: detailsCacheRef.current
     });
     const { stats: computedStats, skillUsageData: computedSkillUsageData } = aggregationResult;
+
+    // Sync aggregation results to zustand store
+    useEffect(() => {
+        const store = useStatsStore.getState();
+        if (computedStats) {
+            const inputsHash = hashAggregationSettings(mvpWeights, statsViewSettings, disruptionMethod)
+                + ':logs' + logsForStats.length;
+            store.setResult(
+                { stats: computedStats, skillUsageData: computedSkillUsageData },
+                inputsHash,
+            );
+        }
+        store.setProgress(aggregationProgress);
+        store.setDiagnostics(aggregationDiagnostics ?? null);
+    }, [computedStats, computedSkillUsageData, aggregationProgress, aggregationDiagnostics, mvpWeights, statsViewSettings, disruptionMethod, logsForStats.length]);
+
     const lastUploadCompleteAtRef = useRef(0);
     const bulkStatsAwaitingRef = useRef(false);
     const bulkFlushIdRef = useRef<number | null>(null);
