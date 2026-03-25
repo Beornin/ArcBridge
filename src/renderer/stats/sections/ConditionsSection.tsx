@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Maximize2, Skull, X, Columns, Users } from 'lucide-react';
+import { Maximize2, X, Columns, Users } from 'lucide-react';
 import { ColumnFilterDropdown } from '../ui/ColumnFilterDropdown';
 import { DenseStatsTable } from '../ui/DenseStatsTable';
 import { PillToggleGroup } from '../ui/PillToggleGroup';
@@ -38,7 +38,7 @@ export const ConditionsSection = ({
     setConditionSort,
     showConditionDamage
 }: ConditionsSectionProps) => {
-    const { renderProfessionIcon, expandedSection, expandedSectionClosing, openExpandedSection, closeExpandedSection, isSectionVisible, isFirstVisibleSection, sectionClass, sidebarListClass } = useStatsSharedContext();
+    const { renderProfessionIcon, expandedSection, expandedSectionClosing, openExpandedSection, closeExpandedSection, sidebarListClass } = useStatsSharedContext();
     const isExpanded = expandedSection === 'conditions-outgoing';
     const [selectedConditionColumns, setSelectedConditionColumns] = useState<string[]>([]);
     const [selectedConditionPlayers, setSelectedConditionPlayers] = useState<string[]>([]);
@@ -88,30 +88,21 @@ export const ConditionsSection = ({
 
     return (
     <div
-        id="conditions-outgoing"
-        data-section-visible={isSectionVisible('conditions-outgoing')}
-        data-section-first={isFirstVisibleSection('conditions-outgoing')}
-        className={sectionClass('conditions-outgoing', `bg-white/5 border border-white/10 rounded-2xl p-6 page-break-avoid stats-share-exclude scroll-mt-24 ${
-            expandedSection === 'conditions-outgoing'
-                ? `fixed inset-0 z-50 overflow-y-auto h-screen shadow-2xl rounded-none modal-pane flex flex-col pb-10 ${
-                    expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'
-                }`
-                : ''
-        }`)}
+        className={`stats-share-exclude ${expandedSection === 'conditions-outgoing' ? `fixed inset-0 z-50 overflow-y-auto h-screen modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}` : ''}`}
+        style={expandedSection === 'conditions-outgoing' ? { background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-card)' } : undefined}
     >
-        <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-200 flex items-center gap-2">
-                <Skull className="w-5 h-5 text-amber-300" />
-                Conditions
-            </h3>
+        <div className="flex items-center gap-2 mb-3.5">
+            <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Conditions</h3>
             <button
                 type="button"
                 onClick={() => (expandedSection === 'conditions-outgoing' ? closeExpandedSection() : openExpandedSection('conditions-outgoing'))}
-                className="p-2 rounded-lg border border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-white/30 transition-colors"
+                className="ml-auto flex items-center justify-center w-[26px] h-[26px]"
+                style={{ background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}
                 aria-label={expandedSection === 'conditions-outgoing' ? 'Close Outgoing Conditions' : 'Expand Outgoing Conditions'}
                 title={expandedSection === 'conditions-outgoing' ? 'Close' : 'Expand'}
             >
-                {expandedSection === 'conditions-outgoing' ? <X className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                {expandedSection === 'conditions-outgoing' ? <X className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} /> : <Maximize2 className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} />}
             </button>
         </div>
         {conditionSummary && conditionSummary.length > 0 ? (

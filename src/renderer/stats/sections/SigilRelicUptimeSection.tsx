@@ -3,7 +3,6 @@ import { Maximize2, X } from 'lucide-react';
 import { StatsTableLayout } from '../ui/StatsTableLayout';
 import { StatsTableShell } from '../ui/StatsTableShell';
 import { InlineIconLabel } from '../ui/StatsViewShared';
-import { Gw2SigilIcon } from '../../ui/Gw2SigilIcon';
 import { useStatsSharedContext } from '../StatsViewContext';
 
 type SigilRelicUptimeSectionProps = {
@@ -30,7 +29,7 @@ export const SigilRelicUptimeSection = ({
     setActiveSigilRelicTab,
     activeSigilRelicTable
 }: SigilRelicUptimeSectionProps) => {
-    const { formatWithCommas, renderProfessionIcon, expandedSection, expandedSectionClosing, openExpandedSection, closeExpandedSection, isSectionVisible, isFirstVisibleSection, sectionClass, sidebarListClass } = useStatsSharedContext();
+    const { formatWithCommas, renderProfessionIcon, expandedSection, expandedSectionClosing, openExpandedSection, closeExpandedSection, sidebarListClass } = useStatsSharedContext();
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
     const isExpanded = expandedSection === 'sigil-relic-uptime';
     const sortedRows = useMemo(() => {
@@ -48,28 +47,21 @@ export const SigilRelicUptimeSection = ({
 
     return (
         <div
-            id="sigil-relic-uptime"
-            data-section-visible={isSectionVisible('sigil-relic-uptime')}
-            data-section-first={isFirstVisibleSection('sigil-relic-uptime')}
-            className={sectionClass('sigil-relic-uptime', `bg-white/5 border border-white/10 rounded-2xl p-6 page-break-avoid stats-share-exclude scroll-mt-24 ${expandedSection === 'sigil-relic-uptime'
-                ? `fixed inset-0 z-50 overflow-y-auto h-screen shadow-2xl rounded-none modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'
-                }`
-                : ''
-                }`)}
+            className={`stats-share-exclude ${expandedSection === 'sigil-relic-uptime' ? `fixed inset-0 z-50 overflow-y-auto h-screen modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}` : ''}`}
+            style={expandedSection === 'sigil-relic-uptime' ? { background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-card)' } : undefined}
         >
-            <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-gray-200 flex items-center gap-2">
-                    <Gw2SigilIcon className="w-5 h-5 text-fuchsia-300" />
-                    Sigil/Relic Uptime
-                </h3>
+            <div className="flex items-center gap-2 mb-3.5">
+                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--section-support)' }} />
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Sigil/Relic Uptime</h3>
                 <button
                     type="button"
                     onClick={() => (expandedSection === 'sigil-relic-uptime' ? closeExpandedSection() : openExpandedSection('sigil-relic-uptime'))}
-                    className="p-2 rounded-lg border border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-white/30 transition-colors"
+                    className="ml-auto flex items-center justify-center w-[26px] h-[26px]"
+                    style={{ background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}
                     aria-label={expandedSection === 'sigil-relic-uptime' ? 'Close Sigil/Relic Uptime' : 'Expand Sigil/Relic Uptime'}
                     title={expandedSection === 'sigil-relic-uptime' ? 'Close' : 'Expand'}
                 >
-                    {expandedSection === 'sigil-relic-uptime' ? <X className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                    {expandedSection === 'sigil-relic-uptime' ? <X className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} /> : <Maximize2 className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} />}
                 </button>
             </div>
             {!hasSigilRelicTables ? (

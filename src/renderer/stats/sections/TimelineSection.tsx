@@ -1,4 +1,3 @@
-import { Users } from 'lucide-react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { useStatsSharedContext } from '../StatsViewContext';
 
@@ -13,22 +12,15 @@ export const TimelineSection = ({
     timelineFriendlyScope,
     setTimelineFriendlyScope
 }: TimelineSectionProps) => {
-    const { isSectionVisible, isFirstVisibleSection, sectionClass } = useStatsSharedContext();
+    useStatsSharedContext();
     return (
-    <div
-        id="timeline"
-        data-section-visible={isSectionVisible('timeline')}
-        data-section-first={isFirstVisibleSection('timeline')}
-        className={sectionClass('timeline', 'bg-white/5 border border-white/10 rounded-2xl p-6 page-break-avoid scroll-mt-24')}
-    >
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-            <h3 className="text-lg font-bold text-gray-200 flex items-center gap-2">
-                <Users className="w-5 h-5 text-green-400" />
-                Squad vs Enemy Size
-            </h3>
-            <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-gray-500">
-                <span className="text-gray-400">Friendly Count</span>
-                <div className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 p-1">
+    <div>
+        <div className="flex items-center gap-2 mb-3.5 flex-wrap">
+            <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Squad vs Enemy Size</h3>
+            <div className="ml-auto flex items-center gap-2">
+                <span className="text-[11px] uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>Friendly Count</span>
+                <div className="flex items-center gap-1 rounded-full p-1" style={{ border: '1px solid var(--border-default)', background: 'transparent' }}>
                     {([
                         { value: 'squad', label: 'Squad' },
                         { value: 'squadAllies', label: 'Squad + Allies' }
@@ -39,8 +31,8 @@ export const TimelineSection = ({
                             onClick={() => setTimelineFriendlyScope(option.value)}
                             className={`px-2.5 py-1 rounded-full text-[11px] font-semibold transition-colors ${
                                 timelineFriendlyScope === option.value
-                                    ? 'bg-emerald-500/20 text-emerald-200 border border-emerald-500/40'
-                                    : 'border border-transparent text-gray-400 hover:text-gray-200'
+                                    ? 'bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]'
+                                    : 'text-[color:var(--text-secondary)] border border-transparent'
                             }`}
                         >
                             {option.label}
@@ -50,7 +42,7 @@ export const TimelineSection = ({
             </div>
         </div>
         {timelineData.length === 0 ? (
-            <div className="text-center text-gray-500 italic py-10">No timeline data available</div>
+            <div className="text-center italic py-10" style={{ color: 'var(--text-muted)' }}>No timeline data available</div>
         ) : (
             <div className="h-[260px] w-full">
                 <ResponsiveContainer width="100%" height="100%">

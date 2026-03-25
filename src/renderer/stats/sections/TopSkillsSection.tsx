@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { ArrowBigDown, ArrowBigUp } from 'lucide-react';
 import { InlineIconLabel } from '../ui/StatsViewShared';
 import { useStatsSharedContext } from '../StatsViewContext';
 
@@ -12,7 +11,7 @@ export const TopSkillsSection = ({
     topSkillsMetric,
     onTopSkillsMetricChange
 }: TopSkillsSectionProps) => {
-    const { stats, isSectionVisible, isFirstVisibleSection, sectionClass } = useStatsSharedContext();
+    const { stats } = useStatsSharedContext();
     const resolvedMetric = (topSkillsMetric || stats.topSkillsMetric) === 'downContribution' ? 'downContribution' : 'damage';
     const isDownContrib = resolvedMetric === 'downContribution';
     const metricLabel = isDownContrib ? 'Down Contrib' : 'Damage';
@@ -38,48 +37,38 @@ export const TopSkillsSection = ({
     const showMetricToggle = typeof onTopSkillsMetricChange === 'function';
 
     return (
-        <div
-            data-section-visible={isSectionVisible('top-skills-outgoing')}
-            data-section-first={isFirstVisibleSection('top-skills-outgoing')}
-            className={sectionClass('top-skills-outgoing', 'grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 mt-4')}
-        >
-        <div
-            id="top-skills-outgoing"
-            data-section-visible={isSectionVisible('top-skills-outgoing')}
-            className={sectionClass('top-skills-outgoing', 'bg-white/5 border border-white/10 rounded-2xl p-6 scroll-mt-24')}
-        >
-            <div className="flex items-center justify-between mb-6">
-                <div>
-                    <h3 className="text-lg font-bold text-gray-200 flex items-center gap-2">
-                        <ArrowBigUp className="top-skills-outgoing-icon w-5 h-5 text-orange-400" />
-                        Top Outgoing Skills
-                    </h3>
-                    <div className="text-xs text-gray-500 mt-1">{metricLabel}</div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div>
+            <div className="flex items-center gap-2 mb-3.5">
+                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+                <h3 className="top-skills-outgoing-icon text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Top Outgoing Skills</h3>
+                <div className="ml-auto flex items-center gap-2">
+                    <span className="text-[11px] uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>{metricLabel}</span>
+                    {showMetricToggle && (
+                        <div className="pill-toggle-group flex items-center gap-1 rounded-full p-1" style={{ border: '1px solid var(--border-default)' }}>
+                            {([
+                                { id: 'damage', label: 'Damage' },
+                                { id: 'downContribution', label: 'Down Contrib' }
+                            ] as const).map((option) => {
+                                const isActive = (topSkillsMetric || stats.topSkillsMetric) === option.id;
+                                return (
+                                    <button
+                                        key={option.id}
+                                        type="button"
+                                        onClick={() => onTopSkillsMetricChange?.(option.id)}
+                                        className={`pill-toggle-option px-2.5 py-1 rounded-full text-[11px] font-semibold transition-colors ${
+                                            isActive
+                                                ? 'pill-toggle-option--active bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]'
+                                                : 'text-[color:var(--text-secondary)]'
+                                        }`}
+                                    >
+                                        {option.label}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    )}
                 </div>
-                {showMetricToggle && (
-                    <div className="pill-toggle-group flex items-center gap-1 rounded-full bg-white/5 border border-white/10 p-1">
-                        {([
-                            { id: 'damage', label: 'Damage' },
-                            { id: 'downContribution', label: 'Down Contrib' }
-                        ] as const).map((option) => {
-                            const isActive = (topSkillsMetric || stats.topSkillsMetric) === option.id;
-                            return (
-                                <button
-                                    key={option.id}
-                                    type="button"
-                                    onClick={() => onTopSkillsMetricChange?.(option.id)}
-                            className={`pill-toggle-option px-2.5 py-1 rounded-full text-[11px] font-semibold transition-colors ${
-                                        isActive
-                                            ? 'pill-toggle-option--active bg-orange-500/30 text-orange-200'
-                                            : 'text-gray-400 hover:text-white'
-                                    }`}
-                                >
-                                    {option.label}
-                                </button>
-                            );
-                        })}
-                    </div>
-                )}
             </div>
             <div className="max-h-80 overflow-y-auto overflow-x-hidden space-y-4">
                 {sortedTopSkills.map((skill: { name: string; icon?: string; damage: number; hits: number }, i: number) => (
@@ -116,19 +105,11 @@ export const TopSkillsSection = ({
             </div>
         </div>
 
-        <div
-            id="top-skills-incoming"
-            data-section-visible={isSectionVisible('top-skills-incoming')}
-            className={sectionClass('top-skills-incoming', 'bg-white/5 border border-white/10 rounded-2xl p-6 scroll-mt-24')}
-        >
-            <div className="flex items-center justify-between mb-6">
-                <div>
-                    <h3 className="text-lg font-bold text-gray-200 flex items-center gap-2">
-                        <ArrowBigDown className="w-5 h-5 text-red-500" />
-                        Top Incoming Skills
-                    </h3>
-                    <div className="text-xs text-gray-500 mt-1">Damage</div>
-                </div>
+        <div>
+            <div className="flex items-center gap-2 mb-3.5">
+                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--section-defense)' }} />
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Top Incoming Skills</h3>
+                <span className="ml-auto text-[11px] uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Damage</span>
             </div>
             <div className="max-h-80 overflow-y-auto overflow-x-hidden space-y-4">
                 {(stats.topIncomingSkills || []).map((skill: { name: string; icon?: string; damage: number; hits: number }, i: number) => (

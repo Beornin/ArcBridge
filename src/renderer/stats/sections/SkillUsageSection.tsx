@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { CheckCircle2, ChevronDown, ChevronRight, Keyboard, Maximize2, X, XCircle } from 'lucide-react';
+import { CheckCircle2, ChevronDown, ChevronRight, Maximize2, X, XCircle } from 'lucide-react';
 import { PillToggleGroup } from '../ui/PillToggleGroup';
 import { InlineIconLabel } from '../ui/StatsViewShared';
 import type { SkillUsagePlayer } from '../statsTypes';
@@ -53,7 +53,6 @@ export const SkillUsageSection = ({
     setSkillUsagePlayerFilter,
     skillUsageView,
     setSkillUsageView,
-    skillUsageData,
     skillUsageSkillFilter,
     setSkillUsageSkillFilter,
     selectedSkillId,
@@ -73,31 +72,18 @@ export const SkillUsageSection = ({
     getLineDashForPlayer,
     formatSkillUsageValue
 }: SkillUsageSectionProps) => {
-    const { expandedSection, expandedSectionClosing, openExpandedSection, closeExpandedSection, isSectionVisible, isFirstVisibleSection, sectionClass, renderProfessionIcon } = useStatsSharedContext();
+    const { expandedSection, expandedSectionClosing, openExpandedSection, closeExpandedSection, renderProfessionIcon } = useStatsSharedContext();
     const allPlayerKeys = groupedSkillUsagePlayers.flatMap((group) => group.players.map((player) => player.key));
     const hasAllPlayersSelected = allPlayerKeys.length > 0 && allPlayerKeys.every((key) => selectedPlayers.includes(key));
     return (
     <div
-        id="skill-usage"
-        data-section-visible={isSectionVisible('skill-usage')}
-        data-section-first={isFirstVisibleSection('skill-usage')}
-        className={sectionClass('skill-usage', `bg-white/5 border border-white/10 rounded-2xl p-6 page-break-avoid stats-share-exclude scroll-mt-24 ${expandedSection === 'skill-usage'
-            ? `fixed inset-0 z-50 overflow-y-auto h-screen shadow-2xl rounded-none modal-pane pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'
-            }`
-            : 'overflow-hidden'
-            }`)}
+        className={`stats-share-exclude ${expandedSection === 'skill-usage' ? `fixed inset-0 z-50 overflow-y-auto h-screen modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}` : ''}`}
+        style={expandedSection === 'skill-usage' ? { background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-card)' } : undefined}
     >
-        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between mb-4 relative">
-            <div className={expandedSection === 'skill-usage' ? 'pr-10 md:pr-0' : ''}>
-                <h3 className="text-lg font-bold text-gray-200 flex items-center gap-2">
-                    <Keyboard className="w-5 h-5 text-cyan-400" />
-                    Skill Usage Tracker
-                </h3>
-                <p className="text-xs text-gray-400">
-                    Compare how often squad members cast a skill and drill into the timeline breakdown.
-                </p>
-            </div>
-            <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 mb-3.5">
+            <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Skill Usage Tracker</h3>
+            <div className="ml-auto flex items-center gap-2">
                 <PillToggleGroup
                     value={skillUsageView}
                     onChange={setSkillUsageView}
@@ -105,21 +91,18 @@ export const SkillUsageSection = ({
                         { value: 'total', label: 'Total' },
                         { value: 'perSecond', label: 'Per Sec' }
                     ]}
-                    activeClassName="bg-cyan-500/20 text-cyan-200 border border-cyan-400/40"
-                    inactiveClassName="border border-transparent text-gray-400 hover:text-white"
+                    activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
+                    inactiveClassName="text-[color:var(--text-secondary)]"
                 />
-                <div className="text-xs uppercase tracking-[0.3em] text-gray-500">
-                    {skillUsageData.logRecords.length} {skillUsageData.logRecords.length === 1 ? 'log' : 'logs'}
-                </div>
                 <button
                     type="button"
                     onClick={() => (expandedSection === 'skill-usage' ? closeExpandedSection() : openExpandedSection('skill-usage'))}
-                    className={`p-2 rounded-lg border border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-white/30 transition-colors ${expandedSection === 'skill-usage' ? 'absolute top-2 right-2 md:static' : ''
-                        }`}
+                    className="flex items-center justify-center w-[26px] h-[26px]"
+                    style={{ background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}
                     aria-label={expandedSection === 'skill-usage' ? 'Close Skill Usage' : 'Expand Skill Usage'}
                     title={expandedSection === 'skill-usage' ? 'Close' : 'Expand'}
                 >
-                    {expandedSection === 'skill-usage' ? <X className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                    {expandedSection === 'skill-usage' ? <X className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} /> : <Maximize2 className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} />}
                 </button>
             </div>
         </div>

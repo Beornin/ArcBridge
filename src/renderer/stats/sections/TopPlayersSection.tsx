@@ -1,4 +1,4 @@
-import { Activity, Crown, Crosshair, Flame, Hammer, HelpingHand, Shield, ShieldCheck, Sparkles, Star, Trophy, Wind, Zap } from 'lucide-react';
+import { Activity, Crown, Crosshair, Flame, Hammer, HelpingHand, Shield, ShieldCheck, Sparkles, Star, Wind, Zap } from 'lucide-react';
 import { useStatsSharedContext } from '../StatsViewContext';
 
 type TopPlayersSectionProps = {
@@ -126,7 +126,7 @@ export const TopPlayersSection = ({
     formatTopStatValue,
     isMvpStatEnabled
 }: TopPlayersSectionProps) => {
-    const { stats, formatWithCommas, renderProfessionIcon, isSectionVisible, isFirstVisibleSection, sectionClass } = useStatsSharedContext();
+    const { stats, formatWithCommas, renderProfessionIcon } = useStatsSharedContext();
     if (!showTopStats) return null;
     const offenseMvp = stats.offensiveMvp || stats.mvp;
     const offenseSilver = stats.offensiveSilver || stats.silver;
@@ -137,16 +137,11 @@ export const TopPlayersSection = ({
     const offenseAvg = Number.isFinite(stats.offensiveAvgMvpScore) ? stats.offensiveAvgMvpScore : (stats.avgMvpScore || 0);
     const defenseAvg = Number.isFinite(stats.defensiveAvgMvpScore) ? stats.defensiveAvgMvpScore : (stats.avgMvpScore || 0);
     return (
-        <div
-            id="top-players"
-            data-section-visible={isSectionVisible('top-players')}
-            data-section-first={isFirstVisibleSection('top-players')}
-            className={sectionClass('top-players', 'scroll-mt-24')}
-        >
-            <h3 className="text-lg font-bold text-gray-200 mb-4 flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-yellow-400" />
-                Top Players
-            </h3>
+        <div>
+            <div className="flex items-center gap-2 mb-3.5">
+                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Top Players</h3>
+            </div>
             {showMvp && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
                     {[

@@ -1,6 +1,5 @@
 import { Bar, CartesianGrid, Cell, ComposedChart, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Maximize2, X } from 'lucide-react';
-import { Gw2AegisIcon } from '../../ui/Gw2AegisIcon';
 import { Gw2BoonIcon } from '../../ui/Gw2BoonIcon';
 import { getProfessionColor } from '../../../shared/professionUtils';
 import { PillToggleGroup } from '../ui/PillToggleGroup';
@@ -85,7 +84,7 @@ export const BoonTimelineSection = ({
     showIncomingHeatmap,
     setShowIncomingHeatmap
 }: BoonTimelineSectionProps) => {
-    const { expandedSection, expandedSectionClosing, openExpandedSection, closeExpandedSection, isSectionVisible, isFirstVisibleSection, sectionClass, formatWithCommas, renderProfessionIcon } = useStatsSharedContext();
+    const { expandedSection, expandedSectionClosing, openExpandedSection, closeExpandedSection, formatWithCommas, renderProfessionIcon } = useStatsSharedContext();
     const sectionId = 'boon-timeline';
     const isExpanded = expandedSection === sectionId;
     const selectedLineColor = selectedPlayer?.profession && selectedPlayer.profession !== 'All'
@@ -132,32 +131,21 @@ export const BoonTimelineSection = ({
 
     return (
         <div
-            id={sectionId}
-            data-section-visible={isSectionVisible(sectionId)}
-            data-section-first={isFirstVisibleSection(sectionId)}
-            className={sectionClass(sectionId, `bg-white/5 border border-white/10 rounded-2xl p-6 page-break-avoid stats-share-exclude scroll-mt-24 ${isExpanded
-                ? `fixed inset-0 z-50 overflow-y-auto h-screen shadow-2xl rounded-none modal-pane pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}`
-                : 'overflow-hidden'
-                }`)}
+            className={`stats-share-exclude ${isExpanded ? `fixed inset-0 z-50 overflow-y-auto h-screen modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}` : ''}`}
+            style={isExpanded ? { background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-card)' } : undefined}
         >
-            <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between mb-4 relative">
-                <div className={isExpanded ? 'pr-10 md:pr-0' : ''}>
-                    <h3 className="text-lg font-bold text-gray-200 flex items-center gap-2">
-                        <Gw2AegisIcon className="w-5 h-5 text-cyan-300" />
-                        Boon Timeline
-                    </h3>
-                    <p className="text-xs text-gray-400">
-                        Select a boon, then a player (or All) to chart generation totals by fight and 5-second buckets.
-                    </p>
-                </div>
+            <div className="flex items-center gap-2 mb-3.5">
+                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--section-boon)' }} />
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Boon Timeline</h3>
                 <button
                     type="button"
                     onClick={() => (isExpanded ? closeExpandedSection() : openExpandedSection(sectionId))}
-                    className={`p-2 rounded-lg border border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-white/30 transition-colors ${isExpanded ? 'absolute top-2 right-2 md:static' : ''}`}
+                    className="ml-auto flex items-center justify-center w-[26px] h-[26px]"
+                    style={{ background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}
                     aria-label={isExpanded ? 'Close Boon Timeline' : 'Expand Boon Timeline'}
                     title={isExpanded ? 'Close' : 'Expand'}
                 >
-                    {isExpanded ? <X className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                    {isExpanded ? <X className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} /> : <Maximize2 className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} />}
                 </button>
             </div>
 

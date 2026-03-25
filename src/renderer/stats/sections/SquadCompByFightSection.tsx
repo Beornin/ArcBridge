@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Users } from 'lucide-react';
 import { resolvePublicAssetPath } from '../../ui/resolvePublicAssetPath';
 import { useStatsSharedContext } from '../StatsViewContext';
 
@@ -42,7 +41,7 @@ export const SquadCompByFightSection = ({
     fights,
     getProfessionIconPath
 }: SquadCompByFightSectionProps) => {
-    const { isSectionVisible, isFirstVisibleSection, sectionClass } = useStatsSharedContext();
+    useStatsSharedContext();
     const [activeFightId, setActiveFightId] = useState<string | null>(null);
     const [search, setSearch] = useState('');
     const normalizedSearch = search.trim().toLowerCase();
@@ -73,17 +72,11 @@ export const SquadCompByFightSection = ({
     };
 
     return (
-        <section
-            id="squad-comp-fight"
-            data-section-visible={isSectionVisible('squad-comp-fight')}
-            data-section-first={isFirstVisibleSection('squad-comp-fight')}
-            className={sectionClass('squad-comp-fight', 'mb-8 page-break-avoid')}
-        >
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 squad-comp-shell">
-                <h3 className="text-lg font-bold text-gray-200 mb-4 flex items-center gap-2">
-                    <Users className="w-5 h-5 text-cyan-300" />
-                    Squad Comp By Fight
-                </h3>
+        <div className="squad-comp-shell">
+            <div className="flex items-center gap-2 mb-3.5">
+                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Squad Comp By Fight</h3>
+            </div>
                 <div className="mb-4">
                     <input
                         value={search}
@@ -185,7 +178,6 @@ export const SquadCompByFightSection = ({
                         </div>
                     </div>
                 )}
-            </div>
-        </section>
+        </div>
     );
 };

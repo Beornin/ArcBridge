@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Bar, BarChart, CartesianGrid, Cell, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { Target, Maximize2, X } from 'lucide-react';
+import { Maximize2, X } from 'lucide-react';
 import { useStatsSharedContext } from '../StatsViewContext';
 
 type KillPressurePoint = {
@@ -21,10 +21,7 @@ export const SquadKillPressureSection = () => {
         expandedSection,
         expandedSectionClosing,
         openExpandedSection,
-        closeExpandedSection,
-        isSectionVisible,
-        isFirstVisibleSection,
-        sectionClass
+        closeExpandedSection
     } = useStatsSharedContext();
     const sectionId = 'squad-kill-pressure';
     const isExpanded = expandedSection === sectionId;
@@ -68,30 +65,21 @@ export const SquadKillPressureSection = () => {
 
     return (
         <div
-            id={sectionId}
-            data-section-visible={isSectionVisible(sectionId)}
-            data-section-first={isFirstVisibleSection(sectionId)}
-            className={sectionClass(sectionId, `bg-white/5 border border-white/10 rounded-2xl p-6 page-break-avoid stats-share-exclude scroll-mt-24 ${
-                isExpanded
-                    ? `fixed inset-0 z-50 overflow-y-auto h-screen shadow-2xl rounded-none modal-pane flex flex-col pb-10 ${
-                        expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'
-                    }`
-                    : ''
-            }`)}
+            className={`stats-share-exclude ${isExpanded ? `fixed inset-0 z-50 overflow-y-auto h-screen modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}` : ''}`}
+            style={isExpanded ? { background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-card)' } : undefined}
         >
-            <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-gray-200 flex items-center gap-2">
-                    <Target className="w-5 h-5 text-violet-400" />
-                    Kill Pressure
-                </h3>
+            <div className="flex items-center gap-2 mb-3.5">
+                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Kill Pressure</h3>
                 <button
                     type="button"
                     onClick={() => (isExpanded ? closeExpandedSection() : openExpandedSection(sectionId))}
-                    className="p-2 rounded-lg border border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-white/30 transition-colors"
+                    className="ml-auto flex items-center justify-center w-[26px] h-[26px]"
+                    style={{ background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}
                     aria-label={isExpanded ? 'Close Kill Pressure' : 'Expand Kill Pressure'}
                     title={isExpanded ? 'Close' : 'Expand'}
                 >
-                    {isExpanded ? <X className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                    {isExpanded ? <X className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} /> : <Maximize2 className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} />}
                 </button>
             </div>
 

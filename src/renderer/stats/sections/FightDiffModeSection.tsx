@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { GitCompareArrows, Maximize2, X } from 'lucide-react';
+import { Maximize2, X } from 'lucide-react';
 import { StatsTableShell } from '../ui/StatsTableShell';
 import { useStatsSharedContext } from '../StatsViewContext';
 
@@ -19,7 +19,7 @@ type DiffFightRow = {
 type TargetSortKey = 'aDamage' | 'aShare' | 'bDamage' | 'bShare' | 'shareDelta';
 
 export const FightDiffModeSection = () => {
-    const { stats, formatWithCommas, expandedSection, expandedSectionClosing, openExpandedSection, closeExpandedSection, isSectionVisible, isFirstVisibleSection, sectionClass } = useStatsSharedContext();
+    const { stats, formatWithCommas, expandedSection, expandedSectionClosing, openExpandedSection, closeExpandedSection } = useStatsSharedContext();
     const fights = (Array.isArray(stats?.fightDiffMode) ? stats.fightDiffMode : []) as DiffFightRow[];
     const fightDiffMissingFromDataset = !Array.isArray(stats?.fightDiffMode) && Array.isArray(stats?.fightBreakdown) && stats.fightBreakdown.length > 0;
     const [fightAId, setFightAId] = useState<string>('');
@@ -139,28 +139,21 @@ export const FightDiffModeSection = () => {
 
     return (
         <div
-            id="fight-diff-mode"
-            data-section-visible={isSectionVisible('fight-diff-mode')}
-            data-section-first={isFirstVisibleSection('fight-diff-mode')}
-            className={sectionClass('fight-diff-mode', `bg-white/5 border border-white/10 rounded-2xl p-6 page-break-avoid stats-share-exclude scroll-mt-24 ${expandedSection === 'fight-diff-mode'
-                ? `fixed inset-0 z-50 overflow-y-auto h-screen shadow-2xl rounded-none modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'
-                }`
-                : ''
-                }`)}
+            className={`stats-share-exclude ${expandedSection === 'fight-diff-mode' ? `fixed inset-0 z-50 overflow-y-auto h-screen modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}` : ''}`}
+            style={expandedSection === 'fight-diff-mode' ? { background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-card)' } : undefined}
         >
-            <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-gray-200 flex items-center gap-2">
-                    <GitCompareArrows className="w-5 h-5 text-indigo-300" />
-                    Fight Comparison
-                </h3>
+            <div className="flex items-center gap-2 mb-3.5">
+                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Fight Comparison</h3>
                 <button
                     type="button"
                     onClick={() => (expandedSection === 'fight-diff-mode' ? closeExpandedSection() : openExpandedSection('fight-diff-mode'))}
-                    className="p-2 rounded-lg border border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-white/30 transition-colors"
+                    className="ml-auto flex items-center justify-center w-[26px] h-[26px]"
+                    style={{ background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}
                     aria-label={expandedSection === 'fight-diff-mode' ? 'Close Fight Comparison' : 'Expand Fight Comparison'}
                     title={expandedSection === 'fight-diff-mode' ? 'Close' : 'Expand'}
                 >
-                    {expandedSection === 'fight-diff-mode' ? <X className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                    {expandedSection === 'fight-diff-mode' ? <X className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} /> : <Maximize2 className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} />}
                 </button>
             </div>
 

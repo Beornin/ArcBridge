@@ -15,7 +15,7 @@ export const FightBreakdownSection = ({
     fightBreakdownTab,
     setFightBreakdownTab
 }: FightBreakdownSectionProps) => {
-    const { stats, expandedSection, expandedSectionClosing, openExpandedSection, closeExpandedSection, isSectionVisible, isFirstVisibleSection, sectionClass } = useStatsSharedContext();
+    const { stats, expandedSection, expandedSectionClosing, openExpandedSection, closeExpandedSection } = useStatsSharedContext();
     const sectionId = 'fight-breakdown';
     const isExpanded = expandedSection === sectionId;
     const fights = Array.isArray(stats?.fightBreakdown) ? stats.fightBreakdown : [];
@@ -189,19 +189,14 @@ export const FightBreakdownSection = ({
 
     return (
         <div
-            id={sectionId}
-            data-section-visible={isSectionVisible(sectionId)}
-            data-section-first={isFirstVisibleSection(sectionId)}
-            className={sectionClass(sectionId, `mt-6 stats-share-exclude ${
-                isExpanded
-                    ? `fixed inset-0 z-50 overflow-y-auto h-screen shadow-2xl rounded-none modal-pane pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}`
-                    : ''
-            }`)}
+            className={`stats-share-exclude ${isExpanded ? `fixed inset-0 z-50 overflow-y-auto h-screen modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}` : ''}`}
+            style={isExpanded ? { background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-card)' } : undefined}
         >
-            <div className={`bg-white/5 border border-white/10 rounded-2xl p-6 ${isExpanded ? 'rounded-none border-0 min-h-full' : ''}`}>
-                <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between mb-4 relative">
-                    <h3 className={`text-lg font-bold text-gray-200 ${isExpanded ? 'pr-10 sm:pr-0' : ''}`}>Fight Breakdown</h3>
-                    <div className={`flex flex-wrap items-center gap-2 ${isExpanded ? 'pr-10 sm:pr-0' : ''}`}>
+            <div>
+                <div className="flex items-center gap-2 mb-3.5">
+                    <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+                    <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Fight Breakdown</h3>
+                    <div className="ml-auto flex items-center gap-2">
                         {!isExpanded && (
                             <PillToggleGroup
                                 value={fightBreakdownTab}
@@ -212,21 +207,22 @@ export const FightBreakdownSection = ({
                                     { value: 'damage', label: 'Damage' },
                                     { value: 'barrier', label: 'Barrier' }
                                 ]}
-                                activeClassName="bg-cyan-500/20 text-cyan-200 border border-cyan-500/40"
-                                inactiveClassName="border border-transparent text-gray-400 hover:text-white"
+                                activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
+                                inactiveClassName="text-[color:var(--text-secondary)]"
                             />
                         )}
-                        <span className="text-[10px] uppercase tracking-widest text-gray-500 sm:ml-1 w-full sm:w-auto">
+                        <span className="text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
                             {fights.length} Fights
                         </span>
                         <button
                             type="button"
                             onClick={() => (isExpanded ? closeExpandedSection() : openExpandedSection(sectionId))}
-                            className={`p-2 rounded-lg border border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-white/30 transition-colors ${isExpanded ? 'absolute top-0 right-0 sm:static' : ''}`}
+                            className="flex items-center justify-center w-[26px] h-[26px]"
+                            style={{ background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}
                             aria-label={isExpanded ? 'Close Fight Breakdown' : 'Expand Fight Breakdown'}
                             title={isExpanded ? 'Close' : 'Expand'}
                         >
-                            {isExpanded ? <X className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                            {isExpanded ? <X className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} /> : <Maximize2 className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} />}
                         </button>
                     </div>
                 </div>

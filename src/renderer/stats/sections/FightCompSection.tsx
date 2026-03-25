@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Swords } from 'lucide-react';
 import { useStatsSharedContext } from '../StatsViewContext';
 
 type FightCompPartyRow = {
@@ -37,7 +36,7 @@ export const FightCompSection = ({
     fights,
     getProfessionIconPath
 }: FightCompSectionProps) => {
-    const { isSectionVisible, isFirstVisibleSection, sectionClass } = useStatsSharedContext();
+    useStatsSharedContext();
     const [activeFightId, setActiveFightId] = useState<string | null>(null);
 
     useEffect(() => {
@@ -79,17 +78,12 @@ export const FightCompSection = ({
     );
 
     return (
-        <section
-            id="fight-comp"
-            data-section-visible={isSectionVisible('fight-comp')}
-            data-section-first={isFirstVisibleSection('fight-comp')}
-            className={sectionClass('fight-comp', 'mb-8 page-break-avoid')}
-        >
-            <div className="fight-comp-shell bg-white/5 border border-white/10 rounded-2xl p-6">
-                <h3 className="text-lg font-bold text-gray-200 mb-4 flex items-center gap-2">
-                    <Swords className="w-5 h-5 text-cyan-300" />
-                    Fight Comp
-                </h3>
+        <div>
+            <div className="flex items-center gap-2 mb-3.5">
+                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Fight Comp</h3>
+            </div>
+            <div className="fight-comp-shell">
                 {fights.length === 0 ? (
                     <div className="text-center text-gray-500 italic py-6">No fight composition data available.</div>
                 ) : (
@@ -234,6 +228,6 @@ export const FightCompSection = ({
                     </div>
                 )}
             </div>
-        </section>
+        </div>
     );
 };

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ListTree, Maximize2, X, Columns, Users } from 'lucide-react';
+import { Maximize2, X, Columns, Users } from 'lucide-react';
 import { InlineIconLabel } from '../ui/StatsViewShared';
 import { DenseStatsTable } from '../ui/DenseStatsTable';
 import { ColumnFilterDropdown } from '../ui/ColumnFilterDropdown';
@@ -64,8 +64,7 @@ export const PlayerBreakdownSection = ({
     activeClassBreakdown,
     activeClassSkill
 }: PlayerBreakdownSectionProps) => {
-    const { expandedSection, expandedSectionClosing, openExpandedSection, closeExpandedSection, isSectionVisible, isFirstVisibleSection, sectionClass, sidebarListClass, renderProfessionIcon, formatWithCommas } = useStatsSharedContext();
-    const playerCount = playerSkillBreakdowns.length;
+    const { expandedSection, expandedSectionClosing, openExpandedSection, closeExpandedSection, sidebarListClass, renderProfessionIcon, formatWithCommas } = useStatsSharedContext();
     const totalPlayerDamage = (activePlayerBreakdown?.skills || []).reduce((sum, skill) => sum + (skill.damage || 0), 0);
     const activeClassRows = activeClassBreakdown?.players || [];
     const [classSort, setClassSort] = useState<{ key: 'down' | 'damage' | 'dps'; dir: 'asc' | 'desc' }>({
@@ -116,36 +115,22 @@ export const PlayerBreakdownSection = ({
 
     return (
         <div
-            id="player-breakdown"
-            data-section-visible={isSectionVisible('player-breakdown')}
-            data-section-first={isFirstVisibleSection('player-breakdown')}
-            className={sectionClass(
-                'player-breakdown',
-                `bg-white/5 border border-white/10 rounded-2xl p-6 page-break-avoid scroll-mt-24 flex flex-col ${expandedSection === 'player-breakdown'
-                    ? `fixed inset-0 z-50 overflow-y-auto h-screen shadow-2xl rounded-none modal-pane pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}`
-                    : 'overflow-hidden'
-                }`
-            )}
+            className={`stats-share-exclude ${expandedSection === 'player-breakdown' ? `fixed inset-0 z-50 overflow-y-auto h-screen modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}` : ''}`}
+            style={expandedSection === 'player-breakdown' ? { background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-card)' } : undefined}
         >
-            <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between mb-4">
-                <h3 className="text-lg font-bold text-gray-200 flex items-center gap-2">
-                    <ListTree className="w-5 h-5 text-sky-300" />
-                    Player Breakdown
-                </h3>
-                <div className="flex items-center gap-3 relative">
-                    <div className="text-xs uppercase tracking-[0.3em] text-gray-500">
-                        {playerCount} {playerCount === 1 ? 'player' : 'players'}
-                    </div>
-                    <button
-                        type="button"
-                        onClick={() => (expandedSection === 'player-breakdown' ? closeExpandedSection() : openExpandedSection('player-breakdown'))}
-                        className={`p-2 rounded-lg border border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-white/30 transition-colors ${expandedSection === 'player-breakdown' ? 'absolute -top-1 -right-1 md:static' : ''}`}
-                        aria-label={expandedSection === 'player-breakdown' ? 'Close Player Breakdown' : 'Expand Player Breakdown'}
-                        title={expandedSection === 'player-breakdown' ? 'Close' : 'Expand'}
-                    >
-                        {expandedSection === 'player-breakdown' ? <X className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-                    </button>
-                </div>
+            <div className="flex items-center gap-2 mb-3.5">
+                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--section-offense)' }} />
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Player Breakdown</h3>
+                <button
+                    type="button"
+                    onClick={() => (expandedSection === 'player-breakdown' ? closeExpandedSection() : openExpandedSection('player-breakdown'))}
+                    className="ml-auto flex items-center justify-center w-[26px] h-[26px]"
+                    style={{ background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}
+                    aria-label={expandedSection === 'player-breakdown' ? 'Close Player Breakdown' : 'Expand Player Breakdown'}
+                    title={expandedSection === 'player-breakdown' ? 'Close' : 'Expand'}
+                >
+                    {expandedSection === 'player-breakdown' ? <X className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} /> : <Maximize2 className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} />}
+                </button>
             </div>
             <div className={expandedSection === 'player-breakdown' ? 'flex-1 min-h-0 flex flex-col' : ''}>
                 {playerSkillBreakdowns.length === 0 ? (

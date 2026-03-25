@@ -57,8 +57,7 @@ export const DamageModifiersSection = ({
         stats, formatWithCommas, renderProfessionIcon,
         expandedSection, expandedSectionClosing,
         openExpandedSection, closeExpandedSection,
-        isSectionVisible, isFirstVisibleSection,
-        sectionClass, sidebarListClass,
+        sidebarListClass,
     } = useStatsSharedContext();
 
     const config = incoming ? SECTION_CONFIG.incoming : SECTION_CONFIG.outgoing;
@@ -173,40 +172,22 @@ export const DamageModifiersSection = ({
 
     return (
         <div
-            id={config.sectionId}
-            data-section-visible={isSectionVisible(config.sectionId)}
-            data-section-first={isFirstVisibleSection(config.sectionId)}
-            className={sectionClass(config.sectionId, `bg-white/5 border border-white/10 rounded-2xl p-6 page-break-avoid stats-share-exclude scroll-mt-24 ${
-                isExpanded
-                    ? `fixed inset-0 z-50 overflow-y-auto h-screen shadow-2xl rounded-none modal-pane flex flex-col pb-10 ${
-                        expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'
-                    }`
-                    : ''
-            }`)}
+            className={`stats-share-exclude ${isExpanded ? `fixed inset-0 z-50 overflow-y-auto h-screen modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}` : ''}`}
+            style={isExpanded ? { background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-card)' } : undefined}
         >
-            {/* Section header */}
-            <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-gray-200 flex items-center gap-2">
-                    {incoming ? (
-                        <svg className="w-5 h-5 text-blue-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                        </svg>
-                    ) : (
-                        <svg className="w-5 h-5 text-rose-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-                        </svg>
-                    )}
-                    {config.title}
-                </h3>
-                <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 mb-3.5">
+                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--section-offense)' }} />
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>{config.title}</h3>
+                <div className="ml-auto flex items-center gap-2">
                     <button
                         type="button"
                         onClick={() => setShowHypothetical((v) => !v)}
-                        className={`px-2.5 py-1.5 rounded-lg border text-[10px] uppercase tracking-widest transition-colors ${
+                        className={`px-2.5 py-1 rounded-lg border text-[10px] uppercase tracking-widest transition-colors ${
                             showHypothetical
-                                ? `${config.accentBg} ${config.accentText} ${config.accentBorder}`
-                                : 'border-white/10 bg-white/5 text-gray-400 hover:text-white hover:border-white/30'
+                                ? 'bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border-[color:var(--accent-border)]'
+                                : 'text-[color:var(--text-secondary)]'
                         }`}
+                        style={{ borderColor: showHypothetical ? undefined : 'var(--border-default)' }}
                         title={showHypothetical ? 'Showing all modifiers including shared squad buffs (banners, spirits, etc.) that are attributed to every benefiting player — not just the provider' : 'Show hypothetical shared modifiers — squad-wide buffs where damage gain is attributed to all benefiting players, not the buff source'}
                     >
                         Hypothetical
@@ -214,11 +195,12 @@ export const DamageModifiersSection = ({
                     <button
                         type="button"
                         onClick={() => (isExpanded ? closeExpandedSection() : openExpandedSection(config.sectionId))}
-                        className="p-2 rounded-lg border border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-white/30 transition-colors"
+                        className="flex items-center justify-center w-[26px] h-[26px]"
+                        style={{ background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}
                         aria-label={isExpanded ? `Close ${config.title}` : `Expand ${config.title}`}
                         title={isExpanded ? 'Close' : 'Expand'}
                     >
-                        {isExpanded ? <X className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                        {isExpanded ? <X className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} /> : <Maximize2 className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} />}
                     </button>
                 </div>
             </div>

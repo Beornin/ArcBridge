@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Clock3, Route, Skull, Target } from 'lucide-react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { CommanderTagIcon } from '../../ui/CommanderTagIcon';
 import { useStatsSharedContext } from '../StatsViewContext';
 
 type CommanderFightRow = {
@@ -146,7 +144,7 @@ const pushTimingStatus = (fight: CommanderFightRow) => {
 export const CommanderTargetConversionSection = ({
     commanderStats
 }: Omit<CommanderStatsSectionProps, 'getProfessionIconPath'>) => {
-    const { isSectionVisible, isFirstVisibleSection, sectionClass } = useStatsSharedContext();
+    useStatsSharedContext();
     const rows = useMemo(
         () => (Array.isArray(commanderStats?.rows) ? commanderStats?.rows || [] : []),
         [commanderStats]
@@ -169,18 +167,11 @@ export const CommanderTargetConversionSection = ({
     );
 
     return (
-        <section
-            id="commander-target-conversion"
-            data-section-visible={isSectionVisible('commander-target-conversion')}
-            data-section-first={isFirstVisibleSection('commander-target-conversion')}
-            className={sectionClass('commander-target-conversion', 'bg-white/5 border border-cyan-300/20 rounded-2xl p-6 page-break-avoid scroll-mt-24')}
-        >
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-                <h3 className="text-lg font-bold text-cyan-100 flex items-center gap-2">
-                    <Target className="w-5 h-5 text-cyan-300" />
-                    Target Conversion
-                </h3>
-                <span className="text-[10px] uppercase tracking-widest text-cyan-200/70">
+        <div>
+            <div className="flex items-center gap-2 mb-3.5">
+                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Target Conversion</h3>
+                <span className="ml-auto text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
                     {rows.length} Commanders
                 </span>
             </div>
@@ -256,14 +247,14 @@ export const CommanderTargetConversionSection = ({
                     )}
                 </div>
             )}
-        </section>
+        </div>
     );
 };
 
 export const CommanderTagMovementSection = ({
     commanderStats
 }: Omit<CommanderStatsSectionProps, 'getProfessionIconPath'>) => {
-    const { isSectionVisible, isFirstVisibleSection, sectionClass } = useStatsSharedContext();
+
     const rows = useMemo(
         () => (Array.isArray(commanderStats?.rows) ? commanderStats?.rows || [] : []),
         [commanderStats]
@@ -294,18 +285,11 @@ export const CommanderTagMovementSection = ({
     );
 
     return (
-        <section
-            id="commander-tag-movement"
-            data-section-visible={isSectionVisible('commander-tag-movement')}
-            data-section-first={isFirstVisibleSection('commander-tag-movement')}
-            className={sectionClass('commander-tag-movement', 'bg-white/5 border border-emerald-300/20 rounded-2xl p-6 page-break-avoid scroll-mt-24')}
-        >
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-                <h3 className="text-lg font-bold text-emerald-100 flex items-center gap-2">
-                    <Route className="w-5 h-5 text-emerald-300" />
-                    Tag Movement
-                </h3>
-                <span className="text-[10px] uppercase tracking-widest text-emerald-200/70">
+        <div>
+            <div className="flex items-center gap-2 mb-3.5">
+                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Tag Movement</h3>
+                <span className="ml-auto text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
                     {rows.length} Commanders
                 </span>
             </div>
@@ -382,14 +366,14 @@ export const CommanderTagMovementSection = ({
                     )}
                 </div>
             )}
-        </section>
+        </div>
     );
 };
 
 export const CommanderTagDeathResponseSection = ({
     commanderStats
 }: Omit<CommanderStatsSectionProps, 'getProfessionIconPath'>) => {
-    const { isSectionVisible, isFirstVisibleSection, sectionClass } = useStatsSharedContext();
+
     const rows = useMemo(
         () => (Array.isArray(commanderStats?.rows) ? commanderStats?.rows || [] : []),
         [commanderStats]
@@ -420,18 +404,11 @@ export const CommanderTagDeathResponseSection = ({
     );
 
     return (
-        <section
-            id="commander-tag-death-response"
-            data-section-visible={isSectionVisible('commander-tag-death-response')}
-            data-section-first={isFirstVisibleSection('commander-tag-death-response')}
-            className={sectionClass('commander-tag-death-response', 'bg-white/5 border border-rose-300/20 rounded-2xl p-6 page-break-avoid scroll-mt-24')}
-        >
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-                <h3 className="text-lg font-bold text-rose-100 flex items-center gap-2">
-                    <Skull className="w-5 h-5 text-rose-300" />
-                    Squad Response To Tag Death
-                </h3>
-                <span className="text-[10px] uppercase tracking-widest text-rose-200/70">
+        <div>
+            <div className="flex items-center gap-2 mb-3.5">
+                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Squad Response To Tag Death</h3>
+                <span className="ml-auto text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
                     {rows.length} Commanders
                 </span>
             </div>
@@ -528,14 +505,14 @@ export const CommanderTagDeathResponseSection = ({
                     )}
                 </div>
             )}
-        </section>
+        </div>
     );
 };
 
 export const CommanderPushTimingSection = ({
     commanderStats
 }: Omit<CommanderStatsSectionProps, 'getProfessionIconPath'>) => {
-    const { isSectionVisible, isFirstVisibleSection, sectionClass } = useStatsSharedContext();
+
     const rows = useMemo(
         () => (Array.isArray(commanderStats?.rows) ? commanderStats?.rows || [] : []),
         [commanderStats]
@@ -566,18 +543,11 @@ export const CommanderPushTimingSection = ({
     );
 
     return (
-        <section
-            id="commander-push-timing"
-            data-section-visible={isSectionVisible('commander-push-timing')}
-            data-section-first={isFirstVisibleSection('commander-push-timing')}
-            className={sectionClass('commander-push-timing', 'bg-white/5 border border-amber-300/20 rounded-2xl p-6 page-break-avoid scroll-mt-24')}
-        >
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-                <h3 className="text-lg font-bold text-amber-100 flex items-center gap-2">
-                    <Clock3 className="w-5 h-5 text-amber-300" />
-                    Push Timing
-                </h3>
-                <span className="text-[10px] uppercase tracking-widest text-amber-200/70">
+        <div>
+            <div className="flex items-center gap-2 mb-3.5">
+                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Push Timing</h3>
+                <span className="ml-auto text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
                     {rows.length} Commanders
                 </span>
             </div>
@@ -656,7 +626,7 @@ export const CommanderPushTimingSection = ({
                     )}
                 </div>
             )}
-        </section>
+        </div>
     );
 };
 
@@ -664,7 +634,7 @@ export const CommanderStatsSection = ({
     commanderStats,
     getProfessionIconPath
 }: CommanderStatsSectionProps) => {
-    const { isSectionVisible, isFirstVisibleSection, sectionClass } = useStatsSharedContext();
+
     const rows = useMemo(
         () => (Array.isArray(commanderStats?.rows) ? commanderStats?.rows || [] : []),
         [commanderStats]
@@ -766,18 +736,11 @@ export const CommanderStatsSection = ({
     }, [selectedFight, selectedBucketIndex]);
 
     return (
-        <section
-            id="commander-stats"
-            data-section-visible={isSectionVisible('commander-stats')}
-            data-section-first={isFirstVisibleSection('commander-stats')}
-            className={sectionClass('commander-stats', 'bg-white/5 border border-white/10 rounded-2xl p-6 page-break-avoid scroll-mt-24')}
-        >
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-                <h3 className="text-lg font-bold text-gray-200 flex items-center gap-2">
-                    <CommanderTagIcon className="w-5 h-5 text-amber-300" />
-                    Commander Stats
-                </h3>
-                <span className="text-[10px] uppercase tracking-widest text-gray-500">{rows.length} Commanders</span>
+        <div>
+            <div className="flex items-center gap-2 mb-3.5">
+                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Commander Stats</h3>
+                <span className="ml-auto text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>{rows.length} Commanders</span>
             </div>
 
             {rows.length === 0 ? (
@@ -1043,6 +1006,6 @@ export const CommanderStatsSection = ({
                     )}
                 </div>
             )}
-        </section>
+        </div>
     );
 };

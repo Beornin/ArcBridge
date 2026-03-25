@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ListTree, Maximize2, X } from 'lucide-react';
+import { Maximize2, X } from 'lucide-react';
 import { DenseStatsTable } from '../ui/DenseStatsTable';
 import { PillToggleGroup } from '../ui/PillToggleGroup';
 import { InlineIconLabel } from '../ui/StatsViewShared';
@@ -15,7 +15,7 @@ type MetricMode = 'healing' | 'barrier';
 export const HealingBreakdownSection = ({
     healingBreakdownPlayers
 }: HealingBreakdownSectionProps) => {
-    const { expandedSection, expandedSectionClosing, openExpandedSection, closeExpandedSection, isSectionVisible, isFirstVisibleSection, sectionClass, renderProfessionIcon, formatWithCommas } = useStatsSharedContext();
+    const { expandedSection, expandedSectionClosing, openExpandedSection, closeExpandedSection, renderProfessionIcon, formatWithCommas } = useStatsSharedContext();
     const sectionId = 'healing-breakdown';
     const isExpanded = expandedSection === sectionId;
     const [metricMode, setMetricMode] = useState<MetricMode>('healing');
@@ -61,25 +61,13 @@ export const HealingBreakdownSection = ({
 
     return (
         <div
-            id={sectionId}
-            data-section-visible={isSectionVisible(sectionId)}
-            data-section-first={isFirstVisibleSection(sectionId)}
-            className={sectionClass(sectionId, `bg-white/5 border border-white/10 rounded-2xl p-6 page-break-avoid stats-share-exclude scroll-mt-24 ${isExpanded
-                ? `fixed inset-0 z-50 overflow-y-auto h-screen shadow-2xl rounded-none modal-pane pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}`
-                : 'overflow-hidden'
-                }`)}
+            className={`stats-share-exclude ${isExpanded ? `fixed inset-0 z-50 overflow-y-auto h-screen modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}` : ''}`}
+            style={isExpanded ? { background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-card)' } : undefined}
         >
-            <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between mb-4 relative">
-                <div className={isExpanded ? 'pr-10 md:pr-0' : ''}>
-                    <h3 className="text-lg font-bold text-gray-200 flex items-center gap-2">
-                        <ListTree className="w-5 h-5 text-emerald-300" />
-                        Healing Breakdown
-                    </h3>
-                    <p className="text-xs text-gray-400">
-                        Select a player to view healing and barrier output by skill.
-                    </p>
-                </div>
-                <div className={`flex items-center gap-3 ${isExpanded ? 'pr-10 md:pr-0' : ''}`}>
+            <div className="flex items-center gap-2 mb-3.5">
+                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--section-healing)' }} />
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Healing Breakdown</h3>
+                <div className="ml-auto flex items-center gap-2">
                     <PillToggleGroup
                         value={metricMode}
                         onChange={(value) => setMetricMode(value as MetricMode)}
@@ -87,17 +75,18 @@ export const HealingBreakdownSection = ({
                             { value: 'healing', label: 'Healing' },
                             { value: 'barrier', label: 'Barrier' }
                         ]}
-                        activeClassName="bg-emerald-500/20 text-emerald-200 border border-emerald-500/40"
-                        inactiveClassName="border border-transparent text-gray-400 hover:text-white"
+                        activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
+                        inactiveClassName="text-[color:var(--text-secondary)]"
                     />
                     <button
                         type="button"
                         onClick={() => (isExpanded ? closeExpandedSection() : openExpandedSection(sectionId))}
-                        className={`p-2 rounded-lg border border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-white/30 transition-colors ${isExpanded ? 'absolute top-2 right-2 md:static' : ''}`}
+                        className="flex items-center justify-center w-[26px] h-[26px]"
+                        style={{ background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}
                         aria-label={isExpanded ? 'Close Healing Breakdown' : 'Expand Healing Breakdown'}
                         title={isExpanded ? 'Close' : 'Expand'}
                     >
-                        {isExpanded ? <X className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                        {isExpanded ? <X className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} /> : <Maximize2 className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} />}
                     </button>
                 </div>
             </div>
