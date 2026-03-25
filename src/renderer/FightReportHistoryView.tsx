@@ -629,7 +629,7 @@ export function FightReportHistoryView() {
                         transition={{ duration: 0.25, ease: 'easeOut' }}
                         className="flex-1 min-h-0 flex gap-3 px-4 pt-2 pb-2"
                     >
-                        <StatsNavSidebar onSectionVisibilityChange={setSectionVisibility} />
+                        <StatsNavSidebar onSectionVisibilityChange={(fn) => setSectionVisibility(() => fn)} />
                         <div className="flex-1 min-h-0 flex flex-col">
                             <StatsView
                                 logs={[]}
