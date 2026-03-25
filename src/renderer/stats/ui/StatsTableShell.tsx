@@ -14,7 +14,7 @@ export const StatsTableShell = ({
     columns,
     rows,
     expanded,
-    maxHeightClass = 'max-h-80',
+    maxHeightClass = 'max-h-72',
     animationKey
 }: StatsTableShellProps) => (
     <>
