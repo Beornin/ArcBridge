@@ -126,14 +126,14 @@ export function StatsNavSidebar({ onSectionVisibilityChange, onScrollToSection }
 
     const surfaceClass = 'border border-[color:var(--border-default)]';
     const subnavClass = 'rounded-[4px] border border-[color:var(--border-subtle)]';
-    const shellClass = 'rounded-[4px] border border-[color:var(--border-default)]';
+    const shellClass = '';
     const groupBtnState = 'text-[color:var(--text-primary)] hover:bg-[var(--bg-hover)]';
     const groupBtnActive = 'text-white';
     const entryState = 'text-[color:var(--text-primary)] hover:bg-[var(--bg-hover)]';
     const entryActive = 'text-white';
 
     return (
-        <aside className="relative w-[248px] -mr-[176px] shrink-0 self-stretch min-h-0 overflow-visible ml-1">
+        <aside className="relative w-[248px] -mr-[176px] shrink-0 self-stretch min-h-0 overflow-visible">
             <div
                 className={`stats-dashboard-nav-panel group/statsnavpanel absolute inset-y-0 left-0 z-40 min-h-0 w-[72px] hover:w-[248px] rounded-[4px] ${surfaceClass} overflow-hidden will-change-[width] transition-[width] duration-[1250ms] ease-[cubic-bezier(0.16,1,0.3,1)]`}
                 style={{ background: 'var(--bg-card)', boxShadow: 'var(--shadow-card)' }}
