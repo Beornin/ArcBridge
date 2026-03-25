@@ -13,7 +13,6 @@ import { SectionPanel } from './stats/ui/SectionPanel';
 import { useStatsNavigation, STATS_TOC_GROUPS } from './stats/hooks/useStatsNavigation';
 import { GROUP_ACCENT_COLORS } from './stats/sectionColors';
 import { useStatsUploads } from './stats/hooks/useStatsUploads';
-import { useStatsScreenshot } from './stats/hooks/useStatsScreenshot';
 import { useStatsAggregationWorker, type AggregationDiagnosticsState, type AggregationProgressState } from './stats/hooks/useStatsAggregationWorker';
 import { useApmStats } from './stats/hooks/useApmStats';
 import { useSkillCharts } from './stats/hooks/useSkillCharts';
@@ -80,7 +79,6 @@ interface StatsViewProps {
     embedded?: boolean;
     sectionVisibility?: (id: string) => boolean;
     dashboardTitle?: string;
-    canShareDiscord?: boolean;
     statsDataProgress?: {
         active: boolean;
         total: number;
@@ -148,7 +146,7 @@ const EMPTY_SKILL_USAGE_SUMMARY: SkillUsageSummary = {
 
 const EMPTY_ANY_ARRAY: any[] = [];
 
-export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings, onStatsViewSettingsChange, webUploadState, onWebUpload, disruptionMethod, precomputedStats, embedded = false, sectionVisibility, dashboardTitle, canShareDiscord = true, statsDataProgress, aggregationResult: externalAggregationResult }: StatsViewProps) {
+export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings, onStatsViewSettingsChange, webUploadState, onWebUpload, disruptionMethod, precomputedStats, embedded = false, sectionVisibility, dashboardTitle, statsDataProgress, aggregationResult: externalAggregationResult }: StatsViewProps) {
     const activeMvpWeights = normalizeMvpWeights(mvpWeights || DEFAULT_MVP_WEIGHTS);
     const activeStatsViewSettings = statsViewSettings || DEFAULT_STATS_VIEW_SETTINGS;
     const activeWebUploadState = webUploadState || DEFAULT_WEB_UPLOAD_STATE;
@@ -718,11 +716,6 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
         onWebUpload
     });
 
-    const {
-        sharing,
-        shareStage,
-        handleShare
-    } = useStatsScreenshot(embedded);
     const mvpStatWeightKeys: Record<string, keyof IMvpWeights> = {
         'Down Contribution': 'offensiveDownContribution',
         'Strips': 'offensiveStrips',
@@ -3819,10 +3812,6 @@ type SpikeFight = {
                 uploadTargets={webUploadTargets}
                 onWebUploadToTarget={handleWebUploadToTarget}
                 canUploadWeb={canUploadWeb}
-                sharing={sharing}
-                shareStage={shareStage}
-                canShareDiscord={canShareDiscord}
-                onShare={handleShare}
                 actionsDisabled={statsActionsDisabled}
             />
 

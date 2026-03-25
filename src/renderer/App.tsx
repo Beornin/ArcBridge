@@ -33,7 +33,6 @@ function App() {
     const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
     const canceledLogsRef = useRef<Set<string>>(new Set());
     const [bulkUploadMode, setBulkUploadMode] = useState(false);
-    const [screenshotData, setScreenshotData] = useState<ILogData | null>(null);
     const bulkUploadModeRef = useRef(bulkUploadMode);
 
     const { setLogsDeferred, queueLogUpdate, pendingLogUpdatesRef, pendingLogFlushTimerRef } = useLogQueue(setLogs, bulkUploadModeRef);
@@ -68,8 +67,6 @@ function App() {
         whatsNewNotes,
         walkthroughSeen,
         shouldOpenWhatsNew,
-        embedStatSettingsRef,
-        enabledTopListCountRef,
     } = useSettings({
         onAutoUpdateSettings: (supported, reason) => {
             setAutoUpdateSupported(supported);
@@ -282,30 +279,6 @@ function App() {
         detailsCache: detailsCacheRef.current,
     });
 
-    const enabledTopListCount = [
-        embedStatSettings.showDamage,
-        embedStatSettings.showDownContribution,
-        embedStatSettings.showHealing,
-        embedStatSettings.showBarrier,
-        embedStatSettings.showCleanses,
-        embedStatSettings.showBoonStrips,
-        embedStatSettings.showCC,
-        embedStatSettings.showStability,
-        embedStatSettings.showResurrects,
-        embedStatSettings.showDistanceToTag,
-        embedStatSettings.showKills,
-        embedStatSettings.showDowns,
-        embedStatSettings.showBreakbarDamage,
-        embedStatSettings.showDamageTaken,
-        embedStatSettings.showDeaths,
-        embedStatSettings.showDodges
-    ].filter(Boolean).length;
-    const showClassIcons = notificationType === 'image' || notificationType === 'image-beta';
-    useEffect(() => {
-        embedStatSettingsRef.current = embedStatSettings;
-        enabledTopListCountRef.current = enabledTopListCount;
-    }, [embedStatSettings, enabledTopListCount]);
-
     const selectedWebhook = useMemo(
         () => webhooks.find((hook) => hook.id === selectedWebhookId) || null,
         [webhooks, selectedWebhookId]
@@ -385,7 +358,7 @@ function App() {
     const logListVirtualization = useMemo(() => {
         const rowHeight = 132;
         const overscan = 6;
-        const canVirtualize = logs.length > 30 && !expandedLogId && !screenshotData;
+        const canVirtualize = logs.length > 30 && !expandedLogId;
         if (!canVirtualize || logsViewportHeight <= 0) {
             return {
                 enabled: false,
@@ -405,7 +378,7 @@ function App() {
             bottomSpacer: Math.max(0, (logs.length - endIndex) * rowHeight),
             visibleLogs: logs.slice(startIndex, endIndex)
         };
-    }, [logs, logsViewportHeight, logsScrollTop, expandedLogId, screenshotData]);
+    }, [logs, logsViewportHeight, logsScrollTop, expandedLogId]);
 
     const endBulkUpload = useCallback(() => {
         bulkUploadExpectedRef.current = null;
@@ -481,16 +454,11 @@ function App() {
         if (expandedLogId === log.filePath) {
             setExpandedLogId(null);
         }
-        setScreenshotData((current) => {
-            const currentIdentity = current ? String(current.filePath || current.id || '') : '';
-            return currentIdentity === identity ? null : current;
-        });
     }, [expandedLogId, pendingLogUpdatesRef, scheduleAsyncStatsRecompute]);
 
     const clearLogsFromActivity = useCallback(() => {
         setLogs([]);
         setExpandedLogId(null);
-        setScreenshotData(null);
         canceledLogsRef.current.clear();
         pendingLogUpdatesRef.current.clear();
         pendingStatsClearRef.current = true;
@@ -544,9 +512,6 @@ function App() {
     useUploadListeners({
         queueLogUpdate,
         endBulkUpload,
-        setScreenshotData,
-        embedStatSettingsRef,
-        enabledTopListCountRef,
         bulkUploadModeRef,
         canceledLogsRef,
         lastUploadCompleteAtRef,
@@ -978,13 +943,13 @@ function App() {
     );
 
     const devDatasetsCtx = {
-        devDatasetsEnabled, devDatasetsOpen, loadDevDatasets, devDatasetRefreshing, setDevDatasetsOpen, devDatasetName, setDevDatasetName, devDatasetSaving, setDevDatasetSaving, devDatasetSavingIdRef, setDevDatasetSaveProgress, computedStats, computedSkillUsageData, appVersion, view, expandedLogId, notificationType, embedStatSettings, mvpWeights, statsViewSettings, disruptionMethod, colorPalette, selectedWebhookId, bulkUploadMode, logs, setDevDatasets, setDevDatasetLoadModes, devDatasetSaveProgress, devDatasets, devDatasetLoadModes, setDevDatasetLoadingId, setDevDatasetLoadProgress, setLogs, setLogsForStats, logsRef, setPrecomputedStats, setScreenshotData, canceledLogsRef, datasetLoadRef, devDatasetStreamingIdRef, applyDevDatasetSnapshot, setDevDatasetDeleteConfirmId, devDatasetDeleteConfirmId, devDatasetLoadingId
+        devDatasetsEnabled, devDatasetsOpen, loadDevDatasets, devDatasetRefreshing, setDevDatasetsOpen, devDatasetName, setDevDatasetName, devDatasetSaving, setDevDatasetSaving, devDatasetSavingIdRef, setDevDatasetSaveProgress, computedStats, computedSkillUsageData, appVersion, view, expandedLogId, notificationType, embedStatSettings, mvpWeights, statsViewSettings, disruptionMethod, colorPalette, selectedWebhookId, bulkUploadMode, logs, setDevDatasets, setDevDatasetLoadModes, devDatasetSaveProgress, devDatasets, devDatasetLoadModes, setDevDatasetLoadingId, setDevDatasetLoadProgress, setLogs, setLogsForStats, logsRef, setPrecomputedStats, canceledLogsRef, datasetLoadRef, devDatasetStreamingIdRef, applyDevDatasetSnapshot, setDevDatasetDeleteConfirmId, devDatasetDeleteConfirmId, devDatasetLoadingId
     };
     const filePickerCtx = {
         ...filePickerState, logDirectory
     };
     const appLayoutCtx = {
-        shellClassName, isDev, arcbridgeLogoStyle, updateAvailable, updateDownloaded, updateProgress, updateStatus, autoUpdateSupported, autoUpdateDisabledReason, view, settingsUpdateCheckRef, versionClickTimesRef, versionClickTimeoutRef, setDeveloperSettingsTrigger, appVersion, setView, showTerminal, setShowTerminal, devDatasetsEnabled, setDevDatasetsOpen, webUploadState, setWebUploadState, statsViewMounted, logsForStats, mvpWeights, disruptionMethod, statsViewSettings, precomputedStats, computedStats, computedSkillUsageData, aggregationProgress, aggregationDiagnostics, statsDataProgress, setStatsViewSettings, colorPalette, setColorPalette, glassSurfaces, setGlassSurfaces, handleWebUpload, selectedWebhookId, setEmbedStatSettings, setMvpWeights, setDisruptionMethod, developerSettingsTrigger, helpUpdatesFocusTrigger, handleHelpUpdatesFocusConsumed, setWalkthroughOpen, setWhatsNewOpen, activityPanel, configurationPanel, screenshotData, embedStatSettings, showClassIcons, enabledTopListCount, devDatasetsCtx, filePickerCtx, webhookDropdownOpen, webhookDropdownStyle, webhookDropdownPortalRef, webhooks, handleUpdateSettings, setSelectedWebhookId, setWebhookDropdownOpen, webhookModalOpen, setWebhookModalOpen, setWebhooks, showUpdateErrorModal, setShowUpdateErrorModal, updateError, whatsNewOpen, handleWhatsNewClose, whatsNewVersion, whatsNewNotes, walkthroughOpen, handleWalkthroughClose, handleWalkthroughLearnMore, isBulkUploadActive
+        shellClassName, isDev, arcbridgeLogoStyle, updateAvailable, updateDownloaded, updateProgress, updateStatus, autoUpdateSupported, autoUpdateDisabledReason, view, settingsUpdateCheckRef, versionClickTimesRef, versionClickTimeoutRef, setDeveloperSettingsTrigger, appVersion, setView, showTerminal, setShowTerminal, devDatasetsEnabled, setDevDatasetsOpen, webUploadState, setWebUploadState, statsViewMounted, logsForStats, mvpWeights, disruptionMethod, statsViewSettings, precomputedStats, computedStats, computedSkillUsageData, aggregationProgress, aggregationDiagnostics, statsDataProgress, setStatsViewSettings, colorPalette, setColorPalette, glassSurfaces, setGlassSurfaces, handleWebUpload, selectedWebhookId, setEmbedStatSettings, setMvpWeights, setDisruptionMethod, developerSettingsTrigger, helpUpdatesFocusTrigger, handleHelpUpdatesFocusConsumed, setWalkthroughOpen, setWhatsNewOpen, activityPanel, configurationPanel, devDatasetsCtx, filePickerCtx, webhookDropdownOpen, webhookDropdownStyle, webhookDropdownPortalRef, webhooks, handleUpdateSettings, setSelectedWebhookId, setWebhookDropdownOpen, webhookModalOpen, setWebhookModalOpen, setWebhooks, showUpdateErrorModal, setShowUpdateErrorModal, updateError, whatsNewOpen, handleWhatsNewClose, whatsNewVersion, whatsNewNotes, walkthroughOpen, handleWalkthroughClose, handleWalkthroughLearnMore, isBulkUploadActive
     };
 
     return (

@@ -14,7 +14,6 @@ import { WebhookModal } from '../WebhookModal';
 import { WhatsNewModal } from '../WhatsNewModal';
 import { DevDatasetsModal } from './DevDatasetsModal';
 import { FilePickerModal } from './FilePickerModal';
-import { ScreenshotContainer } from './ScreenshotContainer';
 import { WebUploadOverlay } from './WebUploadOverlay';
 import { FightReportHistoryView } from '../FightReportHistoryView';
 
@@ -68,10 +67,6 @@ export function AppLayout({ ctx }: { ctx: any }) {
         setWhatsNewOpen,
         activityPanel,
         configurationPanel,
-        screenshotData,
-        embedStatSettings,
-        showClassIcons,
-        enabledTopListCount,
         devDatasetsCtx,
         filePickerCtx,
         webhookDropdownOpen,
@@ -326,7 +321,6 @@ export function AppLayout({ ctx }: { ctx: any }) {
                                     }}
                                     webUploadState={webUploadState}
                                     onWebUpload={handleWebUpload}
-                                    canShareDiscord={!!selectedWebhookId}
                                     sectionVisibility={statsSectionVisibility || undefined}
                                 />
                             </StatsErrorBoundary>
@@ -374,14 +368,6 @@ export function AppLayout({ ctx }: { ctx: any }) {
                     </div>
                 )}
             </div>
-
-            <ScreenshotContainer
-                screenshotData={screenshotData}
-                embedStatSettings={embedStatSettings}
-                disruptionMethod={disruptionMethod}
-                showClassIcons={showClassIcons}
-                enabledTopListCount={enabledTopListCount}
-            />
 
             <DevDatasetsModal ctx={devDatasetsCtx} isBulkUploadActive={isBulkUploadActive} />
 

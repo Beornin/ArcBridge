@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ChevronDown, Share2, Sparkles, Trophy, UploadCloud } from 'lucide-react';
+import { ChevronDown, Sparkles, Trophy, UploadCloud } from 'lucide-react';
 
 type StatsHeaderProps = {
     embedded: boolean;
@@ -13,10 +13,6 @@ type StatsHeaderProps = {
     uploadTargets?: Array<{ fullName: string; label: string; isDefault: boolean }>;
     onWebUploadToTarget?: (repoFullName: string) => void;
     canUploadWeb?: boolean;
-    sharing: boolean;
-    shareStage?: 'idle' | 'settling' | 'capturing' | 'sending';
-    canShareDiscord: boolean;
-    onShare: () => void;
     actionsDisabled?: boolean;
 };
 
@@ -32,30 +28,15 @@ export const StatsHeader = ({
     uploadTargets = [],
     onWebUploadToTarget,
     canUploadWeb = true,
-    sharing,
-    shareStage = 'idle',
-    canShareDiscord,
-    onShare,
     actionsDisabled = false
 }: StatsHeaderProps) => {
     const uploadDisabled = uploadingWeb || actionsDisabled || !canUploadWeb;
     const uploadDisabledReason = actionsDisabled
         ? 'Stats are still loading. Actions will enable when the dashboard is ready.'
         : (!canUploadWeb ? 'Add at least one fight before uploading a web report.' : '');
-    const shareDisabled = sharing || actionsDisabled || !canShareDiscord;
-    const shareDisabledReason = actionsDisabled
-        ? 'Stats are still loading. Actions will enable when the dashboard is ready.'
-        : (!canShareDiscord ? 'Select a Discord webhook to enable sharing.' : '');
     const [uploadMenuOpen, setUploadMenuOpen] = useState(false);
     const uploadMenuRef = useRef<HTMLDivElement | null>(null);
     const alternateUploadTargets = uploadTargets.filter((target) => !target.isDefault);
-    const shareLabel = shareStage === 'settling'
-        ? 'Settling...'
-        : shareStage === 'capturing'
-            ? 'Capturing...'
-            : shareStage === 'sending'
-                ? 'Sending...'
-                : (sharing ? 'Sharing...' : 'Share to Discord');
 
     useEffect(() => {
         if (!uploadMenuOpen) return;
@@ -157,23 +138,6 @@ export const StatsHeader = ({
                     {!canUploadWeb && !actionsDisabled && (
                         <div className="stats-share-tooltip pointer-events-none absolute right-0 top-full mt-2 w-56 rounded-md px-2 py-1 text-[11px] opacity-0 shadow-lg transition-opacity group-hover:opacity-100 z-50" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-hover)', color: 'var(--text-secondary)' }}>
                             Add at least one fight before uploading a web report.
-                        </div>
-                    )}
-                </div>
-                <div className="relative group" title={shareDisabledReason}>
-                    <button
-                        onClick={onShare}
-                        disabled={shareDisabled}
-                        aria-disabled={shareDisabled}
-                        className="stats-action-discord flex items-center gap-2 px-4 py-2 rounded-md font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        style={{ background: 'var(--accent-bg-strong)', color: 'var(--text-primary)', border: '1px solid var(--accent-border)' }}
-                    >
-                        <Share2 className="w-4 h-4" style={{ color: 'var(--brand-primary)' }} />
-                        {shareLabel}
-                    </button>
-                    {!canShareDiscord && (
-                        <div className="stats-share-tooltip pointer-events-none absolute right-0 top-full mt-2 w-56 rounded-md px-2 py-1 text-[11px] opacity-0 shadow-lg transition-opacity group-hover:opacity-100 z-50" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-hover)', color: 'var(--text-secondary)' }}>
-                            Select a Discord webhook to enable sharing.
                         </div>
                     )}
                 </div>

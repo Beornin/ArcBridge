@@ -31,15 +31,6 @@ export function useSettings({ onAutoUpdateSettings }: UseSettingsOptions = {}) {
     const [whatsNewVersion, setWhatsNewVersion] = useState('');
     const [whatsNewNotes, setWhatsNewNotes] = useState<string | null>(null);
 
-    // Refs needed by screenshot/embed handlers in App.tsx
-    const embedStatSettingsRef = useRef(embedStatSettings);
-    const enabledTopListCountRef = useRef(0);
-
-    // Keep embedStatSettingsRef in sync
-    useEffect(() => {
-        embedStatSettingsRef.current = embedStatSettings;
-    }, [embedStatSettings]);
-
     const walkthroughSeenMarkedRef = useRef(false);
     const onAutoUpdateSettingsRef = useRef(onAutoUpdateSettings);
     onAutoUpdateSettingsRef.current = onAutoUpdateSettings;
@@ -143,7 +134,5 @@ export function useSettings({ onAutoUpdateSettings }: UseSettingsOptions = {}) {
         whatsNewNotes,
         walkthroughSeen,
         shouldOpenWhatsNew,
-        embedStatSettingsRef,
-        enabledTopListCountRef,
     };
 }

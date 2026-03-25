@@ -39,7 +39,6 @@ export function DevDatasetsModal({ ctx, isBulkUploadActive }: { ctx: any; isBulk
         setLogsForStats,
         logsRef,
         setPrecomputedStats,
-        setScreenshotData,
         canceledLogsRef,
         datasetLoadRef,
         devDatasetStreamingIdRef,
@@ -176,7 +175,6 @@ export function DevDatasetsModal({ ctx, isBulkUploadActive }: { ctx: any; isBulk
                                                         setLogsForStats([]);
                                                         logsRef.current = [];
                                                         setPrecomputedStats(null);
-                                                        setScreenshotData(null);
                                                         canceledLogsRef.current.clear();
                                                         try {
                                                             if (window.electronAPI?.loadDevDatasetChunked) {
