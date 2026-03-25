@@ -7,7 +7,6 @@ import { PillToggleGroup } from '../ui/PillToggleGroup';
 import { StatsTableLayout } from '../ui/StatsTableLayout';
 import { StatsTableShell } from '../ui/StatsTableShell';
 import { InlineIconLabel } from '../ui/StatsViewShared';
-import { Gw2BoonIcon } from '../../ui/Gw2BoonIcon';
 import { useMetricSectionState } from '../hooks/useMetricSectionState';
 import { useStatsSharedContext } from '../StatsViewContext';
 
@@ -38,7 +37,7 @@ export const BoonOutputSection = ({
     formatBoonMetricDisplay,
     getBoonMetricValue
 }: BoonOutputSectionProps) => {
-    const { stats, renderProfessionIcon, roundCountStats, expandedSection, expandedSectionClosing, openExpandedSection, closeExpandedSection, isSectionVisible, isFirstVisibleSection, sectionClass, sidebarListClass } = useStatsSharedContext();
+    const { stats, renderProfessionIcon, roundCountStats, expandedSection, expandedSectionClosing, openExpandedSection, closeExpandedSection, sidebarListClass } = useStatsSharedContext();
     const allBoonColumns = stats.boonTables || [];
     const boonMetrics = useMemo(
         () => allBoonColumns.map((boon: any) => ({ ...boon, label: boon.name })),
@@ -71,36 +70,34 @@ export const BoonOutputSection = ({
     }));
     return (
     <div
-        id="boon-output"
-        data-section-visible={isSectionVisible('boon-output')}
-        data-section-first={isFirstVisibleSection('boon-output')}
-        className={sectionClass('boon-output', `bg-white/5 border border-white/10 rounded-2xl p-6 page-break-avoid stats-share-exclude scroll-mt-24 ${expandedSection === 'boon-output'
-                ? `fixed inset-0 z-50 overflow-y-auto h-screen shadow-2xl rounded-none modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'
-                }`
-                : ''
-            }`)}
+        className={`stats-share-exclude ${expandedSection === 'boon-output'
+            ? `fixed inset-0 z-50 overflow-y-auto h-screen modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}`
+            : ''
+        }`}
+        style={expandedSection === 'boon-output' ? { background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-card)' } : undefined}
     >
-        <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-200 flex items-center gap-2">
-                <Gw2BoonIcon className="w-5 h-5 text-cyan-400" />
+        <div className="flex items-center gap-2 mb-3.5">
+            <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--section-boon)' }} />
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>
                 Boon Output
             </h3>
             <button
                 type="button"
                 onClick={() => (expandedSection === 'boon-output' ? closeExpandedSection() : openExpandedSection('boon-output'))}
-                className="p-2 rounded-lg border border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-white/30 transition-colors"
+                className="ml-auto flex items-center justify-center w-[26px] h-[26px]"
+                style={{ background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}
                 aria-label={expandedSection === 'boon-output' ? 'Close Boon Output' : 'Expand Boon Output'}
                 title={expandedSection === 'boon-output' ? 'Close' : 'Expand'}
             >
-                {expandedSection === 'boon-output' ? <X className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                {expandedSection === 'boon-output' ? <X className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} /> : <Maximize2 className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} />}
             </button>
         </div>
         {stats.boonTables.length === 0 ? (
-            <div className="text-center text-gray-500 italic py-8">No boon data available</div>
+            <div className="text-center italic py-8" style={{ color: 'var(--text-muted)' }}>No boon data available</div>
         ) : isExpanded ? (
             <div className="flex flex-col gap-4">
-                <div className="bg-black/20 border border-white/5 rounded-xl px-4 py-3">
-                    <div className="text-xs uppercase tracking-widest text-gray-500 mb-2">Boons</div>
+                <div className="border rounded-[var(--radius-md)] px-4 py-3" style={{ background: 'var(--bg-hover)', borderColor: 'var(--border-subtle)' }}>
+                    <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-muted)' }}>Boons</div>
                     <div className="flex flex-wrap items-center gap-2">
                         <SearchSelectDropdown
                             options={[
@@ -158,8 +155,8 @@ export const BoonOutputSection = ({
                                 { value: 'squadBuffs', label: 'Squad' },
                                 { value: 'totalBuffs', label: 'Total' }
                             ]}
-                            activeClassName="bg-blue-500/20 text-blue-200 border border-blue-500/40"
-                            inactiveClassName="border border-transparent text-gray-400 hover:text-white"
+                            activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
+                            inactiveClassName="text-[color:var(--text-secondary)]"
                         />
                         <PillToggleGroup
                             value={activeBoonMetric}
@@ -169,8 +166,8 @@ export const BoonOutputSection = ({
                                 { value: 'average', label: 'Gen/Sec' },
                                 { value: 'uptime', label: 'Uptime' }
                             ]}
-                            activeClassName="bg-blue-500/20 text-blue-200 border border-blue-500/40"
-                            inactiveClassName="border border-transparent text-gray-400 hover:text-white"
+                            activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
+                            inactiveClassName="text-[color:var(--text-secondary)]"
                         />
                     </div>
                     {(selectedBoonColumnIds.length > 0 || selectedBoonPlayers.length > 0) && (
@@ -181,7 +178,8 @@ export const BoonOutputSection = ({
                                     setSelectedBoonColumnIds([]);
                                     setSelectedBoonPlayers([]);
                                 }}
-                                className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-2 py-1 text-[11px] text-gray-200 hover:text-white"
+                                className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px]"
+                                style={{ border: '1px solid var(--border-default)', background: 'var(--bg-hover)', color: 'var(--text-primary)' }}
                             >
                                 Clear All
                             </button>
@@ -192,10 +190,11 @@ export const BoonOutputSection = ({
                                         key={id}
                                         type="button"
                                         onClick={() => setSelectedBoonColumnIds((prev) => prev.filter((entry) => entry !== id))}
-                                        className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] text-gray-200 hover:text-white"
+                                        className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px]"
+                                        style={{ border: '1px solid var(--border-default)', background: 'var(--bg-hover)', color: 'var(--text-primary)' }}
                                     >
                                         <span>{label}</span>
-                                        <span className="text-gray-400">×</span>
+                                        <span style={{ color: 'var(--text-secondary)' }}>×</span>
                                     </button>
                                 );
                             })}
@@ -204,18 +203,19 @@ export const BoonOutputSection = ({
                                     key={id}
                                     type="button"
                                     onClick={() => setSelectedBoonPlayers((prev) => prev.filter((entry) => entry !== id))}
-                                    className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] text-gray-200 hover:text-white"
+                                    className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px]"
+                                    style={{ border: '1px solid var(--border-default)', background: 'var(--bg-hover)', color: 'var(--text-primary)' }}
                                 >
                                     <span>{id}</span>
-                                    <span className="text-gray-400">×</span>
+                                    <span style={{ color: 'var(--text-secondary)' }}>×</span>
                                 </button>
                             ))}
                         </div>
                     )}
                 </div>
-                <div className="bg-black/30 border border-white/5 rounded-xl overflow-hidden">
+                <div className="border rounded-[var(--radius-md)] overflow-hidden" style={{ background: 'var(--bg-card-inner)', borderColor: 'var(--border-subtle)' }}>
                     {allBoonColumns.length === 0 ? (
-                        <div className="px-4 py-10 text-center text-gray-500 italic text-sm">No boons match this filter</div>
+                        <div className="px-4 py-10 text-center italic text-sm" style={{ color: 'var(--text-muted)' }}>No boons match this filter</div>
                     ) : (
                         (() => {
                             const columnTables = visibleBoonColumns;
@@ -280,7 +280,7 @@ export const BoonOutputSection = ({
                                         id: `${entry.key}-${idx}`,
                                         label: (
                                             <>
-                                                <span className="text-gray-500 font-mono">{idx + 1}</span>
+                                                <span className="font-mono" style={{ color: 'var(--text-muted)' }}>{idx + 1}</span>
                                                 {renderProfessionIcon(entry.row.profession, entry.row.professionList, 'w-4 h-4')}
                                                 <span className="truncate">{entry.row.account || entry.row.name || entry.key}</span>
                                             </>
@@ -296,29 +296,33 @@ export const BoonOutputSection = ({
         ) : (
             <StatsTableLayout
                 expanded={expandedSection === 'boon-output'}
-                sidebarClassName={`bg-black/20 border border-white/5 rounded-xl px-3 pt-3 pb-2 flex flex-col min-h-0 ${expandedSection === 'boon-output' ? 'h-full flex-1' : 'self-start'}`}
-                contentClassName={`bg-black/30 border border-white/5 rounded-xl overflow-hidden ${expandedSection === 'boon-output' ? 'flex flex-col min-h-0' : ''}`}
+                sidebarClassName={`border rounded-[var(--radius-md)] px-3 pt-3 pb-2 flex flex-col min-h-0 ${expandedSection === 'boon-output' ? 'h-full flex-1' : 'self-start'}`}
+                sidebarStyle={{ background: 'var(--bg-hover)', borderColor: 'var(--border-subtle)' }}
+                contentClassName={`border rounded-[var(--radius-md)] overflow-hidden ${expandedSection === 'boon-output' ? 'flex flex-col min-h-0' : ''}`}
+                contentStyle={{ background: 'var(--bg-card-inner)', borderColor: 'var(--border-subtle)' }}
                 sidebar={
                     <>
-                        <div className="text-xs uppercase tracking-widest text-gray-500 mb-2">Boons</div>
+                        <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-muted)' }}>Boons</div>
                         <input
                             value={boonSearch}
                             onChange={(e) => setBoonSearch(e.target.value)}
                             placeholder="Search..."
-                            className="w-full bg-black/30 border border-white/10 rounded-lg px-2 py-1 text-xs text-gray-200 focus:outline-none mb-2"
+                            className="w-full rounded-[var(--radius-md)] px-2 py-1 text-xs focus:outline-none mb-2"
+                            style={{ background: 'var(--bg-card-inner)', border: '1px solid var(--border-default)', color: 'var(--text-primary)' }}
                         />
                         <div className={`${sidebarListClass} ${expandedSection === 'boon-output' ? 'max-h-none flex-1 min-h-0' : ''}`}>
                             {filteredBoonTables.length === 0 ? (
-                                <div className="text-center text-gray-500 italic py-6 text-xs">No boons match this filter</div>
+                                <div className="text-center italic py-6 text-xs" style={{ color: 'var(--text-muted)' }}>No boons match this filter</div>
                             ) : (
                                 filteredBoonTables.map((boon: any) => (
                                     <button
                                         key={boon.id}
                                         onClick={() => setActiveBoonTab(boon.id)}
-                                        className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold border transition-colors ${activeBoonTab === boon.id
-                                            ? 'bg-blue-500/20 text-blue-200 border-blue-500/40'
-                                            : 'bg-white/5 text-gray-300 border-white/10 hover:text-white'
+                                        className={`w-full text-left px-3 py-2 rounded-[var(--radius-md)] text-xs font-semibold border transition-colors ${activeBoonTab === boon.id
+                                            ? 'bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border-[color:var(--accent-border)]'
+                                            : 'border-[color:var(--border-default)] hover:text-[color:var(--text-primary)]'
                                             }`}
+                                        style={activeBoonTab !== boon.id ? { background: 'var(--bg-hover)', color: 'var(--text-secondary)' } : undefined}
                                     >
                                         <InlineIconLabel name={boon.name} iconUrl={boon.icon} iconClassName="h-3.5 w-3.5" />
                                     </button>
@@ -329,24 +333,24 @@ export const BoonOutputSection = ({
                 }
                 content={
                     !activeBoonTable ? (
-                        <div className="px-4 py-10 text-center text-gray-500 italic text-sm">Select a boon to view details</div>
+                        <div className="px-4 py-10 text-center italic text-sm" style={{ color: 'var(--text-muted)' }}>Select a boon to view details</div>
                     ) : (
                         <StatsTableShell
                             expanded={expandedSection === 'boon-output'}
                             maxHeightClass="max-h-64"
                             header={
-                                <div className="flex items-center justify-between px-4 py-3 bg-white/5">
-                                    <div className="text-sm font-semibold text-gray-200">
+                                <div className="flex items-center justify-between px-4 py-3" style={{ background: 'var(--bg-hover)' }}>
+                                    <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
                                         <InlineIconLabel name={activeBoonTable.name} iconUrl={activeBoonTable.icon} iconClassName="h-4 w-4" />
                                     </div>
-                                    <div className="text-xs uppercase tracking-widest text-gray-500">
+                                    <div className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
                                         {`${activeBoonCategory.replace('Buffs', '')} • ${activeBoonMetric === 'total' ? 'Total Gen' : activeBoonMetric === 'average' ? 'Gen/Sec' : 'Uptime'}`}
                                     </div>
                                 </div>
                             }
                             columns={
                                 <>
-                                    <div className="flex flex-wrap items-center justify-start gap-2 px-4 py-2 bg-white/5">
+                                    <div className="flex flex-wrap items-center justify-start gap-2 px-4 py-2" style={{ background: 'var(--bg-hover)' }}>
                                         <PillToggleGroup
                                             value={activeBoonCategory}
                                             onChange={setActiveBoonCategory}
@@ -356,8 +360,8 @@ export const BoonOutputSection = ({
                                                 { value: 'squadBuffs', label: 'Squad' },
                                                 { value: 'totalBuffs', label: 'Total' }
                                             ]}
-                                            activeClassName="bg-blue-500/20 text-blue-200 border border-blue-500/40"
-                                            inactiveClassName="border border-transparent text-gray-400 hover:text-white"
+                                            activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
+                                            inactiveClassName="text-[color:var(--text-secondary)]"
                                         />
                                         <PillToggleGroup
                                             value={activeBoonMetric}
@@ -368,17 +372,18 @@ export const BoonOutputSection = ({
                                                 { value: 'uptime', label: 'Uptime' }
                                             ]}
                                             className="sm:ml-auto"
-                                            activeClassName="bg-blue-500/20 text-blue-200 border border-blue-500/40"
-                                            inactiveClassName="border border-transparent text-gray-400 hover:text-white"
+                                            activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
+                                            inactiveClassName="text-[color:var(--text-secondary)]"
                                         />
                                     </div>
-                                    <div className="grid grid-cols-[0.4fr_1.5fr_1fr_0.9fr] text-xs uppercase tracking-wider text-gray-400 bg-white/5 px-4 py-2">
+                                    <div className="grid grid-cols-[0.4fr_1.5fr_1fr_0.9fr] text-xs uppercase tracking-wider px-4 py-2" style={{ color: 'var(--text-secondary)', background: 'var(--bg-hover)' }}>
                                         <div className="text-center">#</div>
                                         <div>Player</div>
                                         <button
                                             type="button"
                                             onClick={() => updateSort('value')}
-                                            className={`text-right transition-colors ${sortState.key === 'value' ? 'text-blue-200' : 'text-gray-400 hover:text-gray-200'}`}
+                                            className="text-right transition-colors"
+                                            style={{ color: sortState.key === 'value' ? 'var(--brand-primary)' : 'var(--text-secondary)' }}
                                         >
                                             {activeBoonMetric === 'total'
                                                 ? 'Total'
@@ -390,7 +395,8 @@ export const BoonOutputSection = ({
                                         <button
                                             type="button"
                                             onClick={() => updateSort('fightTime')}
-                                            className={`text-right transition-colors ${sortState.key === 'fightTime' ? 'text-blue-200' : 'text-gray-400 hover:text-gray-200'}`}
+                                            className="text-right transition-colors"
+                                            style={{ color: sortState.key === 'fightTime' ? 'var(--brand-primary)' : 'var(--text-secondary)' }}
                                         >
                                             Fight Time{sortState.key === 'fightTime' ? (sortState.dir === 'desc' ? ' ↓' : ' ↑') : ''}
                                         </button>
@@ -413,16 +419,16 @@ export const BoonOutputSection = ({
                                             })()
                                         ))
                                         .map((row: any, idx: number) => (
-                                            <div key={`${activeBoonTable.id}-${row.account}-${idx}`} className="grid grid-cols-[0.4fr_1.5fr_1fr_0.9fr] px-4 py-2 text-sm text-gray-200 border-t border-white/5">
-                                                <div className="text-center text-gray-500 font-mono">{idx + 1}</div>
+                                            <div key={`${activeBoonTable.id}-${row.account}-${idx}`} className="grid grid-cols-[0.4fr_1.5fr_1fr_0.9fr] px-4 py-2 text-sm border-t" style={{ color: 'var(--text-primary)', borderColor: 'var(--border-subtle)' }}>
+                                                <div className="text-center font-mono" style={{ color: 'var(--text-muted)' }}>{idx + 1}</div>
                                                 <div className="flex items-center gap-2 min-w-0">
                                                     {renderProfessionIcon(row.profession, row.professionList, 'w-4 h-4')}
                                                     <span className="truncate">{row.account}</span>
                                                 </div>
-                                                <div className="text-right font-mono text-gray-300">
+                                                <div className="text-right font-mono" style={{ color: 'var(--text-secondary)' }}>
                                                     {formatBoonMetricDisplay(row, activeBoonCategory, activeBoonTable.stacking, activeBoonMetric, { roundCountStats })}
                                                 </div>
-                                                <div className="text-right font-mono text-gray-400">
+                                                <div className="text-right font-mono" style={{ color: 'var(--text-secondary)' }}>
                                                     {row.activeTimeMs ? `${(row.activeTimeMs / 1000).toFixed(1)}s` : '-'}
                                                 </div>
                                             </div>

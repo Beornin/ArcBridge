@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Maximize2, Sparkles, X, Columns, Users } from 'lucide-react';
+import { Maximize2, X, Columns, Users } from 'lucide-react';
 import { useMetricSectionState } from '../hooks/useMetricSectionState';
 import { ColumnFilterDropdown } from '../ui/ColumnFilterDropdown';
 import { PillToggleGroup } from '../ui/PillToggleGroup';
@@ -32,7 +32,7 @@ export const SpecialBuffsSection = ({
     setActiveSpecialTab,
     activeSpecialTable
 }: SpecialBuffsSectionProps) => {
-    const { stats, formatWithCommas, renderProfessionIcon, expandedSection, expandedSectionClosing, openExpandedSection, closeExpandedSection, isSectionVisible, isFirstVisibleSection, sectionClass, sidebarListClass } = useStatsSharedContext();
+    const { stats, formatWithCommas, renderProfessionIcon, expandedSection, expandedSectionClosing, openExpandedSection, closeExpandedSection, sidebarListClass } = useStatsSharedContext();
     const [sortKey, setSortKey] = useState<SpecialSortKey>('total');
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
     const [viewMode, setViewMode] = useState<SpecialViewMode>('received');
@@ -108,21 +108,18 @@ export const SpecialBuffsSection = ({
 
     return (
         <div
-            id="special-buffs"
-            data-section-visible={isSectionVisible('special-buffs')}
-            data-section-first={isFirstVisibleSection('special-buffs')}
-            className={sectionClass('special-buffs', `bg-white/5 border border-white/10 rounded-2xl p-6 page-break-avoid stats-share-exclude scroll-mt-24 ${expandedSection === 'special-buffs'
-                    ? `fixed inset-0 z-50 overflow-y-auto h-screen shadow-2xl rounded-none modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'
-                    }`
-                    : ''
-                }`)}
+            className={`stats-share-exclude ${expandedSection === 'special-buffs'
+                ? `fixed inset-0 z-50 overflow-y-auto h-screen modal-pane flex flex-col pb-10 ${expandedSectionClosing ? 'modal-pane-exit' : 'modal-pane-enter'}`
+                : ''
+            }`}
+            style={expandedSection === 'special-buffs' ? { background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-card)' } : undefined}
         >
-        <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-200 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-purple-300" />
+        <div className="flex items-center gap-2 mb-3.5">
+            <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>
                 Special Buffs
             </h3>
-            <div className="flex items-center gap-2">
+            <div className="ml-auto flex items-center gap-2">
                 <PillToggleGroup
                     value={viewMode}
                     onChange={(value) => setViewMode(value as SpecialViewMode)}
@@ -131,26 +128,27 @@ export const SpecialBuffsSection = ({
                         { value: 'output', label: 'Output' }
                     ]}
                     className="inline-flex w-auto"
-                    activeClassName="bg-purple-500/20 text-purple-200 border border-purple-500/40"
-                    inactiveClassName="border border-transparent text-gray-400 hover:text-white"
+                    activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
+                    inactiveClassName="text-[color:var(--text-secondary)]"
                 />
                 <button
                     type="button"
                     onClick={() => (expandedSection === 'special-buffs' ? closeExpandedSection() : openExpandedSection('special-buffs'))}
-                    className="p-2 rounded-lg border border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-white/30 transition-colors"
+                    className="flex items-center justify-center w-[26px] h-[26px]"
+                    style={{ background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)' }}
                     aria-label={expandedSection === 'special-buffs' ? 'Close Special Buffs' : 'Expand Special Buffs'}
                     title={expandedSection === 'special-buffs' ? 'Close' : 'Expand'}
                 >
-                    {expandedSection === 'special-buffs' ? <X className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                    {expandedSection === 'special-buffs' ? <X className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} /> : <Maximize2 className="w-3 h-3" style={{ color: 'var(--text-secondary)' }} />}
                 </button>
             </div>
         </div>
         {stats.specialTables.length === 0 ? (
-            <div className="text-center text-gray-500 italic py-8">No special buff data available</div>
+            <div className="text-center italic py-8" style={{ color: 'var(--text-muted)' }}>No special buff data available</div>
         ) : isExpanded ? (
             <div className="flex flex-col gap-4">
-                <div className="bg-black/20 border border-white/5 rounded-xl px-4 py-3">
-                    <div className="text-xs uppercase tracking-widest text-gray-500 mb-2">Special Buffs</div>
+                <div className="border rounded-[var(--radius-md)] px-4 py-3" style={{ background: 'var(--bg-hover)', borderColor: 'var(--border-subtle)' }}>
+                    <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-muted)' }}>Special Buffs</div>
                     <div className="flex flex-wrap items-center gap-2">
                         <SearchSelectDropdown
                             options={[
@@ -207,8 +205,8 @@ export const SpecialBuffsSection = ({
                                 { value: 'perSecond', label: 'Per Sec' },
                                 { value: 'duration', label: 'Fight Time' }
                             ]}
-                            activeClassName="bg-purple-500/20 text-purple-200 border border-purple-500/40"
-                            inactiveClassName="border border-transparent text-gray-400 hover:text-white"
+                            activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
+                            inactiveClassName="text-[color:var(--text-secondary)]"
                         />
                     </div>
                     {(selectedSpecialColumns.length > 0 || selectedSpecialPlayers.length > 0) && (
@@ -219,7 +217,8 @@ export const SpecialBuffsSection = ({
                                     setSelectedSpecialColumns([]);
                                     setSelectedSpecialPlayers([]);
                                 }}
-                                className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-2 py-1 text-[11px] text-gray-200 hover:text-white"
+                                className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px]"
+                                style={{ border: '1px solid var(--border-default)', background: 'var(--bg-hover)', color: 'var(--text-primary)' }}
                             >
                                 Clear All
                             </button>
@@ -230,10 +229,11 @@ export const SpecialBuffsSection = ({
                                         key={id}
                                         type="button"
                                         onClick={() => setSelectedSpecialColumns((prev) => prev.filter((entry) => entry !== id))}
-                                        className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] text-gray-200 hover:text-white"
+                                        className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px]"
+                                        style={{ border: '1px solid var(--border-default)', background: 'var(--bg-hover)', color: 'var(--text-primary)' }}
                                     >
                                         <span>{label}</span>
-                                        <span className="text-gray-400">×</span>
+                                        <span style={{ color: 'var(--text-secondary)' }}>×</span>
                                     </button>
                                 );
                             })}
@@ -242,18 +242,19 @@ export const SpecialBuffsSection = ({
                                     key={id}
                                     type="button"
                                     onClick={() => setSelectedSpecialPlayers((prev) => prev.filter((entry) => entry !== id))}
-                                    className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] text-gray-200 hover:text-white"
+                                    className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px]"
+                                    style={{ border: '1px solid var(--border-default)', background: 'var(--bg-hover)', color: 'var(--text-primary)' }}
                                 >
                                     <span>{id}</span>
-                                    <span className="text-gray-400">×</span>
+                                    <span style={{ color: 'var(--text-secondary)' }}>×</span>
                                 </button>
                             ))}
                         </div>
                     )}
                 </div>
-                <div className="bg-black/30 border border-white/5 rounded-xl overflow-hidden">
+                <div className="border rounded-[var(--radius-md)] overflow-hidden" style={{ background: 'var(--bg-card-inner)', borderColor: 'var(--border-subtle)' }}>
                     {visibleSpecialTables.length === 0 ? (
-                        <div className="px-4 py-10 text-center text-gray-500 italic text-sm">No special buffs match this filter</div>
+                        <div className="px-4 py-10 text-center italic text-sm" style={{ color: 'var(--text-muted)' }}>No special buffs match this filter</div>
                     ) : (
                         (() => {
                             const columnTables = visibleSpecialTables;
@@ -299,7 +300,7 @@ export const SpecialBuffsSection = ({
                                 || (activeSpecialTab && columnTables.some((item: any) => item.id === activeSpecialTab) ? activeSpecialTab : undefined)
                                 || columnTables[0]?.id
                                 || '';
-                            const sortedRows = [...rows].sort((a, b) => {
+                            const sortedRows2 = [...rows].sort((a, b) => {
                                 if (!resolvedSortColumnId) return String(a.key).localeCompare(String(b.key));
                                 const aVal = a.numericValues[resolvedSortColumnId] ?? 0;
                                 const bVal = b.numericValues[resolvedSortColumnId] ?? 0;
@@ -324,11 +325,11 @@ export const SpecialBuffsSection = ({
                                         align: 'right',
                                         minWidth: 90
                                     }))}
-                                    rows={sortedRows.map((entry, idx) => ({
+                                    rows={sortedRows2.map((entry, idx) => ({
                                         id: `${entry.key}-${idx}`,
                                         label: (
                                             <>
-                                                <span className="text-gray-500 font-mono">{idx + 1}</span>
+                                                <span className="font-mono" style={{ color: 'var(--text-muted)' }}>{idx + 1}</span>
                                                 {renderProfessionIcon(entry.row.profession, entry.row.professionList, 'w-4 h-4')}
                                                 <span className="truncate">{entry.row.account || entry.row.name || entry.key}</span>
                                             </>
@@ -344,30 +345,34 @@ export const SpecialBuffsSection = ({
         ) : (
             <StatsTableLayout
                 expanded={expandedSection === 'special-buffs'}
-                sidebarClassName={`bg-black/20 border border-white/5 rounded-xl px-3 pt-3 pb-2 flex flex-col min-h-0 ${expandedSection === 'special-buffs' ? 'h-full flex-1' : 'self-start'}`}
-                contentClassName={`bg-black/30 border border-white/5 rounded-xl overflow-hidden ${expandedSection === 'special-buffs' ? 'flex flex-col min-h-0' : ''}`}
+                sidebarClassName={`border rounded-[var(--radius-md)] px-3 pt-3 pb-2 flex flex-col min-h-0 ${expandedSection === 'special-buffs' ? 'h-full flex-1' : 'self-start'}`}
+                sidebarStyle={{ background: 'var(--bg-hover)', borderColor: 'var(--border-subtle)' }}
+                contentClassName={`border rounded-[var(--radius-md)] overflow-hidden ${expandedSection === 'special-buffs' ? 'flex flex-col min-h-0' : ''}`}
+                contentStyle={{ background: 'var(--bg-card-inner)', borderColor: 'var(--border-subtle)' }}
                 sidebar={
                     <>
-                        <div className="text-xs uppercase tracking-widest text-gray-500 mb-2">Special Buffs</div>
+                        <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-muted)' }}>Special Buffs</div>
                         <input
                             value={specialSearch}
                             onChange={(e) => setSpecialSearch(e.target.value)}
                             placeholder="Search..."
-                            className="w-full bg-black/30 border border-white/10 rounded-lg px-2 py-1 text-xs text-gray-200 focus:outline-none mb-2"
+                            className="w-full rounded-[var(--radius-md)] px-2 py-1 text-xs focus:outline-none mb-2"
+                            style={{ background: 'var(--bg-card-inner)', border: '1px solid var(--border-default)', color: 'var(--text-primary)' }}
                         />
                         <div className={`${sidebarListClass} ${expandedSection === 'special-buffs' ? 'max-h-none flex-1 min-h-0' : ''}`}>
                             {filteredSpecialTables.length === 0 ? (
-                                <div className="text-center text-gray-500 italic py-6 text-xs">No special buffs match this filter</div>
+                                <div className="text-center italic py-6 text-xs" style={{ color: 'var(--text-muted)' }}>No special buffs match this filter</div>
                             ) : (
                                 filteredSpecialTables.map((buff: any) => (
                                     <button
                                         key={buff.id}
                                         onClick={() => setActiveSpecialTab(buff.id)}
                                         title={buff.name}
-                                        className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold border transition-colors ${activeSpecialTab === buff.id
-                                            ? 'bg-purple-500/20 text-purple-200 border-purple-500/40'
-                                            : 'bg-white/5 text-gray-300 border-white/10 hover:text-white'
+                                        className={`w-full text-left px-3 py-2 rounded-[var(--radius-md)] text-xs font-semibold border transition-colors ${activeSpecialTab === buff.id
+                                            ? 'bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border-[color:var(--accent-border)]'
+                                            : 'border-[color:var(--border-default)] hover:text-[color:var(--text-primary)]'
                                             }`}
+                                        style={activeSpecialTab !== buff.id ? { background: 'var(--bg-hover)', color: 'var(--text-secondary)' } : undefined}
                                     >
                                         <InlineIconLabel
                                             name={truncateSidebarLabel(buff.name)}
@@ -385,9 +390,9 @@ export const SpecialBuffsSection = ({
                 content={
                     <>
                         {!activeSpecialTable ? (
-                            <div className="px-4 py-10 text-center text-gray-500 italic text-sm">Select a special buff to view details</div>
+                            <div className="px-4 py-10 text-center italic text-sm" style={{ color: 'var(--text-muted)' }}>Select a special buff to view details</div>
                         ) : activeRowsForMode.length === 0 ? (
-                            <div className="px-4 py-10 text-center text-gray-500 italic text-sm">
+                            <div className="px-4 py-10 text-center italic text-sm" style={{ color: 'var(--text-muted)' }}>
                                 No {viewMode} data available for this buff
                             </div>
                         ) : (
@@ -395,37 +400,40 @@ export const SpecialBuffsSection = ({
                                 expanded={expandedSection === 'special-buffs'}
                                 maxHeightClass="max-h-64"
                                 header={
-                                    <div className="flex items-center justify-between px-4 py-3 bg-white/5">
-                                        <div className="text-sm font-semibold text-gray-200">
+                                    <div className="flex items-center justify-between px-4 py-3" style={{ background: 'var(--bg-hover)' }}>
+                                        <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
                                             <InlineIconLabel name={activeSpecialTable.name} iconUrl={activeSpecialTable.icon} iconClassName="h-4 w-4" />
                                         </div>
-                                        <div className="text-xs uppercase tracking-widest text-gray-500">
+                                        <div className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
                                             {viewMode === 'output' ? 'Output Totals' : 'Received Totals'}
                                         </div>
                                     </div>
                                 }
                                 columns={
-                                    <div className="grid grid-cols-[0.4fr_1.5fr_0.8fr_0.8fr_0.8fr] text-xs uppercase tracking-wider text-gray-400 bg-white/5 px-4 py-2">
+                                    <div className="grid grid-cols-[0.4fr_1.5fr_0.8fr_0.8fr_0.8fr] text-xs uppercase tracking-wider px-4 py-2" style={{ color: 'var(--text-secondary)', background: 'var(--bg-hover)' }}>
                                         <div className="text-center">#</div>
                                         <div>Player</div>
                                         <button
                                             type="button"
                                             onClick={() => updateSort('total')}
-                                            className={`text-right transition-colors ${sortKey === 'total' ? 'text-purple-200' : 'text-gray-400 hover:text-gray-200'}`}
+                                            className="text-right transition-colors"
+                                            style={{ color: sortKey === 'total' ? 'var(--brand-primary)' : 'var(--text-secondary)' }}
                                         >
                                             Total{sortIndicator('total')}
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() => updateSort('perSecond')}
-                                            className={`text-right transition-colors ${sortKey === 'perSecond' ? 'text-purple-200' : 'text-gray-400 hover:text-gray-200'}`}
+                                            className="text-right transition-colors"
+                                            style={{ color: sortKey === 'perSecond' ? 'var(--brand-primary)' : 'var(--text-secondary)' }}
                                         >
                                             Per Sec{sortIndicator('perSecond')}
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() => updateSort('duration')}
-                                            className={`text-right transition-colors ${sortKey === 'duration' ? 'text-purple-200' : 'text-gray-400 hover:text-gray-200'}`}
+                                            className="text-right transition-colors"
+                                            style={{ color: sortKey === 'duration' ? 'var(--brand-primary)' : 'var(--text-secondary)' }}
                                         >
                                             Fight Time{sortIndicator('duration')}
                                         </button>
@@ -434,19 +442,19 @@ export const SpecialBuffsSection = ({
                                 rows={
                                     <>
                                         {sortedRows.map((row: any, idx: number) => (
-                                            <div key={`${activeSpecialTable.id}-${row.account}-${idx}`} className="grid grid-cols-[0.4fr_1.5fr_0.8fr_0.8fr_0.8fr] px-4 py-2 text-sm text-gray-200 border-t border-white/5">
-                                                <div className="text-center text-gray-500 font-mono">{idx + 1}</div>
+                                            <div key={`${activeSpecialTable.id}-${row.account}-${idx}`} className="grid grid-cols-[0.4fr_1.5fr_0.8fr_0.8fr_0.8fr] px-4 py-2 text-sm border-t" style={{ color: 'var(--text-primary)', borderColor: 'var(--border-subtle)' }}>
+                                                <div className="text-center font-mono" style={{ color: 'var(--text-muted)' }}>{idx + 1}</div>
                                                 <div className="flex items-center gap-2 min-w-0">
                                                     {renderProfessionIcon(row.profession, row.professionList, 'w-4 h-4')}
                                                     <span className="truncate">{row.account}</span>
                                                 </div>
-                                                <div className="text-right font-mono text-gray-300">
+                                                <div className="text-right font-mono" style={{ color: 'var(--text-secondary)' }}>
                                                     {Math.round(row.total).toLocaleString()}
                                                 </div>
-                                                <div className="text-right font-mono text-gray-300">
+                                                <div className="text-right font-mono" style={{ color: 'var(--text-secondary)' }}>
                                                     {formatWithCommas(row.perSecond, 1)}
                                                 </div>
-                                                <div className="text-right font-mono text-gray-400">
+                                                <div className="text-right font-mono" style={{ color: 'var(--text-secondary)' }}>
                                                     {row.duration ? `${row.duration.toFixed(1)}s` : '-'}
                                                 </div>
                                             </div>
@@ -459,6 +467,6 @@ export const SpecialBuffsSection = ({
                 }
             />
         )}
-    </div>
+        </div>
     );
 };
