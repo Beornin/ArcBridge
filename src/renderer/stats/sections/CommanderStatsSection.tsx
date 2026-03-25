@@ -895,7 +895,7 @@ export const CommanderStatsSection = ({
                                                     <option key={fight.id} value={fight.id}>{fight.shortLabel} • {fight.mapName || 'Unknown'}</option>
                                                 ))}
                                             </select>
-                                            <div className="flex items-center gap-1 rounded-full border border-[color:var(--border-default)] bg-[var(--bg-hover)] p-1">
+                                            <div className="flex items-center gap-1 rounded-sm p-[1px]" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-subtle)', borderRadius: '3px' }}>
                                                 <button
                                                     type="button"
                                                     onClick={() => setTimelineMode('incomingDamage')}
@@ -909,7 +909,7 @@ export const CommanderStatsSection = ({
                                                     type="button"
                                                     onClick={() => setTimelineMode('incomingBoons')}
                                                     className={`px-2.5 py-1 rounded-sm text-[11px] font-semibold transition-colors ${timelineMode === 'incomingBoons'
-                                                        ? 'bg-cyan-500/20 text-cyan-200 border border-cyan-500/40'
+                                                        ? 'bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]'
                                                         : 'border border-transparent text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}`}
                                                 >
                                                     Incoming Boons

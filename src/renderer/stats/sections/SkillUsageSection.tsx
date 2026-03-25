@@ -119,10 +119,10 @@ export const SkillUsageSection = ({
                     const player = playerMapByKey.get(playerKey);
                     if (!player) return null;
                     return (
-                        <span key={player.key} className="max-w-full flex items-center gap-1 rounded-full border border-cyan-400/40 bg-cyan-500/10 px-3 py-1 text-xs text-cyan-200">
+                        <span key={player.key} className="max-w-full flex items-center gap-1 rounded-full border border-[color:var(--accent-border)] bg-[var(--accent-bg)] px-3 py-1 text-xs text-[color:var(--brand-primary)]">
                             <span className="truncate max-w-[140px]">{player.displayName}</span>
-                            <span className="text-[10px] text-cyan-200/70">{player.logs} {player.logs === 1 ? 'log' : 'logs'}</span>
-                            <button type="button" onClick={() => removeSelectedPlayer(player.key)} className="rounded-full p-1 text-cyan-200 hover:bg-white/20">
+                            <span className="text-[10px] text-[color:var(--brand-primary)]/70">{player.logs} {player.logs === 1 ? 'log' : 'logs'}</span>
+                            <button type="button" onClick={() => removeSelectedPlayer(player.key)} className="rounded-full p-1 text-[color:var(--brand-primary)] hover:bg-white/20">
                                 <XCircle className="w-3 h-3" />
                             </button>
                         </span>
@@ -227,7 +227,7 @@ export const SkillUsageSection = ({
                                                         type="button"
                                                         key={player.key}
                                                         onClick={() => togglePlayerSelection(player.key)}
-                                                        className={`skill-usage-player-list-item w-full border-b border-[color:var(--border-subtle)] px-6 py-2 text-left transition-colors last:border-b-0 ${isSelected ? 'border-cyan-400 bg-cyan-500/10 text-white' : 'border-transparent hover:border-[color:var(--border-default)] hover:bg-[var(--bg-hover)]'}`}
+                                                        className={`skill-usage-player-list-item w-full border-b border-[color:var(--border-subtle)] px-6 py-2 text-left transition-colors last:border-b-0 ${isSelected ? 'border-[color:var(--accent-border)] bg-[var(--accent-bg-strong)] text-[color:var(--text-primary)]' : 'border-transparent hover:border-[color:var(--border-default)] hover:bg-[var(--bg-hover)]'}`}
                                                     >
                                                         <div className="flex items-center justify-between">
                                                             <div>
@@ -236,7 +236,7 @@ export const SkillUsageSection = ({
                                                                     {player.account} · {player.profession} · {player.logs} {player.logs === 1 ? 'log' : 'logs'}
                                                                 </div>
                                                             </div>
-                                                            {isSelected && <CheckCircle2 className="w-4 h-4 text-cyan-300" />}
+                                                            {isSelected && <CheckCircle2 className="w-4 h-4 text-[color:var(--brand-primary)]" />}
                                                         </div>
                                                     </button>
                                                 );
@@ -302,7 +302,7 @@ export const SkillUsageSection = ({
                                                             textClassName="font-semibold"
                                                         />
                                                     </div>
-                                                    <span className="text-cyan-200 font-mono text-xs shrink-0">{formatSkillUsageValue(entry.total)}</span>
+                                                    <span className="text-[color:var(--brand-primary)] font-mono text-xs shrink-0">{formatSkillUsageValue(entry.total)}</span>
                                                 </div>
                                                 <div className="h-1 w-full rounded-full bg-[var(--bg-hover)]">
                                                     <div

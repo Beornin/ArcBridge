@@ -260,7 +260,7 @@ export const BoonUptimeSection = ({
                                         type="button"
                                         onClick={() => setActiveBoonId(boon.id)}
                                         className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-colors ${isActive
-                                            ? 'border-amber-300/60 bg-amber-500/15 text-amber-100'
+                                            ? 'border-[color:var(--accent-border)] bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)]'
                                             : 'border-[color:var(--border-default)] bg-white/[0.03] text-[color:var(--text-secondary)] hover:border-[color:var(--border-hover)] hover:text-[color:var(--text-primary)]'
                                             }`}
                                     >
@@ -310,7 +310,7 @@ export const BoonUptimeSection = ({
                                                     ? 'border-cyan-300/70 bg-cyan-400/12 text-white shadow-[inset_0_0_0_1px_rgba(34,211,238,0.18)]'
                                                     : 'border-cyan-400/25 bg-cyan-400/[0.06] hover:border-cyan-300/45 hover:bg-cyan-400/[0.10]')
                                                 : (isSelected
-                                                    ? 'border-amber-300/60 bg-amber-400/10 text-white'
+                                                    ? 'border-[color:var(--accent-border)] bg-[var(--accent-bg-strong)] text-[color:var(--text-primary)]'
                                                     : 'border-[color:var(--border-default)] bg-white/[0.02] hover:border-[color:var(--border-hover)] hover:bg-white/[0.05]')
                                                 }`}
                                         >

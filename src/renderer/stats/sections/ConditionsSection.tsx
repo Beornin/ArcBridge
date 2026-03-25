@@ -103,7 +103,7 @@ export const ConditionsSection = ({
                             { value: 'outgoing', label: 'Outgoing' },
                             { value: 'incoming', label: 'Incoming' }
                         ]}
-                        activeClassName="bg-amber-500/20 text-amber-200 border border-amber-500/40"
+                        activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
                         inactiveClassName="border border-transparent text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]"
                     />
                 )}
@@ -174,7 +174,7 @@ export const ConditionsSection = ({
                                     { value: 'outgoing', label: 'Outgoing' },
                                     { value: 'incoming', label: 'Incoming' }
                                 ]}
-                                activeClassName="bg-amber-500/20 text-amber-200 border border-amber-500/40"
+                                activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
                                 inactiveClassName="border border-transparent text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]"
                             />
                             <PillToggleGroup
@@ -185,7 +185,7 @@ export const ConditionsSection = ({
                                         ...(conditionDirection === 'outgoing' ? [{ value: 'uptime', label: 'Uptime' }] : []),
                                         ...(showConditionDamage ? [{ value: 'damage', label: 'Damage' }] : [])
                                     ]}
-                                    activeClassName="bg-amber-500/20 text-amber-200 border border-amber-500/40"
+                                    activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
                                     inactiveClassName="border border-transparent text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]"
                                 />
                         </div>
@@ -351,7 +351,7 @@ export const ConditionsSection = ({
                                             type="button"
                                             onClick={() => setActiveConditionName('all')}
                                             className={`w-full text-left px-3 py-1.5 rounded-[var(--radius-md)] text-xs transition-colors ${activeConditionName === 'all'
-                                                ? 'bg-amber-500/20 text-amber-200 font-semibold'
+                                                ? 'bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] font-semibold'
                                                 : 'hover:bg-[var(--bg-hover)] text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'
                                                 }`}
                                         >
@@ -363,7 +363,7 @@ export const ConditionsSection = ({
                                                 type="button"
                                                 onClick={() => setActiveConditionName(entry.name)}
                                                 className={`w-full text-left px-3 py-1.5 rounded-[var(--radius-md)] text-xs transition-colors ${activeConditionName === entry.name
-                                                    ? 'bg-amber-500/20 text-amber-200 font-semibold'
+                                                    ? 'bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] font-semibold'
                                                     : 'hover:bg-[var(--bg-hover)] text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'
                                                     }`}
                                             >
@@ -393,7 +393,7 @@ export const ConditionsSection = ({
                                             dir: effectiveConditionSort.key === 'applications' ? (effectiveConditionSort.dir === 'desc' ? 'asc' : 'desc') : 'desc'
                                         });
                                     }}
-                                    className={`text-right transition-colors ${effectiveConditionSort.key === 'applications' ? 'text-amber-200' : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}`}
+                                    className={`text-right transition-colors ${effectiveConditionSort.key === 'applications' ? 'text-[color:var(--brand-primary)]' : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}`}
                                 >
                                     Applications {effectiveConditionSort.key === 'applications' ? (effectiveConditionSort.dir === 'desc' ? '↓' : '↑') : ''}
                                 </button>
@@ -406,7 +406,7 @@ export const ConditionsSection = ({
                                                 dir: effectiveConditionSort.key === 'uptime' ? (effectiveConditionSort.dir === 'desc' ? 'asc' : 'desc') : 'desc'
                                             });
                                         }}
-                                        className={`text-right transition-colors ${effectiveConditionSort.key === 'uptime' ? 'text-amber-200' : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}`}
+                                        className={`text-right transition-colors ${effectiveConditionSort.key === 'uptime' ? 'text-[color:var(--brand-primary)]' : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}`}
                                     >
                                         Uptime {effectiveConditionSort.key === 'uptime' ? (effectiveConditionSort.dir === 'desc' ? '↓' : '↑') : ''}
                                     </button>
@@ -420,7 +420,7 @@ export const ConditionsSection = ({
                                                 dir: effectiveConditionSort.key === 'damage' ? (effectiveConditionSort.dir === 'desc' ? 'asc' : 'desc') : 'desc'
                                             });
                                         }}
-                                        className={`text-right transition-colors ${effectiveConditionSort.key === 'damage' ? 'text-amber-200' : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}`}
+                                        className={`text-right transition-colors ${effectiveConditionSort.key === 'damage' ? 'text-[color:var(--brand-primary)]' : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}`}
                                     >
                                         Damage {effectiveConditionSort.key === 'damage' ? (effectiveConditionSort.dir === 'desc' ? '↓' : '↑') : ''}
                                     </button>

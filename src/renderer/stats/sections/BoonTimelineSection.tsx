@@ -173,7 +173,7 @@ export const BoonTimelineSection = ({
                             { value: 'groupBuffs', label: 'Group' },
                             { value: 'totalBuffs', label: 'All' }
                         ]}
-                        activeClassName="bg-cyan-500/20 text-cyan-200 border border-cyan-500/40"
+                        activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
                         inactiveClassName="border border-transparent text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]"
                     />
                 </div>
@@ -190,7 +190,7 @@ export const BoonTimelineSection = ({
                                         type="button"
                                         onClick={() => setActiveBoonId(boon.id)}
                                         className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-colors ${isActive
-                                            ? 'border-cyan-300/60 bg-cyan-500/15 text-cyan-100'
+                                            ? 'border-[color:var(--accent-border)] bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)]'
                                             : 'border-[color:var(--border-default)] bg-white/[0.03] text-[color:var(--text-secondary)] hover:border-[color:var(--border-hover)] hover:text-[color:var(--text-primary)]'
                                             }`}
                                     >
@@ -235,7 +235,7 @@ export const BoonTimelineSection = ({
                                             type="button"
                                             onClick={() => setSelectedPlayerKey(player.key)}
                                             className={`spike-player-list-item w-full rounded-md border px-2.5 py-1.5 text-left transition-colors ${isSelected
-                                                ? 'border-cyan-300/60 bg-cyan-400/10 text-white'
+                                                ? 'border-[color:var(--accent-border)] bg-[var(--accent-bg-strong)] text-[color:var(--text-primary)]'
                                                 : 'border-[color:var(--border-default)] bg-white/[0.02] hover:border-[color:var(--border-hover)] hover:bg-white/[0.05]'
                                                 }`}
                                         >
