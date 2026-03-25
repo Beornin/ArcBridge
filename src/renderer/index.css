@@ -771,6 +771,15 @@ body:not(.web-report) .modal-pane .dense-table.fight-breakdown-dense .dense-tabl
     to { opacity: 0; }
 }
 
+.stats-view-slide-up {
+    animation: stats-view-slide-up 350ms ease-out both;
+}
+
+@keyframes stats-view-slide-up {
+    from { transform: translateY(12px); }
+    to { transform: translateY(0); }
+}
+
 /* Group container entrance animation on nav switch */
 .stats-group-enter {
     animation: stats-group-enter 250ms ease-out both;
