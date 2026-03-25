@@ -755,50 +755,6 @@ body:not(.web-report) .modal-pane .dense-table.fight-breakdown-dense .dense-tabl
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
-/* Stats view fade-in overlay when switching to stats tab */
-.stats-view-fade-in {
-    position: absolute;
-    inset: 0;
-    z-index: 30;
-    background: var(--bg-elevated);
-    pointer-events: none;
-    animation: stats-view-reveal 300ms ease-out forwards;
-}
-
-@keyframes stats-view-reveal {
-    from { opacity: 1; }
-    to { opacity: 0; }
-}
-
-/* Stats entrance: header slides down, content slides up */
-.stats-view-entering .stats-header-entrance {
-    animation: stats-header-slide-down 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.stats-view-entering .stats-group-container {
-    animation: stats-content-slide-up 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
-    animation-delay: 50ms;
-}
-
-@keyframes stats-header-slide-down {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes stats-content-slide-up {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Nav sidebar slide-in from left */
-.stats-nav-slide-in {
-    animation: stats-nav-slide-in 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-@keyframes stats-nav-slide-in {
-    from { opacity: 0; transform: translateX(-20px); }
-    to { opacity: 1; transform: translateX(0); }
-}
 
 /* Group container entrance animation on nav switch */
 .stats-group-enter {

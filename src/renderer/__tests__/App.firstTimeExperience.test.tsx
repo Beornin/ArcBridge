@@ -145,6 +145,10 @@ describe('App first-time walkthrough', () => {
         expect(scrollToSpy).toHaveBeenCalledTimes(1);
 
         await user.click(screen.getByTitle('Dashboard'));
+        // Wait for Dashboard to mount after AnimatePresence exit/enter transition
+        await waitFor(() => {
+            expect(screen.queryByRole('heading', { name: 'Help & Updates' })).not.toBeInTheDocument();
+        });
         await user.click(screen.getByTitle('Settings'));
         expect(await screen.findByRole('heading', { name: 'Help & Updates' })).toBeInTheDocument();
         expect(scrollToSpy).toHaveBeenCalledTimes(1);
