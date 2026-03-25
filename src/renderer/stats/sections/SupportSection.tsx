@@ -309,7 +309,7 @@ export const SupportSection = ({
             <>
             <StatsTableLayout
                 expanded={expandedSection === 'support-detailed'}
-                sidebarClassName={`pr-3 flex flex-col min-h-0 overflow-y-auto ${expandedSection === 'support-detailed' ? 'h-full flex-1' : ''}`}
+                sidebarClassName={`pr-3 flex flex-col overflow-y-auto ${expandedSection === 'support-detailed' ? 'h-full flex-1 min-h-0' : ''}`}
                 sidebarStyle={undefined}
                 contentClassName={`overflow-hidden ${expandedSection === 'support-detailed' ? 'flex flex-col min-h-0' : ''}`}
                 contentStyle={undefined}

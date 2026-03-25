@@ -313,7 +313,7 @@ export const HealingSection = ({
             <>
             <StatsTableLayout
                 expanded={expandedSection === 'healing-stats'}
-                sidebarClassName={`pr-3 flex flex-col min-h-0 overflow-y-auto ${expandedSection === 'healing-stats' ? 'h-full flex-1' : ''}`}
+                sidebarClassName={`pr-3 flex flex-col overflow-y-auto ${expandedSection === 'healing-stats' ? 'h-full flex-1 min-h-0' : ''}`}
                 sidebarStyle={undefined}
                 contentClassName={`overflow-hidden ${expandedSection === 'healing-stats' ? 'flex flex-col min-h-0' : ''}`}
                 contentStyle={undefined}

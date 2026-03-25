@@ -327,7 +327,7 @@ export const BoonOutputSection = ({
             <>
             <StatsTableLayout
                 expanded={expandedSection === 'boon-output'}
-                sidebarClassName={`pr-3 flex flex-col min-h-0 overflow-y-auto ${expandedSection === 'boon-output' ? 'h-full flex-1' : ''}`}
+                sidebarClassName={`pr-3 flex flex-col overflow-y-auto ${expandedSection === 'boon-output' ? 'h-full flex-1 min-h-0' : ''}`}
                 sidebarStyle={undefined}
                 contentClassName={`overflow-hidden ${expandedSection === 'boon-output' ? 'flex flex-col min-h-0' : ''}`}
                 contentStyle={undefined}

@@ -328,7 +328,7 @@ export const ConditionsSection = ({
                 <>
                 <StatsTableLayout
                 expanded={expandedSection === 'conditions-outgoing'}
-                sidebarClassName={`pr-3 flex flex-col min-h-0 overflow-y-auto ${expandedSection === 'conditions-outgoing' ? 'h-full flex-1' : ''}`}
+                sidebarClassName={`pr-3 flex flex-col overflow-y-auto ${expandedSection === 'conditions-outgoing' ? 'h-full flex-1 min-h-0' : ''}`}
                 contentClassName={`overflow-hidden ${expandedSection === 'conditions-outgoing' ? 'flex flex-col min-h-0' : ''}`}
                 sidebar={
                     <>

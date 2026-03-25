@@ -89,7 +89,7 @@ export const FightCompSection = ({
                     <div className="rounded-[var(--radius-md)] border border-dashed border-[color:var(--border-hover)] px-4 py-6 text-center text-xs text-[color:var(--text-secondary)]">No fight composition data available.</div>
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)] gap-4">
-                        <aside className="fight-comp-fight-nav rounded-[var(--radius-md)] pr-3 flex flex-col min-h-0 overflow-y-auto">
+                        <aside className="fight-comp-fight-nav rounded-[var(--radius-md)] pr-3 flex flex-col overflow-y-auto">
                             <div className="text-xs uppercase tracking-widest text-[color:var(--text-secondary)] mb-2">Fight Tabs</div>
                             <div className="space-y-1 pr-1 max-h-[320px] overflow-y-auto">
                                 {fights.map((fight) => {

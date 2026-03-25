@@ -282,7 +282,7 @@ export const OffenseSection = ({
             <>
             <StatsTableLayout
                 expanded={expandedSection === 'offense-detailed'}
-                sidebarClassName={`pr-3 flex flex-col min-h-0 overflow-y-auto ${expandedSection === 'offense-detailed' ? 'h-full flex-1' : ''}`}
+                sidebarClassName={`pr-3 flex flex-col overflow-y-auto ${expandedSection === 'offense-detailed' ? 'h-full flex-1 min-h-0' : ''}`}
                 sidebarStyle={undefined}
                 contentClassName={`overflow-hidden ${expandedSection === 'offense-detailed' ? 'flex flex-col min-h-0' : ''}`}
                 contentStyle={undefined}
