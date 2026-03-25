@@ -174,7 +174,8 @@ export const FightDiffModeSection = () => {
                         <label className="text-xs uppercase tracking-widest text-[color:var(--text-secondary)]">
                             Fight A
                             <select
-                                className="fight-diff-select mt-2 w-full rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-[var(--bg-card-inner)] px-3 py-2 text-sm text-gray-100 focus:outline-none"
+                                className="fight-diff-select mt-2 w-full rounded-[var(--radius-md)] border border-[color:var(--border-default)] px-3 py-2 text-sm focus:outline-none"
+                                style={{ background: 'var(--bg-input)', color: 'var(--text-primary)' }}
                                 value={fightAId}
                                 onChange={(event) => setFightAId(event.target.value)}
                             >
@@ -188,7 +189,8 @@ export const FightDiffModeSection = () => {
                         <label className="text-xs uppercase tracking-widest text-[color:var(--text-secondary)]">
                             Fight B
                             <select
-                                className="fight-diff-select mt-2 w-full rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-[var(--bg-card-inner)] px-3 py-2 text-sm text-gray-100 focus:outline-none"
+                                className="fight-diff-select mt-2 w-full rounded-[var(--radius-md)] border border-[color:var(--border-default)] px-3 py-2 text-sm focus:outline-none"
+                                style={{ background: 'var(--bg-input)', color: 'var(--text-primary)' }}
                                 value={fightBId}
                                 onChange={(event) => setFightBId(event.target.value)}
                             >

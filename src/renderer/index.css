@@ -206,6 +206,16 @@ body,
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23cbd5e1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E") !important;
 }
 
+body.glass-surfaces .stats-view .fight-diff-select {
+    background-color: rgba(15, 18, 25, 0.85) !important;
+    backdrop-filter: blur(12px);
+}
+
+body.glass-surfaces .stats-view .fight-diff-select option {
+    background: #0f1219;
+    color: var(--text-primary);
+}
+
 body.web-report .stats-sections>[data-section-visible="true"]+[data-section-visible="true"] {
     margin-top: 1.5rem;
 }
