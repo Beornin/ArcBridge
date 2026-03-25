@@ -62,7 +62,7 @@ export const FightBreakdownSection = ({
 
     const renderReportCell = (fight: any): ReactNode => {
         const label = formatReportLabel(fight);
-        if (!fight?.permalink) return <span className="text-gray-500">Pending</span>;
+        if (!fight?.permalink) return <span className="text-[color:var(--text-muted)]">Pending</span>;
         return (
             <button
                 onClick={() => {
@@ -127,7 +127,7 @@ export const FightBreakdownSection = ({
                         count={fight.squadCount ?? 0}
                         classCounts={fight.squadClassCountsFight}
                         label="Squad Classes"
-                        className="text-gray-200"
+                        className="text-[color:var(--text-primary)]"
                     />
                 ),
                 allies: (
@@ -135,7 +135,7 @@ export const FightBreakdownSection = ({
                         count={fight.allyCount ?? 0}
                         classCounts={fight.allyClassCountsFight}
                         label="Ally Classes"
-                        className="text-gray-200"
+                        className="text-[color:var(--text-primary)]"
                     />
                 ),
                 enemies: (
@@ -143,7 +143,7 @@ export const FightBreakdownSection = ({
                         count={fight.enemyCount ?? 0}
                         classCounts={fight.enemyClassCounts}
                         label="Enemy Classes"
-                        className="text-gray-200"
+                        className="text-[color:var(--text-primary)]"
                     />
                 ),
                 alliesDown: Number(fight.alliesDown ?? 0),
@@ -178,7 +178,7 @@ export const FightBreakdownSection = ({
                 id: String(fight.id || `${fight.label}-${idx}`),
                 label: (
                     <div className="min-w-0">
-                        <div className="text-[10px] uppercase tracking-widest text-gray-500">{idx + 1}</div>
+                        <div className="text-[10px] uppercase tracking-widest text-[color:var(--text-muted)]">{idx + 1}</div>
                         {renderReportCell(fight)}
                     </div>
                 ),
@@ -227,7 +227,7 @@ export const FightBreakdownSection = ({
                     </div>
                 </div>
                 {fights.length === 0 ? (
-                    <div className="text-center text-gray-500 italic py-6">No fight data available</div>
+                    <div className="text-center text-[color:var(--text-muted)] italic py-6">No fight data available</div>
                 ) : isExpanded ? (
                     <DenseStatsTable
                         title="Fight Breakdown (All Columns)"
@@ -241,7 +241,7 @@ export const FightBreakdownSection = ({
                         <div className="max-h-[360px] overflow-y-auto">
                             <table className="w-full text-xs table-auto min-w-[720px]">
                                 <thead>
-                                    <tr className="text-gray-400 uppercase tracking-widest text-[10px] border-b border-white/10">
+                                    <tr className="text-[color:var(--text-secondary)] uppercase tracking-widest text-[10px] border-b border-[color:var(--border-default)]">
                                         <th className="text-right py-2 px-2 w-8">#</th>
                                         <th className="text-left py-2 px-3 w-[240px]">Report</th>
                                         <th className="text-left py-2 px-3 w-20">Duration</th>
@@ -298,10 +298,10 @@ export const FightBreakdownSection = ({
                                 </thead>
                                 <tbody>
                                     {fights.map((fight: any, idx: number) => (
-                                        <tr key={fight.id || `${fight.label}-${idx}`} className="border-b border-white/5 hover:bg-white/5">
-                                            <td className="py-2 px-2 text-right font-mono text-gray-500 w-8">{idx + 1}</td>
+                                        <tr key={fight.id || `${fight.label}-${idx}`} className="border-b border-[color:var(--border-subtle)] hover:bg-[var(--bg-hover)]">
+                                            <td className="py-2 px-2 text-right font-mono text-[color:var(--text-muted)] w-8">{idx + 1}</td>
                                             <td className="py-2 px-3 w-[240px]">{renderReportCell(fight)}</td>
-                                            <td className="py-2 px-3 text-gray-200 w-20">{fight.duration || '--:--'}</td>
+                                            <td className="py-2 px-3 text-[color:var(--text-primary)] w-20">{fight.duration || '--:--'}</td>
                                             <td
                                                 className={`py-2 px-3 font-semibold ${
                                                     fight.isWin === true
@@ -320,7 +320,7 @@ export const FightBreakdownSection = ({
                                                             count={fight.squadCount ?? 0}
                                                             classCounts={fight.squadClassCountsFight}
                                                             label="Squad Classes"
-                                                            className="text-gray-200"
+                                                            className="text-[color:var(--text-primary)]"
                                                         />
                                                     </td>
                                                     <td className="py-2 px-3 text-right font-mono">
@@ -328,7 +328,7 @@ export const FightBreakdownSection = ({
                                                             count={fight.allyCount ?? 0}
                                                             classCounts={fight.allyClassCountsFight}
                                                             label="Ally Classes"
-                                                            className="text-gray-200"
+                                                            className="text-[color:var(--text-primary)]"
                                                         />
                                                     </td>
                                                     <td className="py-2 px-3 text-right font-mono">
@@ -336,17 +336,17 @@ export const FightBreakdownSection = ({
                                                             count={fight.enemyCount ?? 0}
                                                             classCounts={fight.enemyClassCounts}
                                                             label="Enemy Classes"
-                                                            className="text-gray-200"
+                                                            className="text-[color:var(--text-primary)]"
                                                         />
                                                     </td>
                                                     {teamColumnIds.length === 0 ? (
-                                                        <td className="py-2 px-3 text-right font-mono text-gray-200">0</td>
+                                                        <td className="py-2 px-3 text-right font-mono text-[color:var(--text-primary)]">0</td>
                                                     ) : (
                                                         teamColumnIds.map((teamId) => {
                                                             const rows = Array.isArray(fight.teamBreakdown) ? fight.teamBreakdown : [];
                                                             const entry = rows.find((row: any) => String(row?.teamId ?? '') === teamId);
                                                             return (
-                                                                <td key={teamId} className="py-2 px-3 text-right font-mono text-gray-200">
+                                                                <td key={teamId} className="py-2 px-3 text-right font-mono text-[color:var(--text-primary)]">
                                                                     {Number(entry?.count || 0)}
                                                                 </td>
                                                             );

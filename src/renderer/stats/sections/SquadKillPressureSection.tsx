@@ -84,17 +84,17 @@ export const SquadKillPressureSection = () => {
             </div>
 
             {chartData.length === 0 ? (
-                <div className="text-center text-gray-500 italic py-8">No fight data available</div>
+                <div className="text-center text-[color:var(--text-muted)] italic py-8">No fight data available</div>
             ) : (
-                <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
+                <div className="rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-[var(--bg-card-inner)] p-4">
                     <div className="flex items-center justify-between gap-3 mb-3">
                         <div>
-                            <div className="text-xs font-semibold uppercase tracking-[0.3em] text-gray-400">Kill/Death Ratio per Fight</div>
-                            <div className="text-[11px] text-gray-500 mt-1">
+                            <div className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--text-secondary)]">Kill/Death Ratio per Fight</div>
+                            <div className="text-[11px] text-[color:var(--text-muted)] mt-1">
                                 Baseline is KDR 1.0. Green above = winning attrition. Red below = losing attrition. Scale is logarithmic.
                             </div>
                         </div>
-                        <div className="text-[11px] text-gray-500 shrink-0">
+                        <div className="text-[11px] text-[color:var(--text-muted)] shrink-0">
                             {chartData.length} {chartData.length === 1 ? 'fight' : 'fights'}
                         </div>
                     </div>
@@ -154,15 +154,15 @@ export const SquadKillPressureSection = () => {
                     <div className="flex justify-center gap-4 mt-2">
                         <div className="flex items-center gap-1.5">
                             <div className="w-2.5 h-2.5 rounded-sm bg-green-500" />
-                            <span className="text-[9px] text-gray-400">KDR &gt; 1.0</span>
+                            <span className="text-[9px] text-[color:var(--text-secondary)]">KDR &gt; 1.0</span>
                         </div>
                         <div className="flex items-center gap-1.5">
                             <div className="w-2.5 h-2.5 rounded-sm bg-red-400" />
-                            <span className="text-[9px] text-gray-400">KDR &lt; 1.0</span>
+                            <span className="text-[9px] text-[color:var(--text-secondary)]">KDR &lt; 1.0</span>
                         </div>
                         <div className="flex items-center gap-1.5">
                             <div className="w-3 h-0 border-t border-dashed border-amber-400" />
-                            <span className="text-[9px] text-gray-400">Break-even</span>
+                            <span className="text-[9px] text-[color:var(--text-secondary)]">Break-even</span>
                         </div>
                     </div>
                 </div>

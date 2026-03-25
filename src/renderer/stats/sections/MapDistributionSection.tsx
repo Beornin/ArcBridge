@@ -47,8 +47,8 @@ export const MapDistributionSection = ({
                             payload: item
                         }))}
                         formatter={(value: any, entry: any) => (
-                            <span className="text-gray-300 font-medium ml-1">
-                                {value} <span className="text-gray-500">({entry.payload.value})</span>
+                            <span className="text-[color:var(--text-secondary)] font-medium ml-1">
+                                {value} <span className="text-[color:var(--text-muted)]">({entry.payload.value})</span>
                             </span>
                         )}
                     />

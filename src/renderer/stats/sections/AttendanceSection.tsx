@@ -135,13 +135,13 @@ export const AttendanceSection = ({
                             value={search}
                             onChange={(event) => setSearch(event.target.value)}
                             placeholder="Search account, character, or class..."
-                            className="w-full sm:w-[320px] rounded-lg px-3 py-2 text-xs focus:outline-none"
+                            className="w-full sm:w-[320px] rounded-[var(--radius-md)] px-3 py-2 text-xs focus:outline-none"
                             style={{ background: 'var(--bg-card-inner)', border: '1px solid var(--border-default)', color: 'var(--text-primary)' }}
                         />
                         <button
                             type="button"
                             onClick={exportVisibleRowsAsCsv}
-                            className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs transition-colors whitespace-nowrap"
+                            className="inline-flex items-center gap-1.5 rounded-[var(--radius-md)] px-3 py-2 text-xs transition-colors whitespace-nowrap"
                             style={{ border: '1px solid var(--border-default)', background: 'var(--bg-hover)', color: 'var(--text-primary)' }}
                         >
                             <Download className="w-3.5 h-3.5" />
@@ -152,7 +152,7 @@ export const AttendanceSection = ({
                 {attendanceRows.length === 0 ? (
                     <div className="text-center italic py-6" style={{ color: 'var(--text-muted)' }}>No attendance data available.</div>
                 ) : (
-                    <div className={`rounded-xl overflow-hidden ${shouldScrollLedger ? 'max-h-[30rem] overflow-y-auto' : ''}`} style={{ background: 'var(--bg-card-inner)', border: '1px solid var(--border-subtle)' }}>
+                    <div className={`rounded-[var(--radius-md)] overflow-hidden ${shouldScrollLedger ? 'max-h-[30rem] overflow-y-auto' : ''}`} style={{ background: 'var(--bg-card-inner)', border: '1px solid var(--border-subtle)' }}>
                         <table className="w-full text-xs table-auto min-w-full border-separate border-spacing-0">
                             <thead>
                                 <tr className="text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-default)' }}>

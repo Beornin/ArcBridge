@@ -73,7 +73,7 @@ export const TopSkillsSection = ({
             <div className="max-h-80 overflow-y-auto overflow-x-hidden space-y-4">
                 {sortedTopSkills.map((skill: { name: string; icon?: string; damage: number; hits: number }, i: number) => (
                     <div key={`outgoing-${skill.name || 'unknown'}-${i}`} className="flex items-center gap-4">
-                        <div className="w-8 text-center text-xl font-bold text-gray-600">#{i + 1}</div>
+                        <div className="w-8 text-center text-xl font-bold text-[color:var(--text-muted)]">#{i + 1}</div>
                         <div className="flex-1">
                             <div className="flex items-center justify-between gap-3 text-sm mb-1 py-0.5 leading-normal">
                                 <span className="text-white font-bold flex-1 min-w-0 py-[1px]">
@@ -87,10 +87,10 @@ export const TopSkillsSection = ({
                                 </span>
                                 <div className="text-right shrink-0">
                                     <span className="top-skills-outgoing-value text-orange-400 font-mono font-bold">{Math.round((skill as any)[metricKey] || 0).toLocaleString()}</span>
-                                    <span className="text-gray-500 text-xs ml-2">({skill.hits.toLocaleString()} hits)</span>
+                                    <span className="text-[color:var(--text-muted)] text-xs ml-2">({skill.hits.toLocaleString()} hits)</span>
                                 </div>
                             </div>
-                            <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div className="h-2 w-full bg-[var(--bg-hover)] rounded-full overflow-hidden">
                                 <div
                                     className="top-skills-outgoing-bar h-full bg-orange-500 rounded-full"
                                     style={{ width: `${(Number((skill as any)[metricKey] || 0) / topSkillsPeak) * 100}%` }}
@@ -100,7 +100,7 @@ export const TopSkillsSection = ({
                     </div>
                 ))}
                 {sortedTopSkills.length === 0 && (
-                    <div className="text-center text-gray-500 italic py-4">No skill data available</div>
+                    <div className="text-center text-[color:var(--text-muted)] italic py-4">No skill data available</div>
                 )}
             </div>
         </div>
@@ -114,7 +114,7 @@ export const TopSkillsSection = ({
             <div className="max-h-80 overflow-y-auto overflow-x-hidden space-y-4">
                 {(stats.topIncomingSkills || []).map((skill: { name: string; icon?: string; damage: number; hits: number }, i: number) => (
                     <div key={`incoming-${skill.name || 'unknown'}-${i}`} className="flex items-center gap-4">
-                        <div className="w-8 text-center text-xl font-bold text-gray-600">#{i + 1}</div>
+                        <div className="w-8 text-center text-xl font-bold text-[color:var(--text-muted)]">#{i + 1}</div>
                         <div className="flex-1">
                             <div className="flex items-center justify-between gap-3 text-sm mb-1 py-0.5 leading-normal">
                                 <span className="text-white font-bold flex-1 min-w-0 py-[1px]">
@@ -128,10 +128,10 @@ export const TopSkillsSection = ({
                                 </span>
                                 <div className="text-right shrink-0">
                                     <span className="text-red-400 font-mono font-bold">{Math.round(skill.damage).toLocaleString()}</span>
-                                    <span className="text-gray-500 text-xs ml-2">({skill.hits.toLocaleString()} hits)</span>
+                                    <span className="text-[color:var(--text-muted)] text-xs ml-2">({skill.hits.toLocaleString()} hits)</span>
                                 </div>
                             </div>
-                            <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div className="h-2 w-full bg-[var(--bg-hover)] rounded-full overflow-hidden">
                                 <div
                                     className="h-full bg-red-500 rounded-full"
                                     style={{ width: `${(skill.damage / (stats.topIncomingSkills[0]?.damage || 1)) * 100}%` }}
@@ -141,7 +141,7 @@ export const TopSkillsSection = ({
                     </div>
                 ))}
                 {stats.topIncomingSkills.length === 0 && (
-                    <div className="text-center text-gray-500 italic py-4">No incoming damage data available</div>
+                    <div className="text-center text-[color:var(--text-muted)] italic py-4">No incoming damage data available</div>
                 )}
             </div>
         </div>

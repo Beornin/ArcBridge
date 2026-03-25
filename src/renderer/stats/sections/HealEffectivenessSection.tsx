@@ -20,15 +20,15 @@ const SkillTable = ({
     rows: HealEffectivenessSkillRow[];
     colorClass: string;
 }) => (
-    <div className="rounded-2xl border border-white/10 bg-black/25 overflow-hidden min-h-[260px]">
-        <div className="px-4 py-3 border-b border-white/10">
-            <div className="text-[10px] uppercase tracking-[0.35em] text-gray-500">{title}</div>
+    <div className="rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-[var(--bg-card-inner)] overflow-hidden min-h-[260px]">
+        <div className="px-4 py-3 border-b border-[color:var(--border-default)]">
+            <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-muted)]">{title}</div>
         </div>
         {rows.length === 0 ? (
-            <div className="px-4 py-8 text-center text-xs text-gray-500 italic">No skill data available for this fight.</div>
+            <div className="px-4 py-8 text-center text-xs text-[color:var(--text-muted)] italic">No skill data available for this fight.</div>
         ) : (
             <>
-                <div className="grid grid-cols-[2fr_0.9fr_0.7fr] gap-2 px-4 py-2 text-[10px] uppercase tracking-[0.25em] text-gray-400 border-b border-white/10">
+                <div className="grid grid-cols-[2fr_0.9fr_0.7fr] gap-2 px-4 py-2 text-[10px] uppercase tracking-[0.25em] text-[color:var(--text-secondary)] border-b border-[color:var(--border-default)]">
                     <div>Skill</div>
                     <div className="text-right">{metricLabel}</div>
                     <div className="text-right">Hits</div>
@@ -37,7 +37,7 @@ const SkillTable = ({
                     {rows.map((row, index) => (
                         <div
                             key={`${row.skillName}-${index}`}
-                            className="grid grid-cols-[2fr_0.9fr_0.7fr] gap-2 px-4 py-2.5 text-sm text-gray-200 border-b border-white/[0.05] last:border-b-0"
+                            className="grid grid-cols-[2fr_0.9fr_0.7fr] gap-2 px-4 py-2.5 text-sm text-[color:var(--text-primary)] border-b border-white/[0.05] last:border-b-0"
                         >
                             <div className="min-w-0">
                                 <InlineIconLabel
@@ -49,7 +49,7 @@ const SkillTable = ({
                                 />
                             </div>
                             <div className={`text-right font-mono ${colorClass}`}>{Math.round(row.amount).toLocaleString()}</div>
-                            <div className="text-right font-mono text-gray-300">{Math.round(row.hits || 0).toLocaleString()}</div>
+                            <div className="text-right font-mono text-[color:var(--text-secondary)]">{Math.round(row.hits || 0).toLocaleString()}</div>
                         </div>
                     ))}
                 </div>
@@ -114,18 +114,18 @@ export const HealEffectivenessSection = ({ fights }: HealEffectivenessSectionPro
                 </button>
             </div>
             {fights.length === 0 ? (
-                <div className="text-center text-gray-500 italic py-8">No heal effectiveness data available</div>
+                <div className="text-center text-[color:var(--text-muted)] italic py-8">No heal effectiveness data available</div>
             ) : (
                 <>
-                    <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
+                    <div className="rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-[var(--bg-card-inner)] p-4">
                         <div className="flex items-center justify-between gap-3 mb-3">
                             <div>
-                                <div className="text-xs font-semibold uppercase tracking-[0.3em] text-gray-400">Per Fight Totals</div>
-                                <div className="text-[11px] text-gray-500 mt-1">
+                                <div className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--text-secondary)]">Per Fight Totals</div>
+                                <div className="text-[11px] text-[color:var(--text-muted)] mt-1">
                                     Red is incoming damage, green is healing, white is healing plus barrier. Click a point to show that fight&apos;s skill tables.
                                 </div>
                             </div>
-                            <div className="text-[11px] text-gray-500 shrink-0">
+                            <div className="text-[11px] text-[color:var(--text-muted)] shrink-0">
                                 {fights.length} {fights.length === 1 ? 'fight' : 'fights'}
                             </div>
                         </div>
@@ -206,31 +206,31 @@ export const HealEffectivenessSection = ({ fights }: HealEffectivenessSectionPro
                         </div>
                     </div>
 
-                    <div className={`mt-4 rounded-2xl border border-white/10 bg-black/30 px-4 py-3 transition-all duration-300 ${
+                    <div className={`mt-4 rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-[var(--bg-card-inner)] px-4 py-3 transition-all duration-300 ${
                         selectedFight ? 'opacity-100 translate-y-0' : 'opacity-90'
                     }`}
                     >
                         <div className="flex items-center justify-between gap-3 mb-3">
                             <div>
-                                <div className="text-[10px] uppercase tracking-[0.35em] text-gray-500">
+                                <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-muted)]">
                                     {selectedFight ? `${selectedFight.fullLabel} - Fight Details` : 'Fight Details'}
                                 </div>
                                 {selectedFight ? (
-                                    <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-gray-400">
+                                    <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-[color:var(--text-secondary)]">
                                         <span>Incoming: {formatWithCommas(selectedFight.incomingDamage, 0)}</span>
                                         <span>Healing: {formatWithCommas(selectedFight.healing, 0)}</span>
                                         <span>Barrier: {formatWithCommas(selectedFight.barrier, 0)}</span>
                                         <span>Healing + Barrier: {formatWithCommas(selectedFight.healing + selectedFight.barrier, 0)}</span>
                                     </div>
                                 ) : (
-                                    <div className="text-xs text-gray-500 mt-1">Select one fight to view the per-fight skill tables.</div>
+                                    <div className="text-xs text-[color:var(--text-muted)] mt-1">Select one fight to view the per-fight skill tables.</div>
                                 )}
                             </div>
                             {selectedFight && (
                                 <button
                                     type="button"
                                     onClick={() => setSelectedFightIndex(null)}
-                                    className="text-[10px] uppercase tracking-[0.2em] text-gray-400 hover:text-gray-200"
+                                    className="text-[10px] uppercase tracking-[0.2em] text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]"
                                 >
                                     Clear
                                 </button>
@@ -243,7 +243,7 @@ export const HealEffectivenessSection = ({ fights }: HealEffectivenessSectionPro
                                     title="Outgoing Healing Skills"
                                     metricLabel="Healing"
                                     rows={selectedFight.healingSkills}
-                                    colorClass="text-gray-200"
+                                    colorClass="text-[color:var(--text-primary)]"
                                 />
                                 <SkillTable
                                     title="Incoming Damage Skills"

@@ -108,8 +108,8 @@ export const ConditionsSection = ({
         {conditionSummary && conditionSummary.length > 0 ? (
             isExpanded ? (
                 <div className="flex flex-col gap-4">
-                    <div className="bg-black/20 border border-white/5 rounded-xl px-4 py-3">
-                        <div className="text-xs uppercase tracking-widest text-gray-500 mb-2">Conditions</div>
+                    <div className="bg-[var(--bg-card-inner)] border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] px-4 py-3">
+                        <div className="text-xs uppercase tracking-widest text-[color:var(--text-muted)] mb-2">Conditions</div>
                     <div className="flex flex-wrap items-center gap-2">
                         <SearchSelectDropdown
                             options={[
@@ -161,7 +161,7 @@ export const ConditionsSection = ({
                                     { value: 'incoming', label: 'Incoming' }
                                 ]}
                                 activeClassName="bg-amber-500/20 text-amber-200 border border-amber-500/40"
-                                inactiveClassName="border border-transparent text-gray-400 hover:text-white"
+                                inactiveClassName="border border-transparent text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]"
                             />
                             <PillToggleGroup
                                     value={effectiveConditionSort.key}
@@ -172,13 +172,13 @@ export const ConditionsSection = ({
                                         ...(showConditionDamage ? [{ value: 'damage', label: 'Damage' }] : [])
                                     ]}
                                     activeClassName="bg-amber-500/20 text-amber-200 border border-amber-500/40"
-                                    inactiveClassName="border border-transparent text-gray-400 hover:text-white"
+                                    inactiveClassName="border border-transparent text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]"
                                 />
                         </div>
                     </div>
-                    <div className="bg-black/30 border border-white/5 rounded-xl overflow-hidden">
+                    <div className="bg-[var(--bg-card-inner)] border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] overflow-hidden">
                         {filteredConditions.length === 0 ? (
-                            <div className="px-4 py-10 text-center text-gray-500 italic text-sm">No conditions match this filter</div>
+                            <div className="px-4 py-10 text-center text-[color:var(--text-muted)] italic text-sm">No conditions match this filter</div>
                         ) : (
                             (() => {
                                 const metricKey = effectiveConditionSort.key;
@@ -261,7 +261,7 @@ export const ConditionsSection = ({
                                             id: `${entry.player.account}-${idx}`,
                                             label: (
                                                 <>
-                                                    <span className="text-gray-500 font-mono">{idx + 1}</span>
+                                                    <span className="text-[color:var(--text-muted)] font-mono">{idx + 1}</span>
                                                     {renderProfessionIcon(entry.player.profession, entry.player.professionList, 'w-4 h-4')}
                                                     <span className="truncate">{entry.player.account}</span>
                                                 </>
@@ -281,7 +281,7 @@ export const ConditionsSection = ({
                                     setSelectedConditionColumns([]);
                                     setSelectedConditionPlayers([]);
                                 }}
-                                className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-2 py-1 text-[11px] text-gray-200 hover:text-white"
+                                className="inline-flex items-center gap-1 rounded-full border border-[color:var(--border-default)] bg-[var(--bg-hover)] px-2 py-1 text-[11px] text-[color:var(--text-primary)] hover:text-[color:var(--text-primary)]"
                             >
                                 Clear All
                             </button>
@@ -290,10 +290,10 @@ export const ConditionsSection = ({
                                     key={id}
                                     type="button"
                                     onClick={() => setSelectedConditionColumns((prev) => prev.filter((entry) => entry !== id))}
-                                    className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] text-gray-200 hover:text-white"
+                                    className="inline-flex items-center gap-1 rounded-full border border-[color:var(--border-default)] bg-[var(--bg-hover)] px-2 py-1 text-[11px] text-[color:var(--text-primary)] hover:text-[color:var(--text-primary)]"
                                 >
                                     <span>{id}</span>
-                                    <span className="text-gray-400">×</span>
+                                    <span className="text-[color:var(--text-secondary)]">×</span>
                                 </button>
                             ))}
                             {selectedConditionPlayers.map((id) => (
@@ -301,10 +301,10 @@ export const ConditionsSection = ({
                                     key={id}
                                     type="button"
                                     onClick={() => setSelectedConditionPlayers((prev) => prev.filter((entry) => entry !== id))}
-                                    className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] text-gray-200 hover:text-white"
+                                    className="inline-flex items-center gap-1 rounded-full border border-[color:var(--border-default)] bg-[var(--bg-hover)] px-2 py-1 text-[11px] text-[color:var(--text-primary)] hover:text-[color:var(--text-primary)]"
                                 >
                                     <span>{id}</span>
-                                    <span className="text-gray-400">×</span>
+                                    <span className="text-[color:var(--text-secondary)]">×</span>
                                 </button>
                             ))}
                         </div>
@@ -313,30 +313,30 @@ export const ConditionsSection = ({
             ) : (
                 <StatsTableLayout
                 expanded={expandedSection === 'conditions-outgoing'}
-                sidebarClassName={`bg-black/20 border border-white/5 rounded-xl px-3 pt-3 pb-2 flex flex-col min-h-0 ${expandedSection === 'conditions-outgoing' ? 'h-full flex-1' : 'self-start'}`}
-                contentClassName={`bg-black/30 border border-white/5 rounded-xl overflow-hidden ${expandedSection === 'conditions-outgoing' ? 'flex flex-col min-h-0' : ''}`}
+                sidebarClassName={`bg-[var(--bg-card-inner)] border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] px-3 pt-3 pb-2 flex flex-col min-h-0 ${expandedSection === 'conditions-outgoing' ? 'h-full flex-1' : 'self-start'}`}
+                contentClassName={`bg-[var(--bg-card-inner)] border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] overflow-hidden ${expandedSection === 'conditions-outgoing' ? 'flex flex-col min-h-0' : ''}`}
                 sidebar={
                     <>
-                        <div className="text-xs uppercase tracking-widest text-gray-500 mb-2">Conditions</div>
+                        <div className="text-xs uppercase tracking-widest text-[color:var(--text-muted)] mb-2">Conditions</div>
                         <input
                             value={conditionSearch}
                             onChange={(e) => setConditionSearch(e.target.value)}
                             placeholder="Search..."
-                            className="w-full bg-black/30 border border-white/10 rounded-lg px-2 py-1 text-xs text-gray-200 focus:outline-none mb-2"
+                            className="w-full bg-[var(--bg-card-inner)] border border-[color:var(--border-default)] rounded-[var(--radius-md)] px-2 py-1 text-xs text-[color:var(--text-primary)] focus:outline-none mb-2"
                         />
                         <div className={`${sidebarListClass} ${expandedSection === 'conditions-outgoing' ? 'max-h-none flex-1 min-h-0' : ''}`}>
                             {(() => {
                                 if (filteredConditions.length === 0) {
-                                    return <div className="text-center text-gray-500 italic py-6 text-xs">No conditions match this filter</div>;
+                                    return <div className="text-center text-[color:var(--text-muted)] italic py-6 text-xs">No conditions match this filter</div>;
                                 }
                                 return (
                                     <>
                                         <button
                                             type="button"
                                             onClick={() => setActiveConditionName('all')}
-                                            className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold border transition-colors ${activeConditionName === 'all'
+                                            className={`w-full text-left px-3 py-2 rounded-[var(--radius-md)] text-xs font-semibold border transition-colors ${activeConditionName === 'all'
                                                 ? 'bg-amber-500/20 text-amber-200 border-amber-500/40'
-                                                : 'bg-white/5 text-gray-300 border-white/10 hover:text-white'
+                                                : 'bg-[var(--bg-hover)] text-[color:var(--text-secondary)] border-[color:var(--border-default)] hover:text-[color:var(--text-primary)]'
                                                 }`}
                                         >
                                             All Conditions
@@ -346,9 +346,9 @@ export const ConditionsSection = ({
                                                 key={entry.name}
                                                 type="button"
                                                 onClick={() => setActiveConditionName(entry.name)}
-                                                className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold border transition-colors ${activeConditionName === entry.name
+                                                className={`w-full text-left px-3 py-2 rounded-[var(--radius-md)] text-xs font-semibold border transition-colors ${activeConditionName === entry.name
                                                     ? 'bg-amber-500/20 text-amber-200 border-amber-500/40'
-                                                    : 'bg-white/5 text-gray-300 border-white/10 hover:text-white'
+                                                    : 'bg-[var(--bg-hover)] text-[color:var(--text-secondary)] border-[color:var(--border-default)] hover:text-[color:var(--text-primary)]'
                                                     }`}
                                             >
                                                 <InlineIconLabel name={entry.name} iconUrl={entry.icon} iconClassName="h-5 w-5" />
@@ -364,8 +364,8 @@ export const ConditionsSection = ({
                     <StatsTableShell
                         expanded={expandedSection === 'conditions-outgoing'}
                         header={
-                            <div className="flex flex-wrap items-start justify-between gap-3 px-4 py-3 bg-white/5">
-                                <div className="text-sm font-semibold text-gray-200">
+                            <div className="flex flex-wrap items-start justify-between gap-3 px-4 py-3 bg-[var(--bg-hover)]">
+                                <div className="text-sm font-semibold text-[color:var(--text-primary)]">
                                     {activeConditionName === 'all'
                                         ? 'All Conditions'
                                         : (
@@ -377,7 +377,7 @@ export const ConditionsSection = ({
                                         )}
                                 </div>
                                 <div className="flex flex-col items-end gap-2 text-right ml-auto mt-2">
-                                    <div className="text-xs uppercase tracking-widest text-gray-500">Squad Totals</div>
+                                    <div className="text-xs uppercase tracking-widest text-[color:var(--text-muted)]">Squad Totals</div>
                                     <PillToggleGroup
                                         value={conditionDirection}
                                         onChange={setConditionDirection}
@@ -386,13 +386,13 @@ export const ConditionsSection = ({
                                             { value: 'incoming', label: 'Incoming' }
                                         ]}
                                         activeClassName="bg-amber-500/20 text-amber-200 border border-amber-500/40"
-                                        inactiveClassName="border border-transparent text-gray-400 hover:text-white"
+                                        inactiveClassName="border border-transparent text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]"
                                     />
                                 </div>
                             </div>
                         }
                         columns={
-                            <div className={`grid ${conditionGridClass} text-xs uppercase tracking-wider text-gray-400 bg-white/5 px-4 py-2`}>
+                            <div className={`grid ${conditionGridClass} text-xs uppercase tracking-wider text-[color:var(--text-secondary)] bg-[var(--bg-hover)] px-4 py-2`}>
                                 <div className="text-center">#</div>
                                 <div>Player</div>
                                 <button
@@ -403,7 +403,7 @@ export const ConditionsSection = ({
                                             dir: effectiveConditionSort.key === 'applications' ? (effectiveConditionSort.dir === 'desc' ? 'asc' : 'desc') : 'desc'
                                         });
                                     }}
-                                    className={`text-right transition-colors ${effectiveConditionSort.key === 'applications' ? 'text-amber-200' : 'text-gray-400 hover:text-gray-200'}`}
+                                    className={`text-right transition-colors ${effectiveConditionSort.key === 'applications' ? 'text-amber-200' : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}`}
                                 >
                                     Applications {effectiveConditionSort.key === 'applications' ? (effectiveConditionSort.dir === 'desc' ? '↓' : '↑') : ''}
                                 </button>
@@ -416,7 +416,7 @@ export const ConditionsSection = ({
                                                 dir: effectiveConditionSort.key === 'uptime' ? (effectiveConditionSort.dir === 'desc' ? 'asc' : 'desc') : 'desc'
                                             });
                                         }}
-                                        className={`text-right transition-colors ${effectiveConditionSort.key === 'uptime' ? 'text-amber-200' : 'text-gray-400 hover:text-gray-200'}`}
+                                        className={`text-right transition-colors ${effectiveConditionSort.key === 'uptime' ? 'text-amber-200' : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}`}
                                     >
                                         Uptime {effectiveConditionSort.key === 'uptime' ? (effectiveConditionSort.dir === 'desc' ? '↓' : '↑') : ''}
                                     </button>
@@ -430,7 +430,7 @@ export const ConditionsSection = ({
                                                 dir: effectiveConditionSort.key === 'damage' ? (effectiveConditionSort.dir === 'desc' ? 'asc' : 'desc') : 'desc'
                                             });
                                         }}
-                                        className={`text-right transition-colors ${effectiveConditionSort.key === 'damage' ? 'text-amber-200' : 'text-gray-400 hover:text-gray-200'}`}
+                                        className={`text-right transition-colors ${effectiveConditionSort.key === 'damage' ? 'text-amber-200' : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}`}
                                     >
                                         Damage {effectiveConditionSort.key === 'damage' ? (effectiveConditionSort.dir === 'desc' ? '↓' : '↑') : ''}
                                     </button>
@@ -474,7 +474,7 @@ export const ConditionsSection = ({
                                             return String(a.account || '').localeCompare(String(b.account || ''));
                                         });
                                     if (rows.length === 0) {
-                                        return <div className="text-center text-gray-500 italic py-6">No condition data available</div>;
+                                        return <div className="text-center text-[color:var(--text-muted)] italic py-6">No condition data available</div>;
                                     }
                                     return rows.map((entry: any, idx: number) => {
                                         const conditionTotals = entry.conditions || {};
@@ -510,13 +510,13 @@ export const ConditionsSection = ({
                                         const applicationsValue = Math.round(entry.applications || 0).toLocaleString();
                                         const damageValue = Math.round(entry.damage || 0).toLocaleString();
                                         return (
-                                            <div key={`${entry.account}-${idx}`} className={`grid ${conditionGridClass} px-4 py-2 text-sm text-gray-200 border-t border-white/5`}>
-                                                <div className="text-center text-gray-500 font-mono">{idx + 1}</div>
+                                            <div key={`${entry.account}-${idx}`} className={`grid ${conditionGridClass} px-4 py-2 text-sm text-[color:var(--text-primary)] border-t border-[color:var(--border-subtle)]`}>
+                                                <div className="text-center text-[color:var(--text-muted)] font-mono">{idx + 1}</div>
                                                 <div className="flex items-center gap-2 min-w-0">
                                                     {renderProfessionIcon(entry.profession, entry.professionList, 'w-4 h-4')}
                                                     <span className="truncate">{entry.account}</span>
                                                 </div>
-                                                <div className="text-right font-mono text-gray-300">
+                                                <div className="text-right font-mono text-[color:var(--text-secondary)]">
                                                     {showTooltip ? (
                                                         <SkillBreakdownTooltip
                                                             value={applicationsValue}
@@ -533,12 +533,12 @@ export const ConditionsSection = ({
                                                     )}
                                                 </div>
                                                 {conditionDirection === 'outgoing' ? (
-                                                    <div className="text-right font-mono text-gray-300">
+                                                    <div className="text-right font-mono text-[color:var(--text-secondary)]">
                                                         {Math.round((entry.uptimeMs || 0) / 1000).toLocaleString()}s
                                                     </div>
                                                 ) : null}
                                                 {showConditionDamage ? (
-                                                    <div className="text-right font-mono text-gray-300">
+                                                    <div className="text-right font-mono text-[color:var(--text-secondary)]">
                                                         {showDamageTooltip ? (
                                                             <SkillBreakdownTooltip
                                                                 value={damageValue}
@@ -566,7 +566,7 @@ export const ConditionsSection = ({
             />
             )
         ) : (
-            <div className="text-center text-gray-500 italic py-8">No condition data available</div>
+            <div className="text-center text-[color:var(--text-muted)] italic py-8">No condition data available</div>
         )}
     </div>
     );

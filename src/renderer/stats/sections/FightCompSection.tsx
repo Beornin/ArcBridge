@@ -85,11 +85,11 @@ export const FightCompSection = ({
             </div>
             <div className="fight-comp-shell">
                 {fights.length === 0 ? (
-                    <div className="text-center text-gray-500 italic py-6">No fight composition data available.</div>
+                    <div className="text-center text-[color:var(--text-muted)] italic py-6">No fight composition data available.</div>
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)] gap-4">
-                        <aside className="fight-comp-fight-nav bg-black/20 border border-white/5 rounded-xl px-3 pt-3 pb-2 flex flex-col min-h-0 self-start">
-                            <div className="text-xs uppercase tracking-widest text-gray-500 mb-2">Fight Tabs</div>
+                        <aside className="fight-comp-fight-nav bg-[var(--bg-card-inner)] border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] px-3 pt-3 pb-2 flex flex-col min-h-0 self-start">
+                            <div className="text-xs uppercase tracking-widest text-[color:var(--text-muted)] mb-2">Fight Tabs</div>
                             <div className="space-y-1 pr-1 max-h-[320px] overflow-y-auto">
                                 {fights.map((fight) => {
                                     const isActive = fight.id === activeFightId;
@@ -97,9 +97,9 @@ export const FightCompSection = ({
                                         <button
                                             key={fight.id}
                                             onClick={() => setActiveFightId(fight.id)}
-                                            className={`fight-comp-fight-nav-item relative w-full text-left px-3 py-2 rounded-lg text-xs font-semibold border transition-colors ${isActive
+                                            className={`fight-comp-fight-nav-item relative w-full text-left px-3 py-2 rounded-[var(--radius-md)] text-xs font-semibold border transition-colors ${isActive
                                                 ? 'border-cyan-400/40 bg-cyan-400/10 text-cyan-100'
-                                                : 'bg-white/5 text-gray-300 border-white/10 hover:text-white'
+                                                : 'bg-[var(--bg-hover)] text-[color:var(--text-secondary)] border-[color:var(--border-default)] hover:text-[color:var(--text-primary)]'
                                             }`}
                                         >
                                             <span
@@ -112,28 +112,28 @@ export const FightCompSection = ({
                                             >
                                                 {fight.isWin === true ? 'Win' : fight.isWin === false ? 'Loss' : 'Unknown'}
                                             </span>
-                                            <div className="text-[10px] uppercase tracking-widest text-gray-400">{fight.label}</div>
+                                            <div className="text-[10px] uppercase tracking-widest text-[color:var(--text-secondary)]">{fight.label}</div>
                                             <div className="text-xs font-semibold truncate">{fight.mapName || 'Unknown Map'}</div>
-                                            <div className="text-[10px] text-gray-500 truncate">{fight.duration || '--:--'} · {formatTimestamp(fight.timestamp)}</div>
+                                            <div className="text-[10px] text-[color:var(--text-muted)] truncate">{fight.duration || '--:--'} · {formatTimestamp(fight.timestamp)}</div>
                                         </button>
                                     );
                                 })}
                             </div>
                         </aside>
 
-                        <div className="fight-comp-board rounded-xl border border-white/10 bg-black/30 p-2.5 overflow-hidden">
+                        <div className="fight-comp-board rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-[var(--bg-card-inner)] p-2.5 overflow-hidden">
                             {!activeFight ? (
-                                <div className="text-gray-500 italic py-6 text-center">Select a fight.</div>
+                                <div className="text-[color:var(--text-muted)] italic py-6 text-center">Select a fight.</div>
                             ) : (
                                 <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.78fr)] gap-2.5 min-w-0">
-                                    <div className="fight-comp-card rounded-xl border border-white/10 bg-black/20 overflow-hidden">
-                                        <div className="px-2.5 py-1.5 bg-white/5 text-[10px] uppercase tracking-widest text-gray-400 flex items-center justify-between gap-2">
+                                    <div className="fight-comp-card rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-[var(--bg-card-inner)] overflow-hidden">
+                                        <div className="px-2.5 py-1.5 bg-[var(--bg-hover)] text-[10px] uppercase tracking-widest text-[color:var(--text-secondary)] flex items-center justify-between gap-2">
                                             <span>Squad Parties</span>
-                                            <span className="inline-flex items-center rounded-md border border-white/15 bg-white/5 px-1.5 py-0.5 text-[9px] font-semibold tracking-normal text-gray-300">
+                                            <span className="inline-flex items-center rounded-md border border-[color:var(--border-default)] bg-[var(--bg-hover)] px-1.5 py-0.5 text-[9px] font-semibold tracking-normal text-[color:var(--text-secondary)]">
                                                 {squadPlayerCount}
                                             </span>
                                         </div>
-                                        <div className="p-2 rounded-lg border border-white/10 bg-white/[0.03] divide-y divide-white/10">
+                                        <div className="p-2 rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-white/[0.03] divide-y divide-white/10">
                                             {activeFight.parties.map((party) => {
                                                 const classIcons = Array.isArray(party.players) && party.players.length > 0
                                                     ? party.players
@@ -160,7 +160,7 @@ export const FightCompSection = ({
                                                         .sort((a, b) => a.profession.localeCompare(b.profession));
                                                 return (
                                                     <div key={`${activeFight.id}-party-${party.party}`} className="fight-comp-row grid grid-cols-[36px_minmax(0,1fr)] gap-1.5 items-center px-1.5 py-1 first:pt-0 last:pb-0">
-                                                        <div className="fight-comp-party-badge text-[10px] font-semibold uppercase tracking-widest text-gray-300 text-center rounded-md border border-white/10 bg-black/20 py-0.5">
+                                                        <div className="fight-comp-party-badge text-[10px] font-semibold uppercase tracking-widest text-[color:var(--text-secondary)] text-center rounded-md border border-[color:var(--border-default)] bg-[var(--bg-card-inner)] py-0.5">
                                                             {party.party > 0 ? `P${party.party}` : 'Unk'}
                                                         </div>
                                                         <div className="flex flex-wrap gap-x-1.5 gap-y-1">
@@ -179,10 +179,10 @@ export const FightCompSection = ({
                                                                             className="w-3.5 h-3.5 object-contain"
                                                                         />
                                                                     ) : (
-                                                                        <span className="inline-block w-3.5 h-3.5 rounded-sm border border-white/15" />
+                                                                        <span className="inline-block w-3.5 h-3.5 rounded-sm border border-[color:var(--border-default)]" />
                                                                     )}
                                                                 </span>
-                                                            )) : <span className="text-gray-500 text-[11px]">-</span>}
+                                                            )) : <span className="text-[color:var(--text-muted)] text-[11px]">-</span>}
                                                         </div>
                                                     </div>
                                                 );
@@ -190,10 +190,10 @@ export const FightCompSection = ({
                                         </div>
                                     </div>
 
-                                    <div className="fight-comp-card rounded-xl border border-white/10 bg-black/20 overflow-hidden">
-                                        <div className="px-2.5 py-1.5 bg-white/5 text-[10px] uppercase tracking-widest text-gray-400 flex items-center justify-between gap-2">
+                                    <div className="fight-comp-card rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-[var(--bg-card-inner)] overflow-hidden">
+                                        <div className="px-2.5 py-1.5 bg-[var(--bg-hover)] text-[10px] uppercase tracking-widest text-[color:var(--text-secondary)] flex items-center justify-between gap-2">
                                             <span>Enemy Classes</span>
-                                            <span className="inline-flex items-center rounded-md border border-white/15 bg-white/5 px-1.5 py-0.5 text-[9px] font-semibold tracking-normal text-gray-300">
+                                            <span className="inline-flex items-center rounded-md border border-[color:var(--border-default)] bg-[var(--bg-hover)] px-1.5 py-0.5 text-[9px] font-semibold tracking-normal text-[color:var(--text-secondary)]">
                                                 {enemyPlayerCount}
                                             </span>
                                         </div>
@@ -201,8 +201,8 @@ export const FightCompSection = ({
                                             {enemyRows.length > 0 ? (
                                                 <div className="flex flex-wrap gap-1">
                                                     {enemyRows.map((entry) => (
-                                                        <div key={`${activeFight.id}-enemy-${entry.profession}`} className="fight-comp-row inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/[0.03] px-1.5 py-0.5">
-                                                            <span className="fight-comp-class-icon inline-flex items-center justify-center rounded-md border border-white/10 bg-black/20 px-1 py-0.5" title={entry.profession}>
+                                                        <div key={`${activeFight.id}-enemy-${entry.profession}`} className="fight-comp-row inline-flex items-center gap-1 rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-white/[0.03] px-1.5 py-0.5">
+                                                            <span className="fight-comp-class-icon inline-flex items-center justify-center rounded-md border border-[color:var(--border-default)] bg-[var(--bg-card-inner)] px-1 py-0.5" title={entry.profession}>
                                                                 {getProfessionIconPath(entry.profession) ? (
                                                                     <img
                                                                         src={getProfessionIconPath(entry.profession) as string}
@@ -210,15 +210,15 @@ export const FightCompSection = ({
                                                                         className="w-3 h-3 object-contain"
                                                                     />
                                                                 ) : (
-                                                                    <span className="inline-block w-3 h-3 rounded-sm border border-white/15" />
+                                                                    <span className="inline-block w-3 h-3 rounded-sm border border-[color:var(--border-default)]" />
                                                                 )}
                                                             </span>
-                                                            <span className="text-[10px] font-mono text-gray-200">{entry.count}</span>
+                                                            <span className="text-[10px] font-mono text-[color:var(--text-primary)]">{entry.count}</span>
                                                         </div>
                                                     ))}
                                                 </div>
                                             ) : (
-                                                <div className="py-6 text-center text-gray-500 italic text-sm">No enemy class data</div>
+                                                <div className="py-6 text-center text-[color:var(--text-muted)] italic text-sm">No enemy class data</div>
                                             )}
                                         </div>
                                     </div>

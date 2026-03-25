@@ -105,14 +105,14 @@ export const ApmSection = ({
         </div>
         <div className={expandedSection === 'apm-stats' ? 'flex-1 min-h-0 flex flex-col' : ''}>
             {!apmSpecAvailable ? (
-                <div className="rounded-2xl border border-dashed border-white/20 px-4 py-6 text-center text-xs text-gray-400">
+                <div className="rounded-[var(--radius-md)] border border-dashed border-[color:var(--border-hover)] px-4 py-6 text-center text-xs text-[color:var(--text-secondary)]">
                     {skillUsageAvailable
                         ? 'No APM data available for the current selection.'
                         : 'Upload or highlight logs with rotation data to enable the APM table.'}
                 </div>
             ) : (
                 <div className={`grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-4 ${expandedSection === 'apm-stats' ? 'flex-1 min-h-0 h-full' : ''}`}>
-                    <div className={`rounded-xl px-3 pt-3 pb-2 flex flex-col min-h-0 ${expandedSection === 'apm-stats' ? 'h-full' : ''}`} style={{ background: 'var(--bg-hover)', border: '1px solid var(--border-subtle)' }}>
+                    <div className={`rounded-[var(--radius-md)] px-3 pt-3 pb-2 flex flex-col min-h-0 ${expandedSection === 'apm-stats' ? 'h-full' : ''}`} style={{ background: 'var(--bg-hover)', border: '1px solid var(--border-subtle)' }}>
                         <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-muted)' }}>Elite Specs</div>
                         <div className="mb-2">
                             <input
@@ -120,7 +120,7 @@ export const ApmSection = ({
                                 value={apmSkillSearch}
                                 onChange={(event) => setApmSkillSearch(event.target.value)}
                                 placeholder="Search skills..."
-                                className="w-full rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1"
+                                className="w-full rounded-[var(--radius-md)] px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1"
                                 style={{ border: '1px solid var(--border-default)', background: 'var(--bg-card-inner)', color: 'var(--text-primary)' }}
                             />
                         </div>
@@ -142,7 +142,7 @@ export const ApmSection = ({
                                                 setSelectedPlayers([]);
                                             }
                                         }}
-                                        className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold border transition-colors ${activeApmSpec === spec.profession
+                                        className={`w-full text-left px-3 py-2 rounded-[var(--radius-md)] text-xs font-semibold border transition-colors ${activeApmSpec === spec.profession
                                                 ? 'bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]'
                                                 : ''
                                             }`}
@@ -153,7 +153,7 @@ export const ApmSection = ({
                                                 {renderProfessionIcon(spec.profession, undefined, 'w-4 h-4')}
                                                 <span className="truncate">{spec.profession}</span>
                                             </div>
-                                            <div className="flex items-center gap-2 text-gray-400">
+                                            <div className="flex items-center gap-2 text-[color:var(--text-secondary)]">
                                                 <span className="text-[10px]">{spec.players.length}p</span>
                                             </div>
                                         </div>
@@ -229,7 +229,7 @@ export const ApmSection = ({
                             ))}
                         </div>
                     </div>
-                    <div className={`rounded-xl overflow-hidden stats-share-table ${expandedSection === 'apm-stats' ? 'flex flex-col min-h-0' : ''}`} style={{ background: 'var(--bg-card-inner)', border: '1px solid var(--border-subtle)' }}>
+                    <div className={`rounded-[var(--radius-md)] overflow-hidden stats-share-table ${expandedSection === 'apm-stats' ? 'flex flex-col min-h-0' : ''}`} style={{ background: 'var(--bg-card-inner)', border: '1px solid var(--border-subtle)' }}>
                         {!activeApmSpecTable ? (
                             <div className="px-4 py-10 text-center italic text-sm" style={{ color: 'var(--text-muted)' }}>
                                 Select an elite spec to view APM details
@@ -267,7 +267,7 @@ export const ApmSection = ({
                                         ...selectedPlayers.map((id) => `player:${id}`)
                                     ]);
                                     return (
-                                        <div className="rounded-xl px-4 py-3" style={{ background: 'var(--bg-hover)', border: '1px solid var(--border-subtle)' }}>
+                                        <div className="rounded-[var(--radius-md)] px-4 py-3" style={{ background: 'var(--bg-hover)', border: '1px solid var(--border-subtle)' }}>
                                             <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-muted)' }}>APM</div>
                                             <div className="flex flex-wrap items-center gap-2">
                                                 <SearchSelectDropdown
@@ -432,7 +432,7 @@ export const ApmSection = ({
                                                     id: `${activeApmSpecTable.profession}-${entry.row.key}`,
                                                     label: (
                                                         <>
-                                                            <span className="text-gray-500 font-mono">{index + 1}</span>
+                                                            <span className="text-[color:var(--text-muted)] font-mono">{index + 1}</span>
                                                             {renderProfessionIcon(entry.row.profession, entry.row.professionList, 'w-4 h-4')}
                                                             <span className="truncate">{entry.row.displayName}</span>
                                                         </>
