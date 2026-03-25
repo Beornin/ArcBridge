@@ -43,7 +43,7 @@ export const OverviewSection = () => {
                     </div>
                 </div>
             </div>
-            <div className="overview-card" style={{ border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', padding: '16px 20px' }}>
+            <div className="overview-card" style={{ borderRadius: 'var(--radius-md)', padding: '16px 20px' }}>
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                     <div className="text-left">
                         <div className="text-2xl font-semibold text-cyan-100">{alliedDowns}</div>
