@@ -344,7 +344,7 @@ export const SpikeDamageSection = ({
                         <div className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--text-secondary)]">
                             Per Fight {modeLabel}
                         </div>
-                        <div className="text-[11px] text-[color:var(--text-muted)]">
+                        <div className="text-[11px] text-[color:var(--text-secondary)]">
                             {spikeChartData.length} {spikeChartData.length === 1 ? 'fight' : 'fights'}
                         </div>
                     </div>
@@ -442,14 +442,14 @@ export const SpikeDamageSection = ({
             {selectedSpikePlayer && (
                 <div className="mt-4 rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-[var(--bg-card-inner)] px-4 py-3 grid gap-3 md:grid-cols-3">
                     <div>
-                        <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-muted)]">Selected Player</div>
+                        <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-secondary)]">Selected Player</div>
                         <div className="mt-1 text-sm font-semibold text-white flex items-center gap-2 min-w-0">
                             {renderProfessionIcon(selectedSpikePlayer.profession, selectedSpikePlayer.professionList, 'w-4 h-4')}
                             <span className="truncate">{selectedSpikePlayer.displayName}</span>
                         </div>
                     </div>
                     <div>
-                        <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-muted)]">
+                        <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-secondary)]">
                             {selectedFight
                                 ? (spikeMode === 'hit'
                                     ? (isDownContributionMode ? 'Selected Skill Down Contribution' : 'Selected Skill Damage')
@@ -463,7 +463,7 @@ export const SpikeDamageSection = ({
                         </div>
                     </div>
                     <div>
-                        <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-muted)]">
+                        <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-secondary)]">
                             {selectedFight
                                 ? (spikeMode === 'hit' ? 'Selected Skill / Fight' : 'Selected Fight')
                                 : (spikeMode === 'hit' ? 'Peak Skill / Fight' : 'Peak Fight')}
@@ -486,7 +486,7 @@ export const SpikeDamageSection = ({
             {selectedSpikePlayer && selectedSpikeFightIndex !== null && (
                 <div className="mt-4 rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-[var(--bg-card-inner)] px-4 py-3">
                     <div className="flex items-center justify-between mb-2">
-                        <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-muted)]">{spikeDrilldownTitle}</div>
+                        <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-secondary)]">{spikeDrilldownTitle}</div>
                         <button
                             type="button"
                             onClick={() => setSelectedSpikeFightIndex(null)}
@@ -584,8 +584,8 @@ export const SpikeDamageSection = ({
                         return (
                             <>
                     <div className="flex items-center justify-between mb-2">
-                        <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-muted)]">{spikeFightSkillTitle}</div>
-                        <div className="text-[10px] uppercase tracking-[0.2em] text-[color:var(--text-muted)]">
+                        <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-secondary)]">{spikeFightSkillTitle}</div>
+                        <div className="text-[10px] uppercase tracking-[0.2em] text-[color:var(--text-secondary)]">
                             {displayRows.length} {displayRows.length === 1 ? 'skill' : 'skills'}
                         </div>
                     </div>

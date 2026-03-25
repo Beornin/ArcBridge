@@ -148,7 +148,7 @@ export const SpecialBuffsSection = ({
         ) : isExpanded ? (
             <div className="flex flex-col gap-4">
                 <div className="border rounded-[var(--radius-md)] px-4 py-3" style={{ background: 'var(--bg-hover)', borderColor: 'var(--border-subtle)' }}>
-                    <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-muted)' }}>Special Buffs</div>
+                    <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>Special Buffs</div>
                     <div className="flex flex-wrap items-center gap-2">
                         <SearchSelectDropdown
                             options={[
@@ -351,7 +351,7 @@ export const SpecialBuffsSection = ({
                 contentStyle={{ background: 'var(--bg-card-inner)', borderColor: 'var(--border-subtle)' }}
                 sidebar={
                     <>
-                        <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-muted)' }}>Special Buffs</div>
+                        <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>Special Buffs</div>
                         <input
                             value={specialSearch}
                             onChange={(e) => setSpecialSearch(e.target.value)}
@@ -404,7 +404,7 @@ export const SpecialBuffsSection = ({
                                         <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
                                             <InlineIconLabel name={activeSpecialTable.name} iconUrl={activeSpecialTable.icon} iconClassName="h-4 w-4" />
                                         </div>
-                                        <div className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
+                                        <div className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>
                                             {viewMode === 'output' ? 'Output Totals' : 'Received Totals'}
                                         </div>
                                     </div>

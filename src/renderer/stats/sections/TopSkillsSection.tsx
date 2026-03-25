@@ -43,7 +43,7 @@ export const TopSkillsSection = ({
                 <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
                 <h3 className="top-skills-outgoing-icon text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Top Outgoing Skills</h3>
                 <div className="ml-auto flex items-center gap-2">
-                    <span className="text-[11px] uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>{metricLabel}</span>
+                    <span className="text-[11px] uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>{metricLabel}</span>
                     {showMetricToggle && (
                         <div className="pill-toggle-group flex items-center gap-1 rounded-full p-1" style={{ border: '1px solid var(--border-default)' }}>
                             {([
@@ -87,7 +87,7 @@ export const TopSkillsSection = ({
                                 </span>
                                 <div className="text-right shrink-0">
                                     <span className="top-skills-outgoing-value text-orange-400 font-mono font-bold">{Math.round((skill as any)[metricKey] || 0).toLocaleString()}</span>
-                                    <span className="text-[color:var(--text-muted)] text-xs ml-2">({skill.hits.toLocaleString()} hits)</span>
+                                    <span className="text-[color:var(--text-secondary)] text-xs ml-2">({skill.hits.toLocaleString()} hits)</span>
                                 </div>
                             </div>
                             <div className="h-2 w-full bg-[var(--bg-hover)] rounded-full overflow-hidden">
@@ -109,7 +109,7 @@ export const TopSkillsSection = ({
             <div className="flex items-center gap-2 mb-3.5">
                 <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--section-defense)' }} />
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Top Incoming Skills</h3>
-                <span className="ml-auto text-[11px] uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Damage</span>
+                <span className="ml-auto text-[11px] uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>Damage</span>
             </div>
             <div className="max-h-80 overflow-y-auto overflow-x-hidden space-y-4">
                 {(stats.topIncomingSkills || []).map((skill: { name: string; icon?: string; damage: number; hits: number }, i: number) => (
@@ -128,7 +128,7 @@ export const TopSkillsSection = ({
                                 </span>
                                 <div className="text-right shrink-0">
                                     <span className="text-red-400 font-mono font-bold">{Math.round(skill.damage).toLocaleString()}</span>
-                                    <span className="text-[color:var(--text-muted)] text-xs ml-2">({skill.hits.toLocaleString()} hits)</span>
+                                    <span className="text-[color:var(--text-secondary)] text-xs ml-2">({skill.hits.toLocaleString()} hits)</span>
                                 </div>
                             </div>
                             <div className="h-2 w-full bg-[var(--bg-hover)] rounded-full overflow-hidden">

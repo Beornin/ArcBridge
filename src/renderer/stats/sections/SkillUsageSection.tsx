@@ -254,7 +254,7 @@ export const SkillUsageSection = ({
                     <div className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--text-secondary)]">
                         Skill Totals
                     </div>
-                    <div className="text-[11px] text-[color:var(--text-muted)]">
+                    <div className="text-[11px] text-[color:var(--text-secondary)]">
                         {selectedPlayers.length > 0
                             ? `${selectedPlayers.length} player${selectedPlayers.length === 1 ? '' : 's'} · ${isSkillUsagePerSecond ? 'casts/sec' : 'total casts'}`
                             : 'Select players'}
@@ -410,7 +410,7 @@ export const SkillUsageSection = ({
                         <div className="rounded-[var(--radius-md)] bg-[var(--bg-card-inner)] border border-[color:var(--border-default)] p-4 space-y-3">
                             <div className="flex items-center justify-between">
                                 <div className="text-xs uppercase tracking-[0.4em] text-[color:var(--text-secondary)]">Selected Players</div>
-                                <div className="text-[11px] text-[color:var(--text-muted)]">
+                                <div className="text-[11px] text-[color:var(--text-secondary)]">
                                     {selectedPlayers.length} {selectedPlayers.length === 1 ? 'player' : 'players'}
                                 </div>
                             </div>

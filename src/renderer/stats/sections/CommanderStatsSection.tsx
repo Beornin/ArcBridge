@@ -171,7 +171,7 @@ export const CommanderTargetConversionSection = ({
             <div className="flex items-center gap-2 mb-3.5">
                 <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Target Conversion</h3>
-                <span className="ml-auto text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
+                <span className="ml-auto text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>
                     {rows.length} Commanders
                 </span>
             </div>
@@ -289,7 +289,7 @@ export const CommanderTagMovementSection = ({
             <div className="flex items-center gap-2 mb-3.5">
                 <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Tag Movement</h3>
-                <span className="ml-auto text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
+                <span className="ml-auto text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>
                     {rows.length} Commanders
                 </span>
             </div>
@@ -408,7 +408,7 @@ export const CommanderTagDeathResponseSection = ({
             <div className="flex items-center gap-2 mb-3.5">
                 <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Squad Response To Tag Death</h3>
-                <span className="ml-auto text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
+                <span className="ml-auto text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>
                     {rows.length} Commanders
                 </span>
             </div>
@@ -547,7 +547,7 @@ export const CommanderPushTimingSection = ({
             <div className="flex items-center gap-2 mb-3.5">
                 <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Push Timing</h3>
-                <span className="ml-auto text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
+                <span className="ml-auto text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>
                     {rows.length} Commanders
                 </span>
             </div>
@@ -740,7 +740,7 @@ export const CommanderStatsSection = ({
             <div className="flex items-center gap-2 mb-3.5">
                 <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Commander Stats</h3>
-                <span className="ml-auto text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>{rows.length} Commanders</span>
+                <span className="ml-auto text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>{rows.length} Commanders</span>
             </div>
 
             {rows.length === 0 ? (
@@ -808,27 +808,27 @@ export const CommanderStatsSection = ({
                         <div className="space-y-4 min-w-0">
                             <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-2">
                                 <div className="rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-[var(--bg-card-inner)] px-3 py-2">
-                                    <div className="text-[10px] uppercase tracking-widest text-[color:var(--text-muted)]">Time Tagged</div>
+                                    <div className="text-[10px] uppercase tracking-widest text-[color:var(--text-secondary)]">Time Tagged</div>
                                     <div className="text-sm font-semibold text-gray-100">{formatDuration(selectedCommander.totalDurationMs)}</div>
                                 </div>
                                 <div className="rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-[var(--bg-card-inner)] px-3 py-2">
-                                    <div className="text-[10px] uppercase tracking-widest text-[color:var(--text-muted)]">Inc. Strips</div>
+                                    <div className="text-[10px] uppercase tracking-widest text-[color:var(--text-secondary)]">Inc. Strips</div>
                                     <div className="text-sm font-semibold text-gray-100">{formatInt(selectedCommander.incomingStrips)}</div>
                                 </div>
                                 <div className="rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-[var(--bg-card-inner)] px-3 py-2">
-                                    <div className="text-[10px] uppercase tracking-widest text-[color:var(--text-muted)]">Inc. CC</div>
+                                    <div className="text-[10px] uppercase tracking-widest text-[color:var(--text-secondary)]">Inc. CC</div>
                                     <div className="text-sm font-semibold text-gray-100">{formatInt(selectedCommander.incomingCC)}</div>
                                 </div>
                                 <div className="rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-[var(--bg-card-inner)] px-3 py-2">
-                                    <div className="text-[10px] uppercase tracking-widest text-[color:var(--text-muted)]">Damage Taken</div>
+                                    <div className="text-[10px] uppercase tracking-widest text-[color:var(--text-secondary)]">Damage Taken</div>
                                     <div className="text-sm font-semibold text-gray-100">{formatInt(selectedCommander.damageTaken)}</div>
                                 </div>
                                 <div className="rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-[var(--bg-card-inner)] px-3 py-2">
-                                    <div className="text-[10px] uppercase tracking-widest text-[color:var(--text-muted)]">Barrier Absorbed</div>
+                                    <div className="text-[10px] uppercase tracking-widest text-[color:var(--text-secondary)]">Barrier Absorbed</div>
                                     <div className="text-sm font-semibold text-gray-100">{formatInt(selectedCommander.incomingBarrierAbsorbed)}</div>
                                 </div>
                                 <div className="rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-[var(--bg-card-inner)] px-3 py-2">
-                                    <div className="text-[10px] uppercase tracking-widest text-[color:var(--text-muted)]">Boon Uptime</div>
+                                    <div className="text-[10px] uppercase tracking-widest text-[color:var(--text-secondary)]">Boon Uptime</div>
                                     <div className="text-sm font-semibold text-gray-100">{formatRate(selectedCommander.boonUptimePct, 1)}%</div>
                                 </div>
                             </div>

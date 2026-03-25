@@ -204,7 +204,7 @@ export const AttendanceSection = ({
                                                             />
                                                         ) : null}
                                                         <span>{entry.profession}</span>
-                                                        <span style={{ color: 'var(--text-muted)' }}>{formatDuration(entry.timeMs)}</span>
+                                                        <span style={{ color: 'var(--text-secondary)' }}>{formatDuration(entry.timeMs)}</span>
                                                     </span>
                                                 )) : <span style={{ color: 'var(--text-muted)' }}>-</span>}
                                             </div>

@@ -58,7 +58,7 @@ export const ColumnFilterDropdown = ({
             </button>
             {open && (
                 <div className="absolute z-20 mt-2 w-56 p-2 text-xs app-dropdown" style={{ border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-dropdown)' }}>
-                    <div className="flex items-center justify-between px-2 pb-2 text-[11px] uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
+                    <div className="flex items-center justify-between px-2 pb-2 text-[11px] uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>
                         <span>Filter Columns</span>
                         <button
                             type="button"

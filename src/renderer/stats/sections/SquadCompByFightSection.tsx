@@ -90,7 +90,7 @@ export const SquadCompByFightSection = ({
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)] gap-4">
                         <aside className="squad-comp-fight-nav bg-[var(--bg-card-inner)] border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] px-3 pt-3 pb-2 flex flex-col min-h-0">
-                            <div className="text-xs uppercase tracking-widest text-[color:var(--text-muted)] mb-2">Fight Tabs</div>
+                            <div className="text-xs uppercase tracking-widest text-[color:var(--text-secondary)] mb-2">Fight Tabs</div>
                             <div className="space-y-1 pr-1 max-h-[560px] xl:max-h-[720px] overflow-y-auto">
                                 {fights.map((fight) => {
                                     const isActive = fight.id === activeFightId;
@@ -105,7 +105,7 @@ export const SquadCompByFightSection = ({
                                         >
                                             <div className="text-[10px] uppercase tracking-widest text-[color:var(--text-secondary)]">{fight.label}</div>
                                             <div className="text-xs font-semibold truncate">{fight.mapName || 'Unknown Map'}</div>
-                                            <div className="text-[10px] text-[color:var(--text-muted)] truncate">{fight.duration || '--:--'} · {formatTimestamp(fight.timestamp)}</div>
+                                            <div className="text-[10px] text-[color:var(--text-secondary)] truncate">{fight.duration || '--:--'} · {formatTimestamp(fight.timestamp)}</div>
                                         </button>
                                     );
                                 })}

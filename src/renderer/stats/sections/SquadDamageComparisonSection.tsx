@@ -71,11 +71,11 @@ export const SquadDamageComparisonSection = () => {
                     <div className="flex items-center justify-between gap-3 mb-3">
                         <div>
                             <div className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--text-secondary)]">Outgoing vs Incoming Damage</div>
-                            <div className="text-[11px] text-[color:var(--text-muted)] mt-1">
+                            <div className="text-[11px] text-[color:var(--text-secondary)] mt-1">
                                 Green bars (up) are squad outgoing damage. Red bars (down) are incoming damage.
                             </div>
                         </div>
-                        <div className="text-[11px] text-[color:var(--text-muted)] shrink-0">
+                        <div className="text-[11px] text-[color:var(--text-secondary)] shrink-0">
                             {chartData.length} {chartData.length === 1 ? 'fight' : 'fights'}
                         </div>
                     </div>

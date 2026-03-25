@@ -142,7 +142,7 @@ export const SearchSelectDropdown = ({
                                 <div>
                                     <div
                                         className="px-2 pb-1 text-[10px] uppercase tracking-widest"
-                                        style={{ color: 'var(--text-muted)' }}
+                                        style={{ color: 'var(--text-secondary)' }}
                                     >Columns</div>
                                     {grouped.columns.map((option) => {
                                         const selected = selectedIds?.has(`${option.type}:${option.id}`) ?? false;
@@ -190,7 +190,7 @@ export const SearchSelectDropdown = ({
                                 <div>
                                     <div
                                         className="px-2 pb-1 text-[10px] uppercase tracking-widest"
-                                        style={{ color: 'var(--text-muted)' }}
+                                        style={{ color: 'var(--text-secondary)' }}
                                     >Players</div>
                                     {grouped.players.map((option) => {
                                         const selected = selectedIds?.has(`${option.type}:${option.id}`) ?? false;

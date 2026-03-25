@@ -86,11 +86,11 @@ export const SquadTagDistanceDeathsSection = ({ fights }: SquadTagDistanceDeaths
                     {/* Summary stats */}
                     <div className="flex gap-4 mb-4">
                         <div className="px-3 py-2 rounded-[var(--radius-md)] bg-[var(--bg-card-inner)] border border-[color:var(--border-subtle)]">
-                            <div className="text-[10px] uppercase tracking-[0.25em] text-[color:var(--text-muted)]">Avg Distance</div>
+                            <div className="text-[10px] uppercase tracking-[0.25em] text-[color:var(--text-secondary)]">Avg Distance</div>
                             <div className="text-sm font-mono text-[color:var(--text-primary)] mt-0.5">{formatWithCommas(overallAvg, 0)}</div>
                         </div>
                         <div className="px-3 py-2 rounded-[var(--radius-md)] bg-[var(--bg-card-inner)] border border-[color:var(--border-subtle)]">
-                            <div className="text-[10px] uppercase tracking-[0.25em] text-[color:var(--text-muted)]">Total Deaths</div>
+                            <div className="text-[10px] uppercase tracking-[0.25em] text-[color:var(--text-secondary)]">Total Deaths</div>
                             <div className="text-sm font-mono text-[color:var(--text-primary)] mt-0.5">{totalDeaths}</div>
                         </div>
                     </div>
@@ -100,7 +100,7 @@ export const SquadTagDistanceDeathsSection = ({ fights }: SquadTagDistanceDeaths
                         <div className="flex items-center justify-between gap-3 mb-3">
                             <div>
                                 <div className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--text-secondary)]">Avg Death Distance from Tag</div>
-                                <div className="text-[11px] text-[color:var(--text-muted)] mt-1">
+                                <div className="text-[11px] text-[color:var(--text-secondary)] mt-1">
                                     Average distance from commander tag at moment of death. Click a bar to see individual deaths.
                                 </div>
                             </div>
@@ -183,7 +183,7 @@ export const SquadTagDistanceDeathsSection = ({ fights }: SquadTagDistanceDeaths
                     }`}>
                         <div className="flex items-center justify-between gap-3 mb-3">
                             <div>
-                                <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-muted)]">
+                                <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-secondary)]">
                                     {selectedFight ? `${selectedFight.fullLabel} — Death Positions` : 'Fight Details'}
                                 </div>
                                 {selectedFight ? (
@@ -192,7 +192,7 @@ export const SquadTagDistanceDeathsSection = ({ fights }: SquadTagDistanceDeaths
                                         <span>Avg: {formatWithCommas(selectedFight.avgDistance, 0)} from tag</span>
                                     </div>
                                 ) : (
-                                    <div className="text-xs text-[color:var(--text-muted)] mt-1">Click a bar above to see individual death events for that fight.</div>
+                                    <div className="text-xs text-[color:var(--text-secondary)] mt-1">Click a bar above to see individual death events for that fight.</div>
                                 )}
                             </div>
                             {selectedFight && (

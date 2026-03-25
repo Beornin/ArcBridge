@@ -242,7 +242,7 @@ export const BoonUptimeSection = ({
                         placeholder="Search boon"
                         className="w-full lg:w-72 rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-[var(--bg-card-inner)] px-3 py-2 text-sm text-[color:var(--text-primary)] focus:border-amber-400 focus:outline-none"
                     />
-                    <div className="text-[11px] text-[color:var(--text-muted)]">
+                    <div className="text-[11px] text-[color:var(--text-secondary)]">
                         {boons.length} {boons.length === 1 ? 'boon' : 'boons'}
                     </div>
                 </div>
@@ -356,7 +356,7 @@ export const BoonUptimeSection = ({
                         <div className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--text-secondary)]">
                             {mainSeriesLabel}
                         </div>
-                        <div className="text-[11px] text-[color:var(--text-muted)]">
+                        <div className="text-[11px] text-[color:var(--text-secondary)]">
                             {chartData.length} {chartData.length === 1 ? 'fight' : 'fights'}
                         </div>
                     </div>
@@ -447,14 +447,14 @@ export const BoonUptimeSection = ({
             {selectedPlayer && (
                 <div className="mt-4 rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-[var(--bg-card-inner)] px-4 py-3 grid gap-3 md:grid-cols-3">
                     <div>
-                        <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-muted)]">Selected Entry</div>
+                        <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-secondary)]">Selected Entry</div>
                         <div className="mt-1 text-sm font-semibold text-white flex items-center gap-2 min-w-0">
                             {renderEntryIcon(selectedPlayer, 'w-4 h-4')}
                             <span className="truncate">{selectedPlayer.displayName}</span>
                         </div>
                     </div>
                     <div>
-                        <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-muted)]">
+                        <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-secondary)]">
                             {selectedFight
                                 ? (showStackCapLine ? 'Selected Fight Avg Stacks' : 'Selected Fight Uptime')
                                 : 'Overall Uptime'}
@@ -470,7 +470,7 @@ export const BoonUptimeSection = ({
                         </div>
                     </div>
                     <div>
-                        <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-muted)]">
+                        <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-secondary)]">
                             {selectedFight ? 'Selected Fight' : 'Peak Fight'}
                         </div>
                         <div className="mt-1 text-sm text-[color:var(--text-primary)] truncate">
@@ -487,7 +487,7 @@ export const BoonUptimeSection = ({
             {selectedPlayer && selectedFightIndex !== null && (
                 <div className="mt-4 rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-[var(--bg-card-inner)] px-4 py-3">
                     <div className="flex items-center justify-between mb-2">
-                        <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-muted)]">{drilldownTitle}</div>
+                        <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-secondary)]">{drilldownTitle}</div>
                         <button
                             type="button"
                             onClick={() => setSelectedFightIndex(null)}

@@ -104,7 +104,7 @@ export const DamageMitigationSection = ({
             ) : isExpanded ? (
                 <div className="flex flex-col gap-4">
                     <div className="border rounded-[var(--radius-md)] px-4 py-3" style={{ background: 'var(--bg-hover)', borderColor: 'var(--border-subtle)' }}>
-                        <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-muted)' }}>Mitigation Tabs</div>
+                        <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>Mitigation Tabs</div>
                         <div className="flex flex-wrap items-center gap-2">
                             <SearchSelectDropdown
                                 options={[
@@ -319,7 +319,7 @@ export const DamageMitigationSection = ({
                                                         <div className="min-w-0">
                                                             <div className="truncate">{entry.row.account}</div>
                                                             {entry.row.minion && (
-                                                                <div className="text-[10px] truncate" style={{ color: 'var(--text-muted)' }}>{entry.row.minion}</div>
+                                                                <div className="text-[10px] truncate" style={{ color: 'var(--text-secondary)' }}>{entry.row.minion}</div>
                                                             )}
                                                         </div>
                                                     </>
@@ -342,7 +342,7 @@ export const DamageMitigationSection = ({
                     contentStyle={{ background: 'var(--bg-card-inner)', borderColor: 'var(--border-subtle)' }}
                     sidebar={
                         <>
-                            <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-muted)' }}>Mitigation Tabs</div>
+                            <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>Mitigation Tabs</div>
                             <input
                                 value={damageMitigationSearch}
                                 onChange={(e) => setDamageMitigationSearch(e.target.value)}
@@ -407,7 +407,7 @@ export const DamageMitigationSection = ({
                                         header={
                                             <div className="flex items-center justify-between px-4 py-3" style={{ background: 'var(--bg-hover)' }}>
                                                 <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{metric.label}</div>
-                                                <div className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Mitigation</div>
+                                                <div className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>Mitigation</div>
                                             </div>
                                         }
                                         columns={
@@ -476,7 +476,7 @@ export const DamageMitigationSection = ({
                                                                 {renderProfessionIcon(row.profession, row.professionList, 'w-4 h-4')}
                                                                 <div className="min-w-0">
                                                                     <div className="truncate">{row.account}</div>
-                                                                    {row.minion && <div className="text-[10px] truncate" style={{ color: 'var(--text-muted)' }}>{row.minion}</div>}
+                                                                    {row.minion && <div className="text-[10px] truncate" style={{ color: 'var(--text-secondary)' }}>{row.minion}</div>}
                                                                 </div>
                                                             </div>
                                                             <div className="text-right font-mono" style={{ color: 'var(--text-secondary)' }}>

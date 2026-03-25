@@ -21,7 +21,7 @@ export const SquadCompositionSection = ({
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
-                <div className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--text-muted)' }}>Classes</div>
+                <div className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--text-secondary)' }}>Classes</div>
                 <div className="grid grid-cols-1 sm:grid-cols-[1fr_150px] sm:h-[300px] gap-4">
                     <div className="h-[240px] sm:h-full">
                         <ResponsiveContainer width="100%" height="100%">
@@ -61,7 +61,7 @@ export const SquadCompositionSection = ({
                                         <span className="inline-block w-4 h-4 rounded-sm" style={{ border: '1px solid var(--border-subtle)' }} />
                                     )}
                                     <span className="min-w-0 truncate">{entry.name}</span>
-                                    <span className="shrink-0" style={{ color: 'var(--text-muted)' }}>({entry.value})</span>
+                                    <span className="shrink-0" style={{ color: 'var(--text-secondary)' }}>({entry.value})</span>
                                 </div>
                             ))}
                         </div>
@@ -70,7 +70,7 @@ export const SquadCompositionSection = ({
             </div>
 
             <div>
-                <div className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--text-muted)' }}>Enemy Composition</div>
+                <div className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--text-secondary)' }}>Enemy Composition</div>
                 <div className="grid grid-cols-1 sm:grid-cols-[1fr_150px] sm:h-[300px] gap-4">
                     <div className="h-[240px] sm:h-full">
                         <ResponsiveContainer width="100%" height="100%">
@@ -110,7 +110,7 @@ export const SquadCompositionSection = ({
                                         <span className="inline-block w-4 h-4 rounded-sm" style={{ border: '1px solid var(--border-subtle)' }} />
                                     )}
                                     <span className="min-w-0 truncate">{entry.name}</span>
-                                    <span className="shrink-0" style={{ color: 'var(--text-muted)' }}>({entry.value})</span>
+                                    <span className="shrink-0" style={{ color: 'var(--text-secondary)' }}>({entry.value})</span>
                                 </div>
                             ))}
                         </div>

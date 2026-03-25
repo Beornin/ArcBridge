@@ -370,7 +370,7 @@ const CollapsedView = ({
             contentClassName={`bg-[var(--bg-card-inner)] border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] overflow-hidden ${expandedSection === config.sectionId ? 'flex flex-col min-h-0' : ''}`}
             sidebar={
                 <>
-                    <div className="text-xs uppercase tracking-widest text-[color:var(--text-muted)] mb-2">Modifiers</div>
+                    <div className="text-xs uppercase tracking-widest text-[color:var(--text-secondary)] mb-2">Modifiers</div>
                     <input
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
@@ -593,7 +593,7 @@ const ExpandedView = ({
     return (
         <div className="flex flex-col gap-4">
             <div className="bg-[var(--bg-card-inner)] border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] px-4 py-3">
-                <div className="text-xs uppercase tracking-widest text-[color:var(--text-muted)] mb-2">Modifier Columns</div>
+                <div className="text-xs uppercase tracking-widest text-[color:var(--text-secondary)] mb-2">Modifier Columns</div>
                 <div className="flex flex-wrap items-center gap-2">
                     <SearchSelectDropdown
                         options={[

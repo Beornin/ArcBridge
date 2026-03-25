@@ -165,7 +165,7 @@ export const HealingBreakdownSection = ({
             ) : (
                 <div className="grid gap-4 lg:grid-cols-[280px_1fr] items-stretch">
                     <div className="bg-[var(--bg-card-inner)] border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] px-3 pt-3 pb-2 flex flex-col min-h-0 h-[420px]">
-                        <div className="text-xs uppercase tracking-widest text-[color:var(--text-muted)] mb-3">
+                        <div className="text-xs uppercase tracking-widest text-[color:var(--text-secondary)] mb-3">
                             Squad Players
                         </div>
                         <div className="mb-2">

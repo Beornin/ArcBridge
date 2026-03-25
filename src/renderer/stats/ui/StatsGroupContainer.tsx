@@ -47,7 +47,7 @@ export function StatsGroupContainer({
                 </h2>
                 <span
                     className="ml-auto text-[10px]"
-                    style={{ color: 'var(--text-muted)' }}
+                    style={{ color: 'var(--text-secondary)' }}
                 >
                     {sectionCount} {sectionCount === 1 ? 'section' : 'sections'}
                 </span>

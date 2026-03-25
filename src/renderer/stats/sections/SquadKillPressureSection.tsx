@@ -90,11 +90,11 @@ export const SquadKillPressureSection = () => {
                     <div className="flex items-center justify-between gap-3 mb-3">
                         <div>
                             <div className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--text-secondary)]">Kill/Death Ratio per Fight</div>
-                            <div className="text-[11px] text-[color:var(--text-muted)] mt-1">
+                            <div className="text-[11px] text-[color:var(--text-secondary)] mt-1">
                                 Baseline is KDR 1.0. Green above = winning attrition. Red below = losing attrition. Scale is logarithmic.
                             </div>
                         </div>
-                        <div className="text-[11px] text-[color:var(--text-muted)] shrink-0">
+                        <div className="text-[11px] text-[color:var(--text-secondary)] shrink-0">
                             {chartData.length} {chartData.length === 1 ? 'fight' : 'fights'}
                         </div>
                     </div>

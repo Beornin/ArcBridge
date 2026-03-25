@@ -46,7 +46,7 @@ const LeaderCard = ({ icon: Icon, title, data, color, unit = '', onClick, active
                 <div className="min-w-0 flex-1">
                     <div className="text-[color:var(--text-secondary)] text-xs font-bold uppercase tracking-wider truncate">{title}</div>
                     <div className="text-2xl font-bold text-white mt-0.5 break-words">
-                        {displayValue} <span className="text-sm font-normal text-[color:var(--text-muted)]">{unit}</span>
+                        {displayValue} <span className="text-sm font-normal text-[color:var(--text-secondary)]">{unit}</span>
                     </div>
                 </div>
             </div>
@@ -55,7 +55,7 @@ const LeaderCard = ({ icon: Icon, title, data, color, unit = '', onClick, active
                     {renderProfessionIcon(data?.profession || 'Unknown', data?.professionList, 'w-4 h-4')}
                     <div className="text-sm font-medium text-[color:var(--brand-primary)] truncate">{data?.player || '-'}</div>
                 </div>
-                <div className="text-xs text-[color:var(--text-muted)] truncate">{data?.count ? `${data.count} logs` : '-'}</div>
+                <div className="text-xs text-[color:var(--text-secondary)] truncate">{data?.count ? `${data.count} logs` : '-'}</div>
             </div>
             {active && (
                 <div className="mt-3 stats-share-exclude">
@@ -270,7 +270,7 @@ export const TopPlayersSection = ({
                                             <div className={`text-xs uppercase tracking-widest font-semibold ${entry.label === 'Silver' ? 'text-slate-200' : 'text-orange-200'}`}>
                                                 {entry.label}
                                             </div>
-                                            <div className="text-xs text-[color:var(--text-muted)] font-mono">
+                                            <div className="text-xs text-[color:var(--text-secondary)] font-mono">
                                                 {entry.data?.score ? entry.data.score.toFixed(1) : '-'}
                                             </div>
                                         </div>

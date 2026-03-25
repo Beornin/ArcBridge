@@ -160,7 +160,7 @@ export const FightDiffModeSection = () => {
             {fightDiffMissingFromDataset ? (
                 <div className="text-center text-[color:var(--text-secondary)] py-8 space-y-1">
                     <div className="font-semibold text-[color:var(--text-primary)]">Fight Comparison data is missing in this dataset.</div>
-                    <div className="text-sm text-[color:var(--text-muted)]">
+                    <div className="text-sm text-[color:var(--text-secondary)]">
                         Regenerate the stats/report with a build that includes Fight Comparison.
                     </div>
                 </div>
@@ -296,7 +296,7 @@ export const FightDiffModeSection = () => {
                             ) : (
                                 <div className="px-4 py-8 text-center text-[color:var(--text-secondary)] text-sm space-y-1">
                                     <div className="italic">No target focus data for selected fights.</div>
-                                    <div className="text-xs text-[color:var(--text-muted)]">
+                                    <div className="text-xs text-[color:var(--text-secondary)]">
                                         Usually this means the fights were uploaded without Detailed WvW enemy slices, or the report was generated from an older build.
                                     </div>
                                 </div>

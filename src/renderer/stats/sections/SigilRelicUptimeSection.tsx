@@ -73,7 +73,7 @@ export const SigilRelicUptimeSection = ({
                     contentClassName={`bg-[var(--bg-card-inner)] border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] overflow-hidden ${isExpanded ? 'flex flex-col min-h-0' : ''}`}
                     sidebar={
                         <>
-                            <div className="text-xs uppercase tracking-widest text-[color:var(--text-muted)] mb-2">Sigil/Relic</div>
+                            <div className="text-xs uppercase tracking-widest text-[color:var(--text-secondary)] mb-2">Sigil/Relic</div>
                             <input
                                 value={sigilRelicSearch}
                                 onChange={(e) => setSigilRelicSearch(e.target.value)}
@@ -120,7 +120,7 @@ export const SigilRelicUptimeSection = ({
                                             <div className="text-sm font-semibold text-[color:var(--text-primary)]">
                                                 <InlineIconLabel name={activeSigilRelicTable.name} iconUrl={activeSigilRelicTable.icon} iconClassName="h-4 w-4" />
                                             </div>
-                                            <div className="text-xs uppercase tracking-widest text-[color:var(--text-muted)]">Uptime</div>
+                                            <div className="text-xs uppercase tracking-widest text-[color:var(--text-secondary)]">Uptime</div>
                                         </div>
                                     }
                                     columns={

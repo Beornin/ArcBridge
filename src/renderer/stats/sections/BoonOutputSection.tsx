@@ -97,7 +97,7 @@ export const BoonOutputSection = ({
         ) : isExpanded ? (
             <div className="flex flex-col gap-4">
                 <div className="border rounded-[var(--radius-md)] px-4 py-3" style={{ background: 'var(--bg-hover)', borderColor: 'var(--border-subtle)' }}>
-                    <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-muted)' }}>Boons</div>
+                    <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>Boons</div>
                     <div className="flex flex-wrap items-center gap-2">
                         <SearchSelectDropdown
                             options={[
@@ -302,7 +302,7 @@ export const BoonOutputSection = ({
                 contentStyle={{ background: 'var(--bg-card-inner)', borderColor: 'var(--border-subtle)' }}
                 sidebar={
                     <>
-                        <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-muted)' }}>Boons</div>
+                        <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>Boons</div>
                         <input
                             value={boonSearch}
                             onChange={(e) => setBoonSearch(e.target.value)}
@@ -343,7 +343,7 @@ export const BoonOutputSection = ({
                                     <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
                                         <InlineIconLabel name={activeBoonTable.name} iconUrl={activeBoonTable.icon} iconClassName="h-4 w-4" />
                                     </div>
-                                    <div className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
+                                    <div className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>
                                         {`${activeBoonCategory.replace('Buffs', '')} • ${activeBoonMetric === 'total' ? 'Total Gen' : activeBoonMetric === 'average' ? 'Gen/Sec' : 'Uptime'}`}
                                     </div>
                                 </div>

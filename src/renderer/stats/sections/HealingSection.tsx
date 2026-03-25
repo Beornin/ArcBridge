@@ -76,7 +76,7 @@ export const HealingSection = ({
         ) : isExpanded ? (
             <div className="flex flex-col gap-4">
                 <div className="border rounded-[var(--radius-md)] px-4 py-3" style={{ background: 'var(--bg-hover)', borderColor: 'var(--border-subtle)' }}>
-                    <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-muted)' }}>Healing Tabs</div>
+                    <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>Healing Tabs</div>
                     <div className="flex flex-wrap items-center gap-2">
                         <SearchSelectDropdown
                             options={[
@@ -281,7 +281,7 @@ export const HealingSection = ({
                 contentStyle={{ background: 'var(--bg-card-inner)', borderColor: 'var(--border-subtle)' }}
                 sidebar={
                     <>
-                        <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-muted)' }}>Healing Tabs</div>
+                        <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>Healing Tabs</div>
                         <div className="flex-1 overflow-y-auto space-y-1 pr-1">
                             {HEALING_METRICS.map((metric) => (
                                 <button
@@ -340,7 +340,7 @@ export const HealingSection = ({
                                     header={
                                         <div className="flex items-center justify-between px-4 py-3" style={{ background: 'var(--bg-hover)' }}>
                                             <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{metric.label}</div>
-                                            <div className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Healing</div>
+                                            <div className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>Healing</div>
                                         </div>
                                     }
                                     columns={

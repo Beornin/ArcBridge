@@ -141,7 +141,7 @@ export const PlayerBreakdownSection = ({
                     <div className={`grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-4 ${expandedSection === 'player-breakdown' ? 'flex-1 min-h-0 h-full' : ''}`}>
                         <div className={`bg-[var(--bg-card-inner)] border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] px-3 pt-3 pb-2 flex flex-col min-h-0 ${expandedSection === 'player-breakdown' ? 'h-full' : ''}`}>
                             <div className="flex items-center justify-between gap-2 mb-3">
-                                <div className="text-xs uppercase tracking-widest text-[color:var(--text-muted)]">
+                                <div className="text-xs uppercase tracking-widest text-[color:var(--text-secondary)]">
                                     {(isExpanded ? 'Squad Classes' : viewMode === 'player' ? 'Squad Players' : 'Squad Classes')}
                                 </div>
                                 {!isExpanded && (
@@ -391,7 +391,7 @@ export const PlayerBreakdownSection = ({
                                             ]);
                                             return (
                                                 <div className="bg-[var(--bg-card-inner)] border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] px-4 py-3">
-                                                    <div className="text-xs uppercase tracking-widest text-[color:var(--text-muted)] mb-2">Player Breakdown</div>
+                                                    <div className="text-xs uppercase tracking-widest text-[color:var(--text-secondary)] mb-2">Player Breakdown</div>
                                                     <div className="flex flex-wrap items-center gap-2">
                                                         <SearchSelectDropdown
                                                             options={searchOptions}
@@ -558,7 +558,7 @@ export const PlayerBreakdownSection = ({
                                                                     />
                                                                 </div>
                                                             </div>
-                                                            <div className="text-[11px] text-[color:var(--text-muted)]">
+                                                            <div className="text-[11px] text-[color:var(--text-secondary)]">
                                                                 {activePlayerBreakdown.skills.length} skills | {formatTopStatValue(totalPlayerDamage)} total damage
                                                             </div>
                                                         </div>
@@ -631,7 +631,7 @@ export const PlayerBreakdownSection = ({
                                             ]);
                                             return (
                                                 <div className="bg-[var(--bg-card-inner)] border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] px-4 py-3">
-                                                    <div className="text-xs uppercase tracking-widest text-[color:var(--text-muted)] mb-2">Class Breakdown</div>
+                                                    <div className="text-xs uppercase tracking-widest text-[color:var(--text-secondary)] mb-2">Class Breakdown</div>
                                                     <div className="flex flex-wrap items-center gap-2">
                                                         <SearchSelectDropdown
                                                             options={searchOptions}
@@ -798,7 +798,7 @@ export const PlayerBreakdownSection = ({
                                                                     />
                                                                 </div>
                                                             </div>
-                                                            <div className="text-[11px] text-[color:var(--text-muted)]">
+                                                            <div className="text-[11px] text-[color:var(--text-secondary)]">
                                                                 {activeClassRows.length} players | {activeClassBreakdown.skills.length} skills
                                                             </div>
                                                         </div>

@@ -113,7 +113,7 @@ export const ApmSection = ({
             ) : (
                 <div className={`grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-4 ${expandedSection === 'apm-stats' ? 'flex-1 min-h-0 h-full' : ''}`}>
                     <div className={`rounded-[var(--radius-md)] px-3 pt-3 pb-2 flex flex-col min-h-0 ${expandedSection === 'apm-stats' ? 'h-full' : ''}`} style={{ background: 'var(--bg-hover)', border: '1px solid var(--border-subtle)' }}>
-                        <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-muted)' }}>Elite Specs</div>
+                        <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>Elite Specs</div>
                         <div className="mb-2">
                             <input
                                 type="text"
@@ -268,7 +268,7 @@ export const ApmSection = ({
                                     ]);
                                     return (
                                         <div className="rounded-[var(--radius-md)] px-4 py-3" style={{ background: 'var(--bg-hover)', border: '1px solid var(--border-subtle)' }}>
-                                            <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-muted)' }}>APM</div>
+                                            <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>APM</div>
                                             <div className="flex flex-wrap items-center gap-2">
                                                 <SearchSelectDropdown
                                                     options={searchOptions}
@@ -458,7 +458,7 @@ export const ApmSection = ({
                                                         )}
                                                     </div>
                                                 </div>
-                                                <div className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
+                                                <div className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>
                                                     {isAllApmSkills || !activeApmSkill
                                                         ? `${activeApmSpecTable.playerRows?.length || 0} players`
                                                         : `${(activeApmSkill as any)?.totalCasts ?? 0} casts`}

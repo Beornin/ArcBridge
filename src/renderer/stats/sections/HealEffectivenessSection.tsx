@@ -22,7 +22,7 @@ const SkillTable = ({
 }) => (
     <div className="rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-[var(--bg-card-inner)] overflow-hidden min-h-[260px]">
         <div className="px-4 py-3 border-b border-[color:var(--border-default)]">
-            <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-muted)]">{title}</div>
+            <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-secondary)]">{title}</div>
         </div>
         {rows.length === 0 ? (
             <div className="px-4 py-8 text-center text-xs text-[color:var(--text-muted)] italic">No skill data available for this fight.</div>
@@ -121,11 +121,11 @@ export const HealEffectivenessSection = ({ fights }: HealEffectivenessSectionPro
                         <div className="flex items-center justify-between gap-3 mb-3">
                             <div>
                                 <div className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--text-secondary)]">Per Fight Totals</div>
-                                <div className="text-[11px] text-[color:var(--text-muted)] mt-1">
+                                <div className="text-[11px] text-[color:var(--text-secondary)] mt-1">
                                     Red is incoming damage, green is healing, white is healing plus barrier. Click a point to show that fight&apos;s skill tables.
                                 </div>
                             </div>
-                            <div className="text-[11px] text-[color:var(--text-muted)] shrink-0">
+                            <div className="text-[11px] text-[color:var(--text-secondary)] shrink-0">
                                 {fights.length} {fights.length === 1 ? 'fight' : 'fights'}
                             </div>
                         </div>
@@ -212,7 +212,7 @@ export const HealEffectivenessSection = ({ fights }: HealEffectivenessSectionPro
                     >
                         <div className="flex items-center justify-between gap-3 mb-3">
                             <div>
-                                <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-muted)]">
+                                <div className="text-[10px] uppercase tracking-[0.35em] text-[color:var(--text-secondary)]">
                                     {selectedFight ? `${selectedFight.fullLabel} - Fight Details` : 'Fight Details'}
                                 </div>
                                 {selectedFight ? (
@@ -223,7 +223,7 @@ export const HealEffectivenessSection = ({ fights }: HealEffectivenessSectionPro
                                         <span>Healing + Barrier: {formatWithCommas(selectedFight.healing + selectedFight.barrier, 0)}</span>
                                     </div>
                                 ) : (
-                                    <div className="text-xs text-[color:var(--text-muted)] mt-1">Select one fight to view the per-fight skill tables.</div>
+                                    <div className="text-xs text-[color:var(--text-secondary)] mt-1">Select one fight to view the per-fight skill tables.</div>
                                 )}
                             </div>
                             {selectedFight && (

@@ -77,7 +77,7 @@ export const OffenseSection = ({
         ) : isExpanded ? (
             <div className="flex flex-col gap-4">
                 <div className="border rounded-[var(--radius-md)] px-4 py-3" style={{ background: 'var(--bg-hover)', borderColor: 'var(--border-subtle)' }}>
-                    <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-muted)' }}>Offensive Tabs</div>
+                    <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>Offensive Tabs</div>
                     <div className="flex flex-wrap items-center gap-2">
                         <SearchSelectDropdown
                             options={[
@@ -272,7 +272,7 @@ export const OffenseSection = ({
                 contentStyle={{ background: 'var(--bg-card-inner)', borderColor: 'var(--border-subtle)' }}
                 sidebar={
                     <>
-                        <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-muted)' }}>Offensive Tabs</div>
+                        <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>Offensive Tabs</div>
                         <input
                             value={offenseSearch}
                             onChange={(e) => setOffenseSearch(e.target.value)}
@@ -349,7 +349,7 @@ export const OffenseSection = ({
                                     header={
                                         <div className="flex items-center justify-between px-4 py-3" style={{ background: 'var(--bg-hover)' }}>
                                             <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{metric.label}</div>
-                                            <div className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Offensive</div>
+                                            <div className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>Offensive</div>
                                         </div>
                                     }
                                     columns={

@@ -109,7 +109,7 @@ export const ConditionsSection = ({
             isExpanded ? (
                 <div className="flex flex-col gap-4">
                     <div className="bg-[var(--bg-card-inner)] border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] px-4 py-3">
-                        <div className="text-xs uppercase tracking-widest text-[color:var(--text-muted)] mb-2">Conditions</div>
+                        <div className="text-xs uppercase tracking-widest text-[color:var(--text-secondary)] mb-2">Conditions</div>
                     <div className="flex flex-wrap items-center gap-2">
                         <SearchSelectDropdown
                             options={[
@@ -317,7 +317,7 @@ export const ConditionsSection = ({
                 contentClassName={`bg-[var(--bg-card-inner)] border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] overflow-hidden ${expandedSection === 'conditions-outgoing' ? 'flex flex-col min-h-0' : ''}`}
                 sidebar={
                     <>
-                        <div className="text-xs uppercase tracking-widest text-[color:var(--text-muted)] mb-2">Conditions</div>
+                        <div className="text-xs uppercase tracking-widest text-[color:var(--text-secondary)] mb-2">Conditions</div>
                         <input
                             value={conditionSearch}
                             onChange={(e) => setConditionSearch(e.target.value)}
@@ -377,7 +377,7 @@ export const ConditionsSection = ({
                                         )}
                                 </div>
                                 <div className="flex flex-col items-end gap-2 text-right ml-auto mt-2">
-                                    <div className="text-xs uppercase tracking-widest text-[color:var(--text-muted)]">Squad Totals</div>
+                                    <div className="text-xs uppercase tracking-widest text-[color:var(--text-secondary)]">Squad Totals</div>
                                     <PillToggleGroup
                                         value={conditionDirection}
                                         onChange={setConditionDirection}

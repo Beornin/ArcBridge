@@ -211,7 +211,7 @@ export const FightBreakdownSection = ({
                                 inactiveClassName="text-[color:var(--text-secondary)]"
                             />
                         )}
-                        <span className="text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
+                        <span className="text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>
                             {fights.length} Fights
                         </span>
                         <button
