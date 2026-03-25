@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { ArrowBigUp, Shield } from 'lucide-react';
 import { InlineIconLabel } from '../ui/StatsViewShared';
+import { PillToggleGroup } from '../ui/PillToggleGroup';
 import { useStatsSharedContext } from '../StatsViewContext';
 
 type TopSkillsSectionProps = {
@@ -40,37 +41,25 @@ export const TopSkillsSection = ({
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div>
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-3.5 min-h-[28px]">
                 <ArrowBigUp className="w-4 h-4 shrink-0" style={{ color: 'var(--brand-primary)' }} />
                 <h3 className="top-skills-outgoing-icon text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Top Outgoing Skills</h3>
-                <span className="ml-auto text-[11px] uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>{metricLabel}</span>
-            </div>
-            {showMetricToggle && (
-                <div className="flex items-center justify-end mb-3">
-                    <div className="pill-toggle-group flex items-center gap-1 rounded-sm p-[1px]" style={{ border: '1px solid var(--border-default)' }}>
-                        {([
-                            { id: 'damage', label: 'Damage' },
-                            { id: 'downContribution', label: 'Down Contrib' }
-                        ] as const).map((option) => {
-                            const isActive = (topSkillsMetric || stats.topSkillsMetric) === option.id;
-                            return (
-                                <button
-                                    key={option.id}
-                                    type="button"
-                                    onClick={() => onTopSkillsMetricChange?.(option.id)}
-                                    className={`pill-toggle-option px-2.5 py-1 rounded-sm text-[11px] font-semibold transition-colors ${
-                                        isActive
-                                            ? 'pill-toggle-option--active bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]'
-                                            : 'text-[color:var(--text-secondary)]'
-                                    }`}
-                                >
-                                    {option.label}
-                                </button>
-                            );
-                        })}
-                    </div>
+                <div className="ml-auto flex items-center gap-2">
+                    {showMetricToggle && (
+                        <PillToggleGroup
+                            value={(topSkillsMetric || stats.topSkillsMetric) as 'damage' | 'downContribution'}
+                            onChange={(v) => onTopSkillsMetricChange?.(v)}
+                            options={[
+                                { value: 'damage' as const, label: 'Damage' },
+                                { value: 'downContribution' as const, label: 'Down Contrib' }
+                            ]}
+                            activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
+                            inactiveClassName="text-[color:var(--text-secondary)]"
+                        />
+                    )}
+                    {!showMetricToggle && <span className="text-[11px] uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>{metricLabel}</span>}
                 </div>
-            )}
+            </div>
             <div className="max-h-80 overflow-y-auto overflow-x-hidden space-y-4">
                 {sortedTopSkills.map((skill: { name: string; icon?: string; damage: number; hits: number }, i: number) => (
                     <div key={`outgoing-${skill.name || 'unknown'}-${i}`} className="flex items-center gap-4">
@@ -107,12 +96,11 @@ export const TopSkillsSection = ({
         </div>
 
         <div>
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-3.5 min-h-[28px]">
                 <Shield className="w-4 h-4 shrink-0" style={{ color: 'var(--section-defense)' }} />
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Top Incoming Skills</h3>
                 <span className="ml-auto text-[11px] uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>Damage</span>
             </div>
-            {showMetricToggle && <div className="mb-3" />}
             <div className="max-h-80 overflow-y-auto overflow-x-hidden space-y-4">
                 {(stats.topIncomingSkills || []).map((skill: { name: string; icon?: string; damage: number; hits: number }, i: number) => (
                     <div key={`incoming-${skill.name || 'unknown'}-${i}`} className="flex items-center gap-4">
