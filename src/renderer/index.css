@@ -760,7 +760,7 @@ body:not(.web-report) .modal-pane .dense-table.fight-breakdown-dense .dense-tabl
 .stats-view-fade-in {
     position: absolute;
     inset: 0;
-    z-index: 50;
+    z-index: 30;
     background: var(--bg-elevated);
     pointer-events: none;
     animation: stats-view-reveal 300ms ease-out forwards;
