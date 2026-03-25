@@ -379,7 +379,14 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
     const dissolveActive = (rawDissolveActive && dissolveCompletedForLogKey !== logIdentityKey) || awaitingData;
     const statsActionsDisabled = dissolveActive || !sectionContentReady;
 
-    const sectionWrapClass = dissolveActive
+    // Latch dissolveActive so shimmer doesn't restart on progress ticks.
+    // Once active, stay active until dissolve fully completes (not per-tick).
+    const dissolveActiveLatchRef = useRef(false);
+    if (dissolveActive) dissolveActiveLatchRef.current = true;
+    if (!dissolveActive && !dissolveCompleting) dissolveActiveLatchRef.current = false;
+    const stableDissolveActive = dissolveActiveLatchRef.current;
+
+    const sectionWrapClass = stableDissolveActive
         ? (dissolveCompleting ? 'stats-section-wrap stats-section-wrap--materializing' : 'stats-section-wrap stats-section-wrap--unloaded')
         : 'stats-section-wrap';
 
