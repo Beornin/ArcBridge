@@ -1,4 +1,5 @@
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Users } from 'lucide-react';
 import { useStatsSharedContext } from '../StatsViewContext';
 
 type TimelineSectionProps = {
@@ -16,7 +17,7 @@ export const TimelineSection = ({
     return (
     <div>
         <div className="flex items-center gap-2 mb-3.5 flex-wrap">
-            <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+            <Users className="w-4 h-4 shrink-0" style={{ color: 'var(--brand-primary)' }} />
             <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Squad vs Enemy Size</h3>
             <div className="ml-auto flex items-center gap-2">
                 <span className="text-[11px] uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>Friendly Count</span>

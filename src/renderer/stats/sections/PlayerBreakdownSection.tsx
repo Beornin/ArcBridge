@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Maximize2, X, Columns, Users } from 'lucide-react';
+import { Maximize2, X, Columns, Users, ListTree } from 'lucide-react';
 import { InlineIconLabel } from '../ui/StatsViewShared';
 import { DenseStatsTable } from '../ui/DenseStatsTable';
 import { ColumnFilterDropdown } from '../ui/ColumnFilterDropdown';
@@ -119,7 +119,7 @@ export const PlayerBreakdownSection = ({
             style={expandedSection === 'player-breakdown' ? { background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-card)' } : undefined}
         >
             <div className="flex items-center gap-2 mb-3.5">
-                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--section-offense)' }} />
+                <ListTree className="w-4 h-4 shrink-0" style={{ color: 'var(--section-offense)' }} />
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Player Breakdown</h3>
                 <button
                     type="button"

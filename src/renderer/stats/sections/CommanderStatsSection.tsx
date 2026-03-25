@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Clock3, Target, Route, Skull } from 'lucide-react';
+import { CommanderTagIcon } from '../../ui/CommanderTagIcon';
 import { useStatsSharedContext } from '../StatsViewContext';
 
 type CommanderFightRow = {
@@ -169,7 +171,7 @@ export const CommanderTargetConversionSection = ({
     return (
         <div>
             <div className="flex items-center gap-2 mb-3.5">
-                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+                <Target className="w-4 h-4 shrink-0" style={{ color: 'var(--brand-primary)' }} />
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Target Conversion</h3>
                 <span className="ml-auto text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>
                     {rows.length} Commanders
@@ -287,7 +289,7 @@ export const CommanderTagMovementSection = ({
     return (
         <div>
             <div className="flex items-center gap-2 mb-3.5">
-                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+                <Route className="w-4 h-4 shrink-0" style={{ color: 'var(--brand-primary)' }} />
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Tag Movement</h3>
                 <span className="ml-auto text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>
                     {rows.length} Commanders
@@ -406,7 +408,7 @@ export const CommanderTagDeathResponseSection = ({
     return (
         <div>
             <div className="flex items-center gap-2 mb-3.5">
-                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+                <Skull className="w-4 h-4 shrink-0" style={{ color: 'var(--brand-primary)' }} />
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Squad Response To Tag Death</h3>
                 <span className="ml-auto text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>
                     {rows.length} Commanders
@@ -545,7 +547,7 @@ export const CommanderPushTimingSection = ({
     return (
         <div>
             <div className="flex items-center gap-2 mb-3.5">
-                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+                <Clock3 className="w-4 h-4 shrink-0" style={{ color: 'var(--brand-primary)' }} />
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Push Timing</h3>
                 <span className="ml-auto text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>
                     {rows.length} Commanders
@@ -738,7 +740,7 @@ export const CommanderStatsSection = ({
     return (
         <div>
             <div className="flex items-center gap-2 mb-3.5">
-                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+                <span className="flex shrink-0" style={{ color: 'var(--brand-primary)' }}><CommanderTagIcon className="w-4 h-4" /></span>
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Commander Stats</h3>
                 <span className="ml-auto text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>{rows.length} Commanders</span>
             </div>

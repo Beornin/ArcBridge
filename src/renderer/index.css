@@ -1371,6 +1371,34 @@ select option {
 .hover\:border-white\/20:hover { border-color: var(--border-hover) !important; }
 .hover\:border-white\/30:hover { border-color: var(--border-hover) !important; }
 
+/* --- Recharts exclusion: never remap Tailwind utilities inside chart wrappers ---
+   Recharts SVG elements and tooltip containers must not inherit background/border
+   overrides that would corrupt bar fills, line strokes, or chart layout. */
+.recharts-wrapper .rounded-2xl,
+.recharts-wrapper .rounded-xl,
+.recharts-wrapper .rounded-lg,
+.recharts-wrapper .rounded-md { border-radius: revert !important; }
+
+.recharts-wrapper .bg-white\/5,
+.recharts-wrapper .bg-white\/4,
+.recharts-wrapper .bg-white\/3,
+.recharts-wrapper .bg-white\/10,
+.recharts-wrapper .bg-black\/20,
+.recharts-wrapper .bg-black\/25,
+.recharts-wrapper .bg-black\/30,
+.recharts-wrapper .bg-black\/40,
+.recharts-wrapper .bg-black\/50,
+.recharts-wrapper .bg-black\/70 { background-color: revert !important; }
+
+.recharts-wrapper .border-white\/5,
+.recharts-wrapper .border-white\/10,
+.recharts-wrapper .border-white\/15,
+.recharts-wrapper .border-white\/20 { border-color: revert !important; }
+
+.recharts-wrapper .shadow-2xl,
+.recharts-wrapper .shadow-xl,
+.recharts-wrapper .shadow-lg { box-shadow: revert !important; }
+
 /* --- Gradients: map to brand gradient --- */
 .bg-gradient-to-br.from-gray-900.to-gray-950 {
   background-image: none !important;

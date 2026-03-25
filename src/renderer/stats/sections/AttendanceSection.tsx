@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Download } from 'lucide-react';
+import { Download, FileText } from 'lucide-react';
 import { useStatsSharedContext } from '../StatsViewContext';
 
 type AttendanceClassTime = {
@@ -120,7 +120,7 @@ export const AttendanceSection = ({
     return (
         <div>
             <div className="flex items-center gap-2 mb-3.5">
-                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+                <FileText className="w-4 h-4 shrink-0" style={{ color: 'var(--brand-primary)' }} />
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Attendance Ledger</h3>
             </div>
             <div>

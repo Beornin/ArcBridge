@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, Cell, ReferenceLine, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis } from 'recharts';
-import { Maximize2, X } from 'lucide-react';
+import { Maximize2, X, Crosshair } from 'lucide-react';
 import { useStatsSharedContext } from '../StatsViewContext';
 import type { TagDistanceDeathFightSummary } from '../computeTagDistanceDeaths';
 
@@ -65,7 +65,7 @@ export const SquadTagDistanceDeathsSection = ({ fights }: SquadTagDistanceDeaths
             style={isExpanded ? { background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-card)' } : undefined}
         >
             <div className="flex items-center gap-2 mb-3.5">
-                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+                <Crosshair className="w-4 h-4 shrink-0" style={{ color: 'var(--brand-primary)' }} />
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Tag Distance Deaths</h3>
                 <button
                     type="button"

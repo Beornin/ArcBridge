@@ -3712,7 +3712,7 @@ type SpikeFight = {
     const scrollContainerClass = embedded
         ? `stats-sections space-y-0 min-h-0 px-3 pb-3 pt-3 sm:px-4 sm:pb-4 sm:pt-4 rounded-xl border border-white/5 ${expandedSection ? '' : 'backdrop-blur-xl'
         }`
-        : `flex-1 overflow-y-auto pr-2 space-y-6 min-h-0 border border-white/5 p-4 rounded-xl ${expandedSection ? '' : 'backdrop-blur-2xl'
+        : `flex-1 overflow-y-auto pr-2 space-y-6 min-h-0 ${expandedSection ? '' : 'backdrop-blur-2xl'
         }`;
     const scrollContainerStyle: CSSProperties | undefined = embedded
         ? {

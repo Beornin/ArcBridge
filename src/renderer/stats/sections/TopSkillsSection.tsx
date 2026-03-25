@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { ArrowBigUp, Shield } from 'lucide-react';
 import { InlineIconLabel } from '../ui/StatsViewShared';
 import { useStatsSharedContext } from '../StatsViewContext';
 
@@ -40,7 +41,7 @@ export const TopSkillsSection = ({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div>
             <div className="flex items-center gap-2 mb-3.5">
-                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+                <ArrowBigUp className="w-4 h-4 shrink-0" style={{ color: 'var(--brand-primary)' }} />
                 <h3 className="top-skills-outgoing-icon text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Top Outgoing Skills</h3>
                 <div className="ml-auto flex items-center gap-2">
                     <span className="text-[11px] uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>{metricLabel}</span>
@@ -107,7 +108,7 @@ export const TopSkillsSection = ({
 
         <div>
             <div className="flex items-center gap-2 mb-3.5">
-                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--section-defense)' }} />
+                <Shield className="w-4 h-4 shrink-0" style={{ color: 'var(--section-defense)' }} />
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Top Incoming Skills</h3>
                 <span className="ml-auto text-[11px] uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>Damage</span>
             </div>

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Swords } from 'lucide-react';
 import { useStatsSharedContext } from '../StatsViewContext';
 
 type FightCompPartyRow = {
@@ -80,7 +81,7 @@ export const FightCompSection = ({
     return (
         <div>
             <div className="flex items-center gap-2 mb-3.5">
-                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+                <Swords className="w-4 h-4 shrink-0" style={{ color: 'var(--brand-primary)' }} />
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Fight Comp</h3>
             </div>
             <div className="fight-comp-shell">

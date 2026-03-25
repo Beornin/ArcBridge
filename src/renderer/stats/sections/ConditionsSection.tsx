@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Maximize2, X, Columns, Users } from 'lucide-react';
+import { Maximize2, X, Columns, Users, Skull } from 'lucide-react';
 import { ColumnFilterDropdown } from '../ui/ColumnFilterDropdown';
 import { DenseStatsTable } from '../ui/DenseStatsTable';
 import { PillToggleGroup } from '../ui/PillToggleGroup';
@@ -92,7 +92,7 @@ export const ConditionsSection = ({
         style={expandedSection === 'conditions-outgoing' ? { background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-card)' } : undefined}
     >
         <div className="flex items-center gap-2 mb-3.5">
-            <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+            <Skull className="w-4 h-4 shrink-0" style={{ color: 'var(--section-offense)' }} />
             <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Conditions</h3>
             <button
                 type="button"

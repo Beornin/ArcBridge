@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useMetricSectionState } from '../hooks/useMetricSectionState';
 import { Maximize2, X, Columns, Users } from 'lucide-react';
+import { Gw2DamMitIcon } from '../../ui/Gw2DamMitIcon';
 import { ColumnFilterDropdown } from '../ui/ColumnFilterDropdown';
 import { SearchSelectDropdown, SearchSelectOption } from '../ui/SearchSelectDropdown';
 import { DenseStatsTable } from '../ui/DenseStatsTable';
@@ -81,7 +82,7 @@ export const DamageMitigationSection = ({
             style={expandedSection === 'defense-mitigation' ? { background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-card)' } : undefined}
         >
             <div className="flex items-center gap-2 mb-2">
-                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--section-mitigation)' }} />
+                <span className="flex shrink-0" style={{ color: 'var(--section-mitigation)' }}><Gw2DamMitIcon className="w-4 h-4" /></span>
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>
                     Defense Mitigation
                 </h3>

@@ -1,4 +1,5 @@
 import { Cell, Legend as ChartLegend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
+import { Map as MapIcon } from 'lucide-react';
 import { useStatsSharedContext } from '../StatsViewContext';
 
 type MapDistributionSectionProps = {
@@ -12,7 +13,7 @@ export const MapDistributionSection = ({
     return (
     <div>
         <div className="flex items-center gap-2 mb-3.5">
-            <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--brand-primary)' }} />
+            <MapIcon className="w-4 h-4 shrink-0" style={{ color: 'var(--brand-primary)' }} />
             <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Map Distribution</h3>
         </div>
         <div className="h-[260px] sm:h-[300px] w-full">

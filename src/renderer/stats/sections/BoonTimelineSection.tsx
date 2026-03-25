@@ -1,6 +1,7 @@
 import { Bar, CartesianGrid, Cell, ComposedChart, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Maximize2, X } from 'lucide-react';
 import { Gw2BoonIcon } from '../../ui/Gw2BoonIcon';
+import { Gw2AegisIcon } from '../../ui/Gw2AegisIcon';
 import { getProfessionColor } from '../../../shared/professionUtils';
 import { PillToggleGroup } from '../ui/PillToggleGroup';
 import { useStatsSharedContext } from '../StatsViewContext';
@@ -135,7 +136,7 @@ export const BoonTimelineSection = ({
             style={isExpanded ? { background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-card)' } : undefined}
         >
             <div className="flex items-center gap-2 mb-3.5">
-                <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: 'var(--section-boon)' }} />
+                <span className="flex shrink-0" style={{ color: 'var(--section-boon)' }}><Gw2AegisIcon className="w-4 h-4" /></span>
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: 'var(--text-primary)' }}>Boon Timeline</h3>
                 <button
                     type="button"
