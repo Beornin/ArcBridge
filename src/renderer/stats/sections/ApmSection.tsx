@@ -466,7 +466,7 @@ export const ApmSection = ({
                                                 </div>
                                             </div>
                                             {isAllApmSkills || !activeApmSkill ? (
-                                                <div className="stats-table-column-header grid grid-cols-[1.4fr_0.6fr_0.7fr_0.8fr] text-xs uppercase tracking-wider px-4 py-2" style={{ color: 'var(--text-secondary)', background: 'var(--bg-hover)' }}>
+                                                <div className="stats-table-column-header grid grid-cols-[1.4fr_0.6fr_0.7fr_0.8fr] text-xs uppercase tracking-wider px-4 py-2" style={{ color: 'var(--text-muted)', borderBottom: '1px solid var(--border-subtle)' }}>
                                                     <div>Player</div>
                                                     <button
                                                         type="button"
@@ -494,7 +494,7 @@ export const ApmSection = ({
                                                     </button>
                                                 </div>
                                             ) : (
-                                                <div className="stats-table-column-header grid grid-cols-[1.4fr_0.8fr_0.8fr] text-xs uppercase tracking-wider px-4 py-2" style={{ color: 'var(--text-secondary)', background: 'var(--bg-hover)' }}>
+                                                <div className="stats-table-column-header grid grid-cols-[1.4fr_0.8fr_0.8fr] text-xs uppercase tracking-wider px-4 py-2" style={{ color: 'var(--text-muted)', borderBottom: '1px solid var(--border-subtle)' }}>
                                                     <div>Player</div>
                                                     <div className="text-right">Casts</div>
                                                     <div className="text-right">{apmView === 'perSecond' ? 'APS' : 'APM'}</div>

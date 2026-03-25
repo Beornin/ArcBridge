@@ -138,8 +138,8 @@ export const PlayerBreakdownSection = ({
                         No player skill damage data available for the current selection.
                     </div>
                 ) : (
-                    <div className={`grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-4 ${expandedSection === 'player-breakdown' ? 'flex-1 min-h-0 h-full' : ''}`}>
-                        <div className={`px-3 pt-3 pb-2 flex flex-col min-h-0 ${expandedSection === 'player-breakdown' ? 'h-full' : ''}`}>
+                    <div className={`grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-0 ${expandedSection === 'player-breakdown' ? 'flex-1 min-h-0 h-full' : ''}`}>
+                        <div className={`pr-3 flex flex-col min-h-0 overflow-y-auto ${expandedSection === 'player-breakdown' ? 'h-full' : ''}" style={{ borderRight: '1px solid var(--border-subtle)' }}`}>
                             <div className="flex items-center justify-between gap-2 mb-3">
                                 <div className="text-xs uppercase tracking-widest text-[color:var(--text-secondary)]">
                                     {(isExpanded ? 'Squad Classes' : viewMode === 'player' ? 'Squad Players' : 'Squad Classes')}
@@ -358,7 +358,7 @@ export const PlayerBreakdownSection = ({
                                     ))}
                             </div>
                         </div>
-                        <div className={`bg-[var(--bg-card-inner)] border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] overflow-hidden stats-share-table ${expandedSection === 'player-breakdown' ? 'flex flex-col min-h-0' : ''}`}>
+                        <div className={`pl-3 overflow-hidden stats-share-table ${expandedSection === 'player-breakdown' ? 'flex flex-col min-h-0' : ''}`}>
                             {(isExpanded ? 'class' : viewMode) === 'player' ? (
                                 !activePlayerBreakdown || (!isExpanded && !activePlayerSkill) ? (
                                     <div className="px-4 py-10 text-center text-[color:var(--text-muted)] italic text-sm">
@@ -570,7 +570,7 @@ export const PlayerBreakdownSection = ({
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div className="stats-table-column-header grid grid-cols-[1.2fr_0.8fr] text-xs uppercase tracking-wider text-[color:var(--text-secondary)] bg-[var(--bg-hover)] px-4 py-2">
+                                                    <div className="stats-table-column-header grid grid-cols-[1.2fr_0.8fr] text-xs uppercase tracking-wider text-[color:var(--text-muted)] px-4 py-2" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                                                         <div>Metric</div>
                                                         <div className="text-right">Value</div>
                                                     </div>
@@ -810,7 +810,7 @@ export const PlayerBreakdownSection = ({
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div className="stats-table-column-header grid grid-cols-[1.6fr_0.8fr_0.8fr_0.8fr] text-xs uppercase tracking-wider text-[color:var(--text-secondary)] bg-[var(--bg-hover)] px-4 py-2">
+                                                    <div className="stats-table-column-header grid grid-cols-[1.6fr_0.8fr_0.8fr_0.8fr] text-xs uppercase tracking-wider text-[color:var(--text-muted)] px-4 py-2" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                                                         <div>Player</div>
                                                         <button
                                                             type="button"

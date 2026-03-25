@@ -185,7 +185,7 @@ export const DamageBreakdownSection = ({
                                                 {(metricMode === 'damage' ? 'Damage' : 'Down Contrib')} / {skillRows.length} {skillRows.length === 1 ? 'skill' : 'skills'}
                                             </div>
                                         </div>
-                                        <div className="stats-table-column-header grid grid-cols-[2fr_0.8fr_0.7fr] text-xs uppercase tracking-wider text-[color:var(--text-secondary)] bg-[var(--bg-hover)] px-4 py-2">
+                                        <div className="stats-table-column-header grid grid-cols-[2fr_0.8fr_0.7fr] text-xs uppercase tracking-wider text-[color:var(--text-muted)] px-4 py-2" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                                             <div>Skill</div>
                                             <div className="text-right">{metricMode === 'damage' ? 'Damage' : 'Down Contrib'}</div>
                                             <div className="text-right">% Total</div>
