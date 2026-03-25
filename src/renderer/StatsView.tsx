@@ -96,7 +96,7 @@ interface StatsViewProps {
     };
 }
 
-const sidebarListClass = 'space-y-1 pr-1 max-h-72 overflow-y-auto';
+const sidebarListClass = 'space-y-0.5 max-h-72 overflow-y-auto';
 const ORDERED_SECTION_IDS = [
     'overview',
     'fight-breakdown',

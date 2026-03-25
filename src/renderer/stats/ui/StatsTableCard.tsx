@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 
-const defaultSidebarClass = 'stats-table-sidebar px-3 pt-3 pb-2 flex flex-col min-h-0 overflow-hidden';
-const defaultSidebarStyle: CSSProperties = { background: 'var(--bg-card-inner)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)' };
-const defaultContentClass = 'overflow-hidden';
-const defaultContentStyle: CSSProperties = { background: 'var(--bg-card-inner)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)' };
+const defaultSidebarClass = 'stats-table-sidebar pr-3 flex flex-col min-h-0 overflow-hidden';
+const defaultSidebarStyle: CSSProperties = { borderRight: '1px solid var(--border-subtle)' };
+const defaultContentClass = 'overflow-hidden pl-3';
+const defaultContentStyle: CSSProperties = {};
 
 type StatsTableCardProps = {
     expanded?: boolean;
@@ -59,7 +59,7 @@ export const StatsTableCard = ({
         : undefined;
 
     return (
-        <div className={`grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-4 ${expanded ? 'flex-1 min-h-0 h-full' : ''} ${className}`}>
+        <div className={`grid grid-cols-1 lg:grid-cols-[140px_1fr] gap-0 ${expanded ? 'flex-1 min-h-0 h-full' : ''} ${className}`}>
             <div className={resolvedSidebarClass} style={{ ...resolvedSidebarStyle, ...sidebarStyle }}>{sidebar}</div>
             <div className={resolvedContentClass} style={resolvedContentStyle}>
                 <div ref={contentInnerRef}>
