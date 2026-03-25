@@ -1106,9 +1106,10 @@ body.web-report #top-players .mvp-gold-icon-badge {
 }
 
 /* Show real sections but styled as skeleton placeholders */
-.stats-section-wrap--unloaded > * {
+.stats-section-wrap--unloaded > *:not(.stats-dissolve-particle) {
   pointer-events: none;
-  animation: section-breathe 4s ease-in-out infinite;
+  opacity: 0.45;
+  filter: saturate(0) brightness(0.7);
 }
 
 .stats-section-wrap--unloaded > .stats-dissolve-particle {
@@ -1116,7 +1117,7 @@ body.web-report #top-players .mvp-gold-icon-badge {
   opacity: 1;
 }
 
-/* Shimmer overlay on unloaded sections */
+/* Shimmer overlay on unloaded sections — smooth continuous sweep */
 .stats-section-wrap--unloaded::after {
   content: '';
   position: absolute;
@@ -1125,13 +1126,14 @@ body.web-report #top-players .mvp-gold-icon-badge {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    color-mix(in srgb, var(--brand-primary) 6%, transparent) 40%,
-    color-mix(in srgb, var(--brand-secondary) 8%, transparent) 50%,
-    color-mix(in srgb, var(--brand-primary) 6%, transparent) 60%,
+    color-mix(in srgb, var(--brand-primary) 5%, transparent) 35%,
+    color-mix(in srgb, var(--brand-secondary) 7%, transparent) 50%,
+    color-mix(in srgb, var(--brand-primary) 5%, transparent) 65%,
     transparent 100%
   );
   background-size: 200% 100%;
-  animation: dissolve-shimmer 6s ease-in-out infinite;
+  animation: dissolve-shimmer 3s linear infinite;
+  will-change: background-position;
   pointer-events: none;
   z-index: 1;
 }
