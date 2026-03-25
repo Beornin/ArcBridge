@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Clock3, Target, Route, Skull } from 'lucide-react';
 import { CommanderTagIcon } from '../../ui/CommanderTagIcon';
+import { PillToggleGroup } from '../ui/PillToggleGroup';
 import { useStatsSharedContext } from '../StatsViewContext';
 
 type CommanderFightRow = {
@@ -895,26 +896,16 @@ export const CommanderStatsSection = ({
                                                     <option key={fight.id} value={fight.id}>{fight.shortLabel} • {fight.mapName || 'Unknown'}</option>
                                                 ))}
                                             </select>
-                                            <div className="flex items-center gap-1 rounded-sm p-[1px]" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-subtle)', borderRadius: '3px' }}>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setTimelineMode('incomingDamage')}
-                                                    className={`px-2.5 py-1 rounded-sm text-[11px] font-semibold transition-colors ${timelineMode === 'incomingDamage'
-                                                        ? 'bg-red-500/20 text-red-200 border border-red-500/40'
-                                                        : 'border border-transparent text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}`}
-                                                >
-                                                    Incoming Damage
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setTimelineMode('incomingBoons')}
-                                                    className={`px-2.5 py-1 rounded-sm text-[11px] font-semibold transition-colors ${timelineMode === 'incomingBoons'
-                                                        ? 'bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]'
-                                                        : 'border border-transparent text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}`}
-                                                >
-                                                    Incoming Boons
-                                                </button>
-                                            </div>
+                                            <PillToggleGroup
+                                                value={timelineMode}
+                                                onChange={setTimelineMode}
+                                                options={[
+                                                    { value: 'incomingDamage' as const, label: 'Incoming Damage' },
+                                                    { value: 'incomingBoons' as const, label: 'Incoming Boons' },
+                                                ]}
+                                                activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
+                                                inactiveClassName="text-[color:var(--text-secondary)]"
+                                            />
                                         </div>
                                     </div>
 
