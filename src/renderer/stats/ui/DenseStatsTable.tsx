@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { HorizontalScrollScrubber } from './HorizontalScrollScrubber';
 
@@ -44,6 +44,20 @@ export const DenseStatsTable = ({
         'minmax(170px, max-content)',
         ...columns.map((column) => `minmax(${column.minWidth ?? 60}px, max-content)`)
     ].join(' ');
+
+    // Workaround: Electron/Chromium compositing breaks native wheel→scroll binding
+    // when the element is inside a position:fixed portal with backdrop-filter ancestors.
+    // Manually apply deltaY to scrollTop so wheel scrolling works.
+    useEffect(() => {
+        const el = scrollRef.current;
+        if (!el) return;
+        const handler = (e: WheelEvent) => {
+            el.scrollTop += e.deltaY;
+            e.preventDefault();
+        };
+        el.addEventListener('wheel', handler, { passive: false });
+        return () => el.removeEventListener('wheel', handler);
+    }, []);
 
     return (
         <div className={`dense-table ${className}`}>

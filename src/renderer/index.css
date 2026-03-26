@@ -454,7 +454,7 @@ body:not(.web-report) .modal-pane {
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
-    overflow-y: hidden;
+    overflow-y: auto;
     padding-top: 0;
     padding-bottom: env(safe-area-inset-bottom);
     margin-top: 0 !important;
@@ -622,8 +622,8 @@ body:not(.web-report) .modal-pane .dense-table {
 body:not(.web-report) .modal-pane .dense-table__scroll {
     flex: 1 1 auto;
     min-height: 0;
-    max-height: none;
-    overflow-y: auto;
+    max-height: calc(100dvh - 12rem);
+    overflow: auto;
 }
 
 /* Web report fullscreen dense tables: hide native horizontal scrollbar
