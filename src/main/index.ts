@@ -135,9 +135,48 @@ process.on('unhandledRejection', (reason) => {
     log.error('[Crash] Unhandled promise rejection:', reason instanceof Error ? reason.stack : reason);
 });
 
+// ─── User data migration: ArcBridge → AxiBridge ─────────────────────────────
+// Must run before `new Store()` — electron-store derives its path from
+// app.getPath('userData'), which changed when productName became "AxiBridge".
 if (!app.isPackaged) {
-    const devUserDataDir = path.join(app.getPath('appData'), 'ArcBridge-Dev');
+    // Dev mode: migrate ArcBridge-Dev → AxiBridge-Dev
+    const appData = app.getPath('appData');
+    const oldDevDir = path.join(appData, 'ArcBridge-Dev');
+    const newDevDir = path.join(appData, 'AxiBridge-Dev');
+    if (fs.existsSync(oldDevDir) && !fs.existsSync(newDevDir)) {
+        try {
+            fs.cpSync(oldDevDir, newDevDir, { recursive: true });
+            log.info('[Migration] Copied dev userData from ArcBridge-Dev to AxiBridge-Dev');
+        } catch (err: any) {
+            log.warn('[Migration] Failed to copy dev userData:', err?.message || err);
+        }
+    }
+    const devUserDataDir = path.join(app.getPath('appData'), 'AxiBridge-Dev');
     app.setPath('userData', devUserDataDir);
+} else {
+    const appData = app.getPath('appData');
+    const oldDir = path.join(appData, 'ArcBridge');
+    const newDir = path.join(appData, 'AxiBridge');
+    if (fs.existsSync(oldDir) && !fs.existsSync(newDir)) {
+        try {
+            fs.cpSync(oldDir, newDir, { recursive: true });
+            log.info('[Migration] Copied userData from ArcBridge to AxiBridge');
+        } catch (err: any) {
+            log.warn('[Migration] Failed to copy userData:', err?.message || err);
+        }
+    }
+}
+
+// Migrate DPS report cache directory
+const oldCacheDir = path.join(app.getPath('temp'), 'arcbridge-dps-report-cache');
+const newCacheDir = path.join(app.getPath('temp'), 'axibridge-dps-report-cache');
+if (fs.existsSync(oldCacheDir) && !fs.existsSync(newCacheDir)) {
+    try {
+        fs.renameSync(oldCacheDir, newCacheDir);
+        log.info('[Migration] Renamed DPS report cache directory');
+    } catch (err: any) {
+        log.warn('[Migration] Failed to rename cache dir:', err?.message || err);
+    }
 }
 
 const { setForwarding: setConsoleLogForwarding, getHistory: getConsoleLogHistory } = setupConsoleLogger(() => win);
@@ -168,7 +207,7 @@ const loadUploadRetryState = (): UploadRetryRuntimeState => loadUploadRetryState
 const saveUploadRetryState = (state: UploadRetryRuntimeState) => saveUploadRetryStateToStore(store, state);
 
 const getLegacyDpsReportCacheDir = () => path.join(app.getPath('userData'), 'dps-report-cache');
-const getDpsReportCacheDir = () => path.join(app.getPath('temp'), 'arcbridge-dps-report-cache');
+const getDpsReportCacheDir = () => path.join(app.getPath('temp'), 'axibridge-dps-report-cache');
 
 // Local wrappers bind the store- and dir-injected cache functions to this process context.
 const loadDpsReportCacheIndex = () => loadDpsReportCacheIndexFn(store);
