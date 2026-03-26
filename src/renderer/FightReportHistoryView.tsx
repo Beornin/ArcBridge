@@ -360,9 +360,9 @@ export function FightReportHistoryView() {
     }
 
     return (
-        <div className="flex-1 min-h-0 -mx-8 -mb-2 flex flex-col">
+        <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
             {/* Tab bar */}
-            <div className="flex items-center gap-0 border-b px-8" style={{ borderColor: 'var(--border-default)' }}>
+            <div className="flex items-center gap-0 border-b px-4" style={{ borderColor: 'var(--border-default)' }}>
                 <button type="button" onClick={() => setActiveTab('list')}
                     className="px-4 py-2 text-xs"
                     style={{
@@ -391,15 +391,14 @@ export function FightReportHistoryView() {
             </div>
 
             {/* Content area */}
-            <AnimatePresence mode="wait">
+            <div className="flex-1 min-h-0 overflow-y-auto">
             {activeTab === 'list' ? (
                 <motion.div
                     key="list"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.2, ease: 'easeOut' }}
-                    className="flex-1 min-h-0 overflow-y-auto px-8 pb-4"
+                    transition={{ duration: 0.2 }}
+                    className="px-4 pb-4"
                 >
                     {/* Repo bar */}
                     <motion.div
@@ -626,11 +625,10 @@ export function FightReportHistoryView() {
                 return activeReport ? (
                     <motion.div
                         key={`detail-${activeTab}`}
-                        initial={{ opacity: 0, x: 30 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -30 }}
-                        transition={{ duration: 0.25, ease: 'easeOut' }}
-                        className="flex-1 min-h-0 flex gap-3 px-4 pt-2 pb-2"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.2 }}
+                        className="flex h-full gap-3 px-4 pt-2 pb-2"
                     >
                         <StatsNavSidebar onSectionVisibilityChange={handleSectionVisibilityChange} />
                         <div className="flex-1 min-h-0 flex flex-col">
@@ -641,6 +639,7 @@ export function FightReportHistoryView() {
                                 statsViewSettings={activeReport.report.stats?.statsViewSettings}
                                 dashboardTitle={activeReport.title}
                                 sectionVisibility={sectionVisibility || undefined}
+                                embedded
                             />
                         </div>
                     </motion.div>
@@ -649,15 +648,15 @@ export function FightReportHistoryView() {
                         key="not-found"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="flex-1 min-h-0 flex items-center justify-center text-sm"
+                        transition={{ duration: 0.2 }}
+                        className="flex-1 flex items-center justify-center text-sm"
                         style={{ color: 'var(--text-secondary)' }}
                     >
                         Report not found. It may have been closed.
                     </motion.div>
                 );
             })()}
-            </AnimatePresence>
+            </div>
         </div>
     );
 }
