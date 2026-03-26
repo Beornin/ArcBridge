@@ -65,7 +65,7 @@ export const DenseStatsTable = ({
                         return (
                         <div
                             key={column.id}
-                            className={`dense-table__head ${column.align === 'right' ? 'dense-table__cell--right' : ''}`}
+                            className={`dense-table__head ${column.align === 'right' ? 'dense-table__cell--right' : ''} ${sortColumnId === column.id ? 'dense-table__head--active' : ''}`}
                             style={column.minWidth ? { minWidth: column.minWidth } : undefined}
                         >
                             {isSortable ? (
@@ -90,7 +90,7 @@ export const DenseStatsTable = ({
                             {columns.map((column) => (
                                 <div
                                     key={`${row.id}-${column.id}`}
-                                    className={`dense-table__cell ${column.align === 'right' ? 'dense-table__cell--right' : ''}`}
+                                    className={`dense-table__cell ${column.align === 'right' ? 'dense-table__cell--right' : ''} ${sortColumnId === column.id ? 'dense-table__cell--active' : ''}`}
                                 >
                                     {row.values[column.id] ?? '-'}
                                 </div>
