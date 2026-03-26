@@ -1,5 +1,4 @@
 import { CSSProperties, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
 import { ShieldAlert } from 'lucide-react';
 
 
@@ -849,6 +848,7 @@ export function StatsView({ logs, onBack: _onBack, mvpWeights, statsViewSettings
     const [expandedSection, setExpandedSection] = useState<string | null>(null);
     const [expandedSectionClosing, setExpandedSectionClosing] = useState(false);
     const expandedCloseTimerRef = useRef<number | null>(null);
+    const expandedPortalRef = useRef<HTMLDivElement | null>(null);
     const [fightBreakdownTab, setFightBreakdownTab] = useState<'sizes' | 'outcomes' | 'damage' | 'barrier'>('sizes');
     const [skillUsageView, setSkillUsageView] = useState<'total' | 'perSecond'>('total');
     const isSkillUsagePerSecond = skillUsageView === 'perSecond';
@@ -3809,6 +3809,7 @@ type SpikeFight = {
         formatWithCommas,
         renderProfessionIcon,
         roundCountStats,
+        expandedPortalRef,
     }), [safeStats, expandedSection, expandedSectionClosing, openExpandedSection,
         closeExpandedSection, isSectionVisible, isFirstVisibleSection, sectionClass,
         formatWithCommas, renderProfessionIcon, roundCountStats]);
@@ -3845,6 +3846,9 @@ type SpikeFight = {
                     onClick={closeExpandedSection}
                 />
             )}
+            {/* Portal target for expanded sections — lives at the StatsView root so
+                position:fixed escapes ancestor transforms/filters/backdrop-filters. */}
+            <div ref={expandedPortalRef} />
             <StatsHeader
                 embedded={embedded}
                 dashboardTitle={dashboardTitle}
@@ -3923,10 +3927,7 @@ type SpikeFight = {
                 </div>
             )}
 
-            {!sectionsDeferred && (<motion.div
-                initial={embedded ? false : { opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+            {!sectionsDeferred && (<div
                 className={`${embedded ? '' : 'flex-1 min-h-0 flex'} relative`}
             >
                 <div
@@ -4727,7 +4728,7 @@ type SpikeFight = {
                 </StatsSharedContext.Provider>
                 {!embedded && <div className="h-24" aria-hidden="true" />}
             </div>
-            </motion.div>)}
+            </div>)}
         </div>
     );
 }
