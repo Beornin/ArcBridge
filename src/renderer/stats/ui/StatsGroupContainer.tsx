@@ -1,5 +1,4 @@
 import { type ReactNode } from 'react';
-import { motion } from 'framer-motion';
 
 type StatsGroupContainerProps = {
     groupId: string;
@@ -10,11 +9,6 @@ type StatsGroupContainerProps = {
     children: ReactNode;
     visible?: boolean;
     embedded?: boolean;
-};
-
-const groupEnter = {
-    hidden: { opacity: 0, y: 8, transition: { duration: 0.15 } },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] } },
 };
 
 export function StatsGroupContainer({
@@ -86,16 +80,13 @@ export function StatsGroupContainer({
     }
 
     return (
-        <motion.div
+        <div
             id={`group-${groupId}`}
             className="stats-group-container scroll-mt-24"
             style={baseStyle}
-            variants={groupEnter}
-            initial="hidden"
-            animate={visible ? 'visible' : 'hidden'}
         >
             {header}
             {children}
-        </motion.div>
+        </div>
     );
 }
