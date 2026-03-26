@@ -595,9 +595,7 @@ const ExpandedView = ({
 
     return (
         <div className="flex flex-col gap-4">
-            <div className="border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] px-4 py-3">
-                <div className="text-xs uppercase tracking-widest text-[color:var(--text-secondary)] mb-2">Modifier Columns</div>
-                <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2 pb-3" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                     <SearchSelectDropdown
                         options={[
                             ...allColumnOptions.map((option) => ({ ...option, type: 'column' as const })),
@@ -640,7 +638,7 @@ const ExpandedView = ({
                         buttonLabel="Players"
                         buttonIcon={<Users className="h-3.5 w-3.5" />}
                     />
-                </div>
+            </div>
                 {(selectedColumnIds.length > 0 || selectedPlayers.length > 0) && (
                     <div className="mt-2 flex flex-wrap items-center gap-2">
                         <button
@@ -660,10 +658,11 @@ const ExpandedView = ({
                                     key={id}
                                     type="button"
                                     onClick={() => setSelectedColumnIds((prev) => prev.filter((e) => e !== id))}
-                                    className="inline-flex items-center gap-1 rounded-full border border-[color:var(--border-default)] bg-[var(--bg-hover)] px-2 py-1 text-[11px] text-[color:var(--text-primary)] hover:text-[color:var(--text-primary)]"
+                                    className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px]"
+                                    style={{ border: '1px solid var(--accent-border)', background: 'var(--accent-bg)', color: 'var(--brand-primary)' }}
                                 >
                                     <span>{label}</span>
-                                    <span className="text-[color:var(--text-secondary)]">&times;</span>
+                                    <span style={{ color: 'var(--text-secondary)' }}>&times;</span>
                                 </button>
                             );
                         })}
@@ -672,15 +671,15 @@ const ExpandedView = ({
                                 key={id}
                                 type="button"
                                 onClick={() => setSelectedPlayers((prev) => prev.filter((e) => e !== id))}
-                                className="inline-flex items-center gap-1 rounded-full border border-[color:var(--border-default)] bg-[var(--bg-hover)] px-2 py-1 text-[11px] text-[color:var(--text-primary)] hover:text-[color:var(--text-primary)]"
+                                className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px]"
+                                style={{ border: '1px solid var(--accent-border)', background: 'var(--accent-bg)', color: 'var(--brand-primary)' }}
                             >
                                 <span>{id}</span>
-                                <span className="text-[color:var(--text-secondary)]">&times;</span>
+                                <span style={{ color: 'var(--text-secondary)' }}>&times;</span>
                             </button>
                         ))}
                     </div>
                 )}
-            </div>
             <div className="overflow-hidden">
                 {visibleMods.length === 0 ? (
                     <div className="rounded-[var(--radius-md)] border border-dashed border-[color:var(--border-hover)] px-4 py-6 text-center text-xs text-[color:var(--text-secondary)]">No modifiers match this filter</div>

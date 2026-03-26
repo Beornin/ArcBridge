@@ -268,9 +268,8 @@ export const ApmSection = ({
                                         ...selectedPlayers.map((id) => `player:${id}`)
                                     ]);
                                     return (
-                                        <div className="rounded-[var(--radius-md)] px-4 py-3" style={{ background: 'var(--bg-hover)', border: '1px solid var(--border-subtle)' }}>
-                                            <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>APM</div>
-                                            <div className="flex flex-wrap items-center gap-2">
+                                        <>
+                                        <div className="flex flex-wrap items-center gap-2 pb-3" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                                                 <SearchSelectDropdown
                                                     options={searchOptions}
                                                     selectedIds={selectedIds}
@@ -311,6 +310,7 @@ export const ApmSection = ({
                                                     buttonLabel="Players"
                                                     buttonIcon={<Users className="h-3.5 w-3.5" />}
                                                 />
+                                                <div className="h-5 w-px" style={{ background: 'var(--border-subtle)' }} />
                                                 <PillToggleGroup
                                                     value={apmView}
                                                     onChange={setApmView}
@@ -321,7 +321,7 @@ export const ApmSection = ({
                                                     activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
                                                     inactiveClassName="text-[color:var(--text-secondary)]"
                                                 />
-                                            </div>
+                                        </div>
                                             {(selectedSkillIds.length > 0 || selectedPlayers.length > 0) && (
                                                 <div className="mt-2 flex flex-wrap items-center gap-2">
                                                     <button
@@ -343,10 +343,10 @@ export const ApmSection = ({
                                                                 type="button"
                                                                 onClick={() => setSelectedSkillIds((prev) => prev.filter((entry) => entry !== id))}
                                                                 className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px]"
-                                                                style={{ border: '1px solid var(--border-subtle)', background: 'var(--bg-hover)', color: 'var(--text-primary)' }}
+                                                                style={{ border: '1px solid var(--accent-border)', background: 'var(--accent-bg)', color: 'var(--brand-primary)' }}
                                                             >
                                                                 <span>{label}</span>
-                                                                <span style={{ color: 'var(--text-muted)' }}>×</span>
+                                                                <span style={{ color: 'var(--text-secondary)' }}>×</span>
                                                             </button>
                                                         );
                                                     })}
@@ -358,16 +358,16 @@ export const ApmSection = ({
                                                                 type="button"
                                                                 onClick={() => setSelectedPlayers((prev) => prev.filter((entry) => entry !== id))}
                                                                 className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px]"
-                                                                style={{ border: '1px solid var(--border-subtle)', background: 'var(--bg-hover)', color: 'var(--text-primary)' }}
+                                                                style={{ border: '1px solid var(--accent-border)', background: 'var(--accent-bg)', color: 'var(--brand-primary)' }}
                                                             >
                                                                 <span>{label}</span>
-                                                                <span style={{ color: 'var(--text-muted)' }}>×</span>
+                                                                <span style={{ color: 'var(--text-secondary)' }}>×</span>
                                                             </button>
                                                         );
                                                     })}
                                                 </div>
                                             )}
-                                        </div>
+                                        </>
                                     );
                                 })()}
                                 {isExpanded ? (

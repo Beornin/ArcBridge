@@ -147,9 +147,7 @@ export const SpecialBuffsSection = ({
             <div className="rounded-[var(--radius-md)] border border-dashed border-[color:var(--border-hover)] px-4 py-6 text-center text-xs text-[color:var(--text-secondary)]">No special buff data available</div>
         ) : isExpanded ? (
             <div className="flex flex-col gap-4">
-                <div className="border rounded-[var(--radius-md)] px-4 py-3" style={{ background: 'var(--bg-hover)', borderColor: 'var(--border-subtle)' }}>
-                    <div className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>Special Buffs</div>
-                    <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2 pb-3" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                         <SearchSelectDropdown
                             options={[
                                 ...allSpecialColumns.map((buff: any) => ({ id: buff.id, label: buff.name, type: 'column' as const })),
@@ -197,6 +195,7 @@ export const SpecialBuffsSection = ({
                             buttonLabel="Players"
                             buttonIcon={<Users className="h-3.5 w-3.5" />}
                         />
+                        <div className="h-5 w-px" style={{ background: 'var(--border-subtle)' }} />
                         <PillToggleGroup
                             value={sortKey}
                             onChange={(value) => setSortKey(value as SpecialSortKey)}
@@ -208,7 +207,7 @@ export const SpecialBuffsSection = ({
                             activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
                             inactiveClassName="text-[color:var(--text-secondary)]"
                         />
-                    </div>
+                </div>
                     {(selectedSpecialColumns.length > 0 || selectedSpecialPlayers.length > 0) && (
                         <div className="mt-2 flex flex-wrap items-center gap-2">
                             <button
@@ -230,7 +229,7 @@ export const SpecialBuffsSection = ({
                                         type="button"
                                         onClick={() => setSelectedSpecialColumns((prev) => prev.filter((entry) => entry !== id))}
                                         className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px]"
-                                        style={{ border: '1px solid var(--border-default)', background: 'var(--bg-hover)', color: 'var(--text-primary)' }}
+                                        style={{ border: '1px solid var(--accent-border)', background: 'var(--accent-bg)', color: 'var(--brand-primary)' }}
                                     >
                                         <span>{label}</span>
                                         <span style={{ color: 'var(--text-secondary)' }}>×</span>
@@ -243,7 +242,7 @@ export const SpecialBuffsSection = ({
                                     type="button"
                                     onClick={() => setSelectedSpecialPlayers((prev) => prev.filter((entry) => entry !== id))}
                                     className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px]"
-                                    style={{ border: '1px solid var(--border-default)', background: 'var(--bg-hover)', color: 'var(--text-primary)' }}
+                                    style={{ border: '1px solid var(--accent-border)', background: 'var(--accent-bg)', color: 'var(--brand-primary)' }}
                                 >
                                     <span>{id}</span>
                                     <span style={{ color: 'var(--text-secondary)' }}>×</span>
@@ -251,7 +250,6 @@ export const SpecialBuffsSection = ({
                             ))}
                         </div>
                     )}
-                </div>
                 <div className="overflow-hidden">
                     {visibleSpecialTables.length === 0 ? (
                         <div className="rounded-[var(--radius-md)] border border-dashed border-[color:var(--border-hover)] px-4 py-6 text-center text-xs text-[color:var(--text-secondary)]">No special buffs match this filter</div>

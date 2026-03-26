@@ -122,9 +122,7 @@ export const ConditionsSection = ({
         {conditionSummary && conditionSummary.length > 0 ? (
             isExpanded ? (
                 <div className="flex flex-col gap-4">
-                    <div className="border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] px-4 py-3">
-                        <div className="text-xs uppercase tracking-widest text-[color:var(--text-secondary)] mb-2">Conditions</div>
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2 pb-3" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                         <SearchSelectDropdown
                             options={[
                                 ...allConditions.map((entry: any) => ({ id: entry.name, label: entry.name, type: 'column' as const })),
@@ -167,6 +165,7 @@ export const ConditionsSection = ({
                             buttonLabel="Players"
                             buttonIcon={<Users className="h-3.5 w-3.5" />}
                         />
+                        <div className="h-5 w-px" style={{ background: 'var(--border-subtle)' }} />
                         <PillToggleGroup
                                 value={conditionDirection}
                                 onChange={setConditionDirection}
@@ -188,7 +187,6 @@ export const ConditionsSection = ({
                                     activeClassName="bg-[var(--accent-bg-strong)] text-[color:var(--brand-primary)] border border-[color:var(--accent-border)]"
                                     inactiveClassName="border border-transparent text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]"
                                 />
-                        </div>
                     </div>
                     <div className="overflow-hidden">
                         {filteredConditions.length === 0 ? (
@@ -304,10 +302,11 @@ export const ConditionsSection = ({
                                     key={id}
                                     type="button"
                                     onClick={() => setSelectedConditionColumns((prev) => prev.filter((entry) => entry !== id))}
-                                    className="inline-flex items-center gap-1 rounded-full border border-[color:var(--border-default)] bg-[var(--bg-hover)] px-2 py-1 text-[11px] text-[color:var(--text-primary)] hover:text-[color:var(--text-primary)]"
+                                    className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px]"
+                                    style={{ border: '1px solid var(--accent-border)', background: 'var(--accent-bg)', color: 'var(--brand-primary)' }}
                                 >
                                     <span>{id}</span>
-                                    <span className="text-[color:var(--text-secondary)]">×</span>
+                                    <span style={{ color: 'var(--text-secondary)' }}>×</span>
                                 </button>
                             ))}
                             {selectedConditionPlayers.map((id) => (
@@ -315,10 +314,11 @@ export const ConditionsSection = ({
                                     key={id}
                                     type="button"
                                     onClick={() => setSelectedConditionPlayers((prev) => prev.filter((entry) => entry !== id))}
-                                    className="inline-flex items-center gap-1 rounded-full border border-[color:var(--border-default)] bg-[var(--bg-hover)] px-2 py-1 text-[11px] text-[color:var(--text-primary)] hover:text-[color:var(--text-primary)]"
+                                    className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px]"
+                                    style={{ border: '1px solid var(--accent-border)', background: 'var(--accent-bg)', color: 'var(--brand-primary)' }}
                                 >
                                     <span>{id}</span>
-                                    <span className="text-[color:var(--text-secondary)]">×</span>
+                                    <span style={{ color: 'var(--text-secondary)' }}>×</span>
                                 </button>
                             ))}
                         </div>
