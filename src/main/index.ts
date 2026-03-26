@@ -721,6 +721,49 @@ const migrateLegacyInstallName = () => {
     }
 };
 
+const migrateArcBridgeInstallName = () => {
+    if (!app.isPackaged) return;
+    const legacyPrefix = 'ArcBridge';
+    const newPrefix = 'AxiBridge';
+
+    if (process.platform === 'linux') {
+        const appImagePath = process.env.APPIMAGE;
+        if (!appImagePath) return;
+        const baseName = path.basename(appImagePath);
+        if (!baseName.startsWith(legacyPrefix)) return;
+        // Don't rename if already AxiBridge
+        if (baseName.startsWith(newPrefix)) return;
+        const newName = baseName.replace(legacyPrefix, newPrefix);
+        const targetPath = path.join(path.dirname(appImagePath), newName);
+        if (fs.existsSync(targetPath)) return;
+        try {
+            fs.copyFileSync(appImagePath, targetPath);
+            fs.chmodSync(targetPath, 0o755);
+            log.info(`[Bridge] Created new AppImage name: ${targetPath}`);
+        } catch (err: any) {
+            log.warn(`[Bridge] Failed to copy AppImage to new name: ${err?.message || err}`);
+        }
+        return;
+    }
+
+    if (process.platform === 'win32') {
+        const portablePath = process.env.PORTABLE_EXECUTABLE;
+        if (!portablePath) return;
+        const baseName = path.basename(portablePath);
+        if (!baseName.startsWith(legacyPrefix)) return;
+        if (baseName.startsWith(newPrefix)) return;
+        const newName = baseName.replace(legacyPrefix, newPrefix);
+        const targetPath = path.join(path.dirname(portablePath), newName);
+        if (fs.existsSync(targetPath)) return;
+        try {
+            fs.copyFileSync(portablePath, targetPath);
+            log.info(`[Bridge] Created new portable name: ${targetPath}`);
+        } catch (err: any) {
+            log.warn(`[Bridge] Failed to copy portable exe to new name: ${err?.message || err}`);
+        }
+    }
+};
+
 
 function createTray() {
     const iconPath = path.join(process.env.VITE_PUBLIC || '', 'img/AxiBridge-white.png');
@@ -966,6 +1009,7 @@ if (!gotTheLock) {
         }
         migrateLegacySettings();
         migrateLegacyInstallName();
+        migrateArcBridgeInstallName();
         createWindow();
         createTray();
 
