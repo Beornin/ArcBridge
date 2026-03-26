@@ -340,6 +340,13 @@ svg {
     -ms-user-select: none;
 }
 
+/* Prevent recharts ResponsiveContainer from measuring -1 dimensions
+   when the parent container hasn't laid out yet (e.g. during initial render storm). */
+.recharts-responsive-container {
+    min-width: 0;
+    min-height: 0;
+}
+
 .recharts-wrapper,
 .recharts-surface,
 .recharts-layer,
@@ -669,7 +676,7 @@ body:not(.web-report) .modal-pane .dense-table.fight-breakdown-dense .dense-tabl
 
 .dense-table__head,
 .dense-table__cell {
-    padding: 0.25rem 0.3rem;
+    padding: 0.35rem 0.5rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     color: #e5e7eb;
     background: rgba(255, 255, 255, 0.02);
@@ -696,7 +703,8 @@ body:not(.web-report) .modal-pane .dense-table.fight-breakdown-dense .dense-tabl
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: #9ca3af;
-    background: #0f172a;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.08);
     position: sticky;
     top: 0;
     z-index: 3;
@@ -758,10 +766,16 @@ body:not(.web-report) .modal-pane .dense-table.fight-breakdown-dense .dense-tabl
 
 /* Group container entrance animation on nav switch */
 
-.dense-table__cell--active,
 .dense-table__head--active {
-    background: #111c33;
-    color: #bfdbfe;
+    background: rgba(56, 189, 248, 0.06);
+    color: var(--brand-primary);
+    border-bottom-color: rgba(56, 189, 248, 0.3);
+}
+
+.dense-table__cell--active {
+    background: rgba(56, 189, 248, 0.03);
+    color: var(--text-primary);
+    font-weight: 500;
 }
 
 .stats-table-sidebar> :last-child {
