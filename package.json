@@ -1,8 +1,8 @@
 {
-    "name": "arcbridge",
+    "name": "axibridge",
     "private": true,
     "version": "1.43.2",
-    "description": "ArcBridge - Guild Wars 2 arcDPS Log Uploader",
+    "description": "AxiBridge - Guild Wars 2 arcDPS Log Uploader",
     "author": {
         "name": "darkharasho",
         "email": "mstephens@example.com"
@@ -101,12 +101,12 @@
         "wait-on": "^7.2.0"
     },
     "build": {
-        "appId": "com.arcbridge.app",
-        "productName": "ArcBridge",
+        "appId": "com.axibridge.app",
+        "productName": "AxiBridge",
         "directories": {
             "output": "dist_out"
         },
-        "artifactName": "ArcBridge-${version}.${ext}",
+        "artifactName": "AxiBridge-${version}.${ext}",
         "publish": {
             "provider": "github",
             "owner": "darkharasho",
@@ -124,7 +124,7 @@
             "THIRD_PARTY_NOTICES.md"
         ],
         "linux": {
-            "artifactName": "ArcBridge-${version}.${ext}",
+            "artifactName": "AxiBridge-${version}.${ext}",
             "target": [
                 "AppImage"
             ],
@@ -132,7 +132,7 @@
             "icon": "public/img/AxiBridge-white.png"
         },
         "win": {
-            "artifactName": "ArcBridge-${version}-Setup.${ext}",
+            "artifactName": "AxiBridge-${version}-Setup.${ext}",
             "target": [
                 "nsis"
             ],
